@@ -1,0 +1,100 @@
+# SoF entity_t field table (gamex86.dll RVA 0x14ED60), 97 fields
+# off    name                     type    accessor
+
+0x000  light                    ?       
+0x000  sky                      str     
+0x004  origin                   vec3    
+0x004  skyrotate                float   
+0x008  skyaxis                  vec3    
+0x010  angle                    angle   
+0x010  angles                   vec3    
+0x014  musicSet                 str     
+0x018  terrainset               str     
+0x01C  nextmap                  str     
+0x020  color                    vec3    
+0x02C  endpoint                 vec3    
+0x02C  skin                     int     
+0x038  spawnfrequency           float   
+0x03C  lip                      int     
+0x040  distance                 int     
+0x044  height                   int     
+0x048  noise                    str     
+0x04C  pausetime                float   
+0x050  item                     str     
+0x054  gravity                  str     
+0x058  minyaw                   float   
+0x05C  maxyaw                   float   
+0x060  minpitch                 float   
+0x064  maxpitch                 float   
+0x068  killedvalue              int     
+0x06C  survivalvalue            int     
+0x070  material                 int     
+0x074  scale                    float   
+0x078  merctype                 int     
+0x07C  mercnum                  int     
+0x080  waitaction1              str     YES
+0x084  waitaction2              str     
+0x088  waitaction3              str     
+0x08C  waitaction4              str     
+0x090  waitaction5              str     
+0x094  waitaction6              str     
+0x098  moveaction               str     YES
+0x09C  screeneffect             int     
+0x0A0  script                   str     YES
+0x0A4  parm1                    str     YES
+0x0A8  parm2                    str     
+0x0AC  parm3                    str     YES
+0x0B0  parm4                    str     
+0x0B4  parm5                    str     
+0x0B8  parm6                    str     
+0x0BC  parm7                    str     
+0x0C0  parm8                    str     
+0x0C4  parm9                    str     
+0x0C8  parm10                   str     
+0x0E4  surfacetype              int     
+0x0E8  noweapons                int     
+0x0EC  setweapons               int     
+0x0F0  maxDeadHostages          int     YES
+0x0F4  ambientSet               str     
+0x0F8  startmusic               int     YES
+0x0FC  forceHUD                 int     
+0x100  weaponsAvailable         int     
+0x104  ainame                   str     YES
+0x108  chopsky                  int     YES
+0x108  distcull                 int     YES
+0x1A4  model                    str     YES
+0x1AC  message                  str     YES
+0x1B0  sp_message               int     
+0x1B4  classname                str     YES
+0x1B8  spawnflags               int     YES
+0x1C4  target                   str     YES
+0x1C8  targetname               str     
+0x1CC  scripttarget             str     
+0x1D0  killtarget               str     YES
+0x1D4  killfacing               str     YES
+0x1D8  team                     str     YES
+0x1DC  pathtarget               str     
+0x1E0  deathtarget              str     YES
+0x1E4  combattarget             str     YES
+0x1E8  soundname                str     
+0x1EC  spawn1                   str     YES
+0x1F0  spawn2                   str     
+0x1F4  spawn3                   str     
+0x21C  speed                    float   YES
+0x220  accel                    float   
+0x224  decel                    float   
+0x27C  mass                     int     
+0x2EC  health                   int     YES
+0x300  map                      str     YES
+0x310  dmg                      int     
+0x314  sounds                   int     
+0x318  count                    int     YES
+0x338  personality              int     
+0x358  volume                   float   
+0x35C  attenuation              float   
+0x360  wait                     float   
+0x364  delay                    float   
+0x368  random                   float   
+0x384  alertradius              float   
+0x3BC  style                    int     YES
+0x50096C00  test_rj                  int     

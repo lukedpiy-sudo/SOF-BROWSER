@@ -1,0 +1,35 @@
+﻿decoded 31 weapon-table registrations
+
+row  name(a2)       fire(a11)    altfire(a14) a5       a6       a13      a15      delayA(+118) delayB(+11C)
+-----------------------------------------------------------------------------------------------------------
+0                   0x00000000 0x00000000 0        3        0        0        0        0       
+1    weapons/othermz/knife 0x50100BF0 0x500FFEA0 22       3        0.25     30       0        0       
+2                   0x50103A60 0x500FFEC0 30       2        0        0        0        0       
+3    weapons/othermz/pistol1_p 0x50101230 0x50096C00 45       2        0        512      0.03     0.03    
+4    weapons/othermz/pistol2_p 0x50101230 0x50096C00 120      5        0        800      0.08     0.08    
+5    weapons/othermz/machinepistol 0x50101230 0x50096C00 40       2        0.5      512      0        0       
+6    weapons/othermz/assaultrifle_p 0x50101230 0x50096C00 45       4        0        512      0.03     0.03    
+7    weapons/othermz/sniper 0x50101230 0x500FFF50 80       6        0        1600     0        0       
+8                   0x00000000 0x00000000 30       3        0        512      0        0       
+9    weapons/othermz/autoshot_p 0x501018A0 0x500FFF70 80       3        0        512      0.04     0.04    
+10   weapons/othermz/autoalt_p 0x50104FC0 0x500FFFA0 200      3        0        256      0.02     0.02    
+11   weapons/othermz/shotgun_p 0x50101A90 0x500FFFF0 40       1        0.5      128      0.2      0.2     
+12   weapons/othermz/machinegun_p 0x50101230 0x50096C00 100      7        0        1024     0.08     0.04    
+13   weapons/othermz/phos_p 0x50104A20 0x50100010 30       3        0        512      0.01     0.01    
+14   weapons/othermz/rocket_p 0x50102A40 0x50100070 30       5        0        512      0.2      0.2     
+15   weapons/othermz/rocket_alt_p 0x50103270 0x501000D0 15       5        0        512      0.1      0.1     
+16                  0x501051B0 0x501001E0 10       3        0        512      0        0       
+17   weapons/othermz/mpg 0x50104510 0x50100150 200      3        0        512      0        0       
+18                  0x50105B20 0x501002B0 15       3        0        512      0        0       
+19   weapons/othermz/flamerelease 0x50105930 0x50100300 30       3        0        512      0.3      0.3     
+20                  0x50106050 0x00000000 30       3        0        512      0.03     0.03    
+21                  0x501063C0 0x00000000 10       3        0        512      0.1      0.1     
+22                  0x50106380 0x50100330 30       3        0        512      0.05     0.05    
+23                  0x501061E0 0x00000000 30       3        0        512      0.1      0.1     
+24                  0x50106380 0x00000000 30       3        0        512      0        0       
+25                  0x50096C00 0x00000000 30       3        0        512      0        0       
+26                  0x501063D0 0x00000000 30       3        0        512      0        0       
+27                  0x501063E0 0x00000000 30       3        0        512      0        0       
+28                  0x50101230 0x50096C00 180      15       0        512      0.1      0.1     
+29   weapons/othermz/gb_dekmz 0x501063F0 0x50100220 300      3        0        512      0.02     0.02    
+30                  0x50103FE0 0x500FFF00 30       2        0        0        0        0       

@@ -1,0 +1,614 @@
+TARGET: gamex86.dll  BASE 50000000
+================================================================
+// pattern 00007A44 (4 bytes): 9 hits, 6 inside functions
+// pattern 00008743 (4 bytes): 2 hits, 0 inside functions
+// pattern 0000FA44 (4 bytes): 1 hits, 0 inside functions
+// pattern 7C1F803F (4 bytes): 0 hits, 0 inside functions
+// pattern 00004244 (4 bytes): 1 hits, 0 inside functions
+// pattern 0000E043 (4 bytes): 2 hits, 1 inside functions
+
+// functions containing >=1 hit: 7
+//   50009190  <- [0000E043 @ 5000933d (offset +429)]
+//   50064ea8  <- [00007A44 @ 50064ef2 (offset +74)]
+//   500c0f40  <- [00007A44 @ 500c0fda (offset +154)]
+//   500c2f80  <- [00007A44 @ 500c3109 (offset +393)]
+//   500c35c0  <- [00007A44 @ 500c3636 (offset +118)]
+//   500c3690  <- [00007A44 @ 500c3776 (offset +230)]
+//   5010508d  <- [00007A44 @ 5010513f (offset +178)]
+
+############################################################
+### FUNC 50009190  size=822  FUN_50009190
+### hits:
+###     0000E043 @ 5000933d (offset +429)
+############################################################
+// callees:
+
+void __thiscall FUN_50009190(void *this,undefined4 param_1,undefined4 param_2)
+
+{
+  switch(param_1) {
+  case 0:
+    *(undefined4 *)((int)this + 0x10) = 0x3f800000;
+    *(undefined4 *)((int)this + 0xc) = 0x3e4ccccd;
+    *(undefined4 *)((int)this + 0x14) = 0x40c00000;
+    *(undefined4 *)((int)this + 0x18) = 0x41a00000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    break;
+  case 1:
+    *(undefined4 *)((int)this + 0x10) = 0x3f800000;
+    *(undefined4 *)((int)this + 0xc) = 0x3e800000;
+    *(undefined4 *)((int)this + 0x14) = 0x40a00000;
+    *(undefined4 *)((int)this + 0x18) = 0x42200000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    break;
+  case 2:
+    *(undefined4 *)((int)this + 0x10) = 0x3f800000;
+    *(undefined4 *)((int)this + 0x18) = 0x42f00000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    goto LAB_50009266;
+  case 3:
+    *(undefined4 *)((int)this + 0x10) = 0x3f800000;
+    *(undefined4 *)((int)this + 0xc) = 0x3eb33333;
+    *(undefined4 *)((int)this + 0x14) = 0x40800000;
+    *(undefined4 *)((int)this + 0x18) = 0x42a00000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    break;
+  case 4:
+    *(undefined4 *)((int)this + 0x10) = 0x3f800000;
+    *(undefined4 *)((int)this + 0xc) = 0x3eb33333;
+    *(undefined4 *)((int)this + 0x14) = 0x40800000;
+    *(undefined4 *)((int)this + 0x18) = 0x42f00000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    break;
+  case 5:
+    *(undefined4 *)((int)this + 0x10) = 0x3f000000;
+    *(undefined4 *)((int)this + 0x14) = 0x40600000;
+    *(undefined4 *)((int)this + 0x18) = 0x430c0000;
+    *(undefined4 *)((int)this + 0x1c) = 0;
+    goto LAB_5000926d;
+  case 6:
+    *(undefined4 *)((int)this + 0x10) = 0x3f000000;
+    *(undefined4 *)((int)this + 0x18) = 0x43480000;
+    *(undefined4 *)((int)this + 0x1c) = 5;
+LAB_50009266:
+    *(undefined4 *)((int)this + 0x14) = 0x40400000;
+LAB_5000926d:
+    *(undefined4 *)((int)this + 0xc) = 0x3ecccccd;
+    break;
+  default:
+    goto switchD_50009287_switchD;
+  }
+  *(undefined4 *)((int)this + 0x20) = 0x3f800000;
+switchD_50009287_switchD:
+  switch(param_2) {
+  case 3:
+    *(undefined4 *)this = 0x43c00000;
+    *(undefined4 *)((int)this + 4) = 0x44400000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) * 0.5;
+    return;
+  case 4:
+    *(undefined4 *)this = 0x43c00000;
+    *(undefined4 *)((int)this + 4) = 0x44400000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) * 0.5;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 1.5;
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.9;
+    return;
+  case 5:
+    *(undefined4 *)this = 0x43000000;
+    *(undefined4 *)((int)this + 4) = 0x43800000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x10) = *(float *)((int)this + 0x10) * 0.0;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) + *(float *)((int)this + 0x14);
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) + *(float *)((int)this + 0x18);
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.35;
+    return;
+  case 6:
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(undefined4 *)this = 0x43400000;
+    *(undefined4 *)((int)this + 4) = 0x43e00000;
+    *(uint *)((int)this + 0x1c) = *(uint *)((int)this + 0x1c) | 0x10;
+    *(float *)((int)this + 0x10) = *(float *)((int)this + 0x10) * 0.0;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) + *(float *)((int)this + 0x14);
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 2.5;
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.35;
+    return;
+  case 7:
+    *(undefined4 *)this = 0x44000000;
+    *(undefined4 *)((int)this + 4) = 0x44800000;
+    *(undefined4 *)((int)this + 8) = 0;
+    *(uint *)((int)this + 0x1c) = *(uint *)((int)this + 0x1c) | 10;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) + *(float *)((int)this + 0x18);
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 3.0;
+    return;
+  case 9:
+    *(undefined4 *)this = 0x43800000;
+    *(undefined4 *)((int)this + 4) = 0x44000000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 4.0;
+    return;
+  case 0xb:
+    *(undefined4 *)this = 0x42c00000;
+    *(undefined4 *)((int)this + 4) = 0x43400000;
+    *(undefined4 *)((int)this + 8) = 0;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) + *(float *)((int)this + 0x18);
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.3;
+    return;
+  case 0xc:
+    *(undefined4 *)this = 0x43800000;
+    *(undefined4 *)((int)this + 4) = 0x44000000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) * 1.5;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 4.0;
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.35;
+    return;
+  case 0xe:
+    *(undefined4 *)this = 0x43800000;
+    *(undefined4 *)((int)this + 4) = 0x44400000;
+    *(undefined4 *)((int)this + 8) = 0;
+    *(uint *)((int)this + 0x1c) = *(uint *)((int)this + 0x1c) | 0x15;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 7.0;
+    return;
+  case 0x10:
+    *(undefined4 *)this = 0x43800000;
+    *(undefined4 *)((int)this + 4) = 0x44000000;
+    *(undefined4 *)((int)this + 8) = 0x3f800000;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 7.0;
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 0.4;
+    return;
+  case 0x12:
+    *(undefined4 *)this = 0x42800000;
+    *(undefined4 *)((int)this + 4) = 0x43200000;
+    *(undefined4 *)((int)this + 8) = 0;
+    *(uint *)((int)this + 0x1c) = *(uint *)((int)this + 0x1c) | 0x90;
+    *(float *)((int)this + 0x10) = *(float *)((int)this + 0x10) * 0.0;
+    *(float *)((int)this + 0x14) = *(float *)((int)this + 0x14) * 0.0;
+    *(float *)((int)this + 0x18) = *(float *)((int)this + 0x18) * 3.0;
+    *(float *)((int)this + 0x20) = *(float *)((int)this + 0x20) + *(float *)((int)this + 0x20);
+    *(float *)((int)this + 0xc) = *(float *)((int)this + 0xc) * 5.0;
+  }
+  return;
+}
+
+
+
+############################################################
+### FUNC 50064ea8  size=78  FUN_50064ea8
+### hits:
+###     00007A44 @ 50064ef2 (offset +74)
+############################################################
+// callees:
+//	50065470  FUN_50065470
+
+void FUN_50064ea8(char *param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4,
+                 undefined4 param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8,
+                 undefined4 param_9,undefined4 param_10,undefined4 param_11,undefined4 param_12,
+                 undefined4 param_13,char *param_14,undefined4 param_15,undefined4 param_16)
+
+{
+  char *unaff_retaddr;
+  
+  FUN_50065470(&DAT_5015a964,s_weapons_playermz_shotgun_50143f28,unaff_retaddr,param_1,param_2,
+               param_3,param_4,param_5,param_6,param_7,param_8,param_9,param_10,param_11,param_12,
+               param_13,param_14,param_15,param_16);
+  FUN_50065470(&DAT_5015aab0,s_weapons_playermz_machinegun_50143ed0,
+               s_weapons_othermz_machinegun_p_50143eec,s_weapons_othermz_machinegun_50143f0c,
+               0x447a0000,0x42c80000,0x40e00000,0x20000,0x3da3d70a,0x3d23d70a,10,FUN_50101230,
+               0x3e800000,0,FUN_50096c00,0x44800000,s_weapons_world_tracer_l_50144188,1,0xc);
+  FUN_50065470(&DAT_5015abfc,s_weapons_playermz_phos_50143e88,s_weapons_othermz_phos_p_50143ea0,
+               s_weapons_othermz_phos_50143eb8,0x43fa0000,0x41f00000,0x40400000,0,0x3c23d70a,
+               0x3c23d70a,0,&LAB_50104a20,0,0,&LAB_50100010,0x44000000,&DAT_5015911c,0,0xd);
+  FUN_50065470(&DAT_5015ad48,s_weapons_playermz_rocket_50143e3c,s_weapons_othermz_rocket_p_50143e54,
+               s_weapons_othermz_rocket_50143e70,0,0x41f00000,0x40a00000,0,0x3e4ccccd,0x3e4ccccd,0,
+               &LAB_50102a40,0,0,&LAB_50100070,0x44000000,&DAT_5015911c,0,0xe);
+  FUN_50065470(&DAT_5015ae94,s_weapons_playermz_rocket_alt_50143de4,
+               s_weapons_othermz_rocket_alt_p_50143e00,s_weapons_othermz_rocket_alt_50143e20,0,
+               0x41700000,0x40a00000,0,0x3dcccccd,0x3dcccccd,0,&LAB_50103270,0,0,&LAB_501000d0,
+               0x44000000,&DAT_5015911c,0,0xf);
+  FUN_50065470(&DAT_5015afe0,s_weapons_playermz_mpgbeam1_50143dc8,&DAT_5015911c,&DAT_5015911c,0,
+               0x41200000,0x40400000,0,0,0,0xe,&LAB_501051b0,0x3f800000,0,FUN_501001e0,0x44000000,
+               &DAT_5015911c,0,0x10);
+  FUN_50065470(&DAT_5015b12c,s_weapons_playermz_mpg_50143d80,s_weapons_othermz_mpg_50143d98,
+               s_weapons_othermz_mpgenemy_50143dac,0,0x43480000,0x40400000,0,0,0,0xe,FUN_50104510,
+               0x3f800000,0,FUN_50100150,0x44000000,&DAT_5015911c,0,0x11);
+  FUN_50065470(&DAT_5015b278,s_weapons_playermz_flamegun_50143d64,&DAT_5015911c,&DAT_5015911c,0,
+               0x41700000,0x40400000,0,0,0,0,&LAB_50105b20,0,0,FUN_501002b0,0x44000000,&DAT_5015911c
+               ,0,0x12);
+  FUN_50065470(&DAT_5015b3c4,s_weapons_playermz_flamerelease_50143d24,
+               s_weapons_othermz_flamerelease_50143d44,s_weapons_othermz_flamerelease_50143d44,0,
+               0x41f00000,0x40400000,0,0x3e99999a,0x3e99999a,0,&LAB_50105930,0,0,FUN_50100300,
+               0x44000000,&DAT_5015911c,0,0x13);
+  FUN_50065470(&DAT_5015b510,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,
+               0x3cf5c28f,0x3cf5c28f,0,&LAB_50106050,0,0,0,0x44000000,&DAT_5015911c,0,0x14);
+  FUN_50065470(&DAT_5015b65c,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41200000,0x40400000,0,
+               0x3dcccccd,0x3dcccccd,0,&DAT_501063c0,0,0,0,0x44000000,
+               s_weapons_world_tracer_l_50144188,0,0x15);
+  FUN_50065470(&DAT_5015b7a8,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,
+               0x3d4ccccd,0x3d4ccccd,0,&LAB_50106380,0,0,&LAB_50100330,0x44000000,&DAT_5015911c,0,
+               0x16);
+  FUN_50065470(&DAT_5015b8f4,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,
+               0x3dcccccd,0x3dcccccd,0,&LAB_501061e0,0,0,0,0x44000000,&DAT_5015911c,0,0x17);
+  FUN_50065470(&DAT_5015ba40,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,0,0
+               ,0,&LAB_50106380,0,0,0,0x44000000,&DAT_5015911c,0,0x18);
+  FUN_50065470(&DAT_5015bb8c,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,0,0
+               ,0,FUN_50096c00,0,0,0,0x44000000,&DAT_5015911c,0,0x19);
+  FUN_50065470(&DAT_5015bcd8,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,0,0
+               ,0,&LAB_501063d0,0,0,0,0x44000000,&DAT_5015911c,0,0x1a);
+  FUN_50065470(&DAT_5015be24,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40400000,0,0,0
+               ,0,&DAT_501063e0,0,0,0,0x44000000,&DAT_5015911c,0,0x1b);
+  FUN_50065470(&DAT_5015bf70,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0x44bb8000,0x43340000,
+               0x41700000,0x20000,0x3dcccccd,0x3dcccccd,0,FUN_50101230,0,0,FUN_50096c00,0x44000000,
+               s_weapons_world_tracer_l_50144188,0,0x1c);
+  FUN_50065470(&DAT_5015c0bc,&DAT_5015911c,s_weapons_othermz_gb_dekmz_50143d08,
+               s_weapons_othermz_gb_dekmz_50143d08,0,0x43960000,0x40400000,0,0x3ca3d70a,0x3ca3d70a,0
+               ,&LAB_501063f0,0,0,FUN_50100220,0x44000000,s_weapons_world_tracer_l_50144188,1,0x1d);
+  FUN_50065470(&DAT_5015c208,&DAT_5015911c,&DAT_5015911c,&DAT_5015911c,0,0x41f00000,0x40000000,0,0,0
+               ,0,FUN_50103fe0,0,0,FUN_500fff00,0,&DAT_5015911c,0,0x1e);
+  return;
+}
+
+
+
+############################################################
+### FUNC 500c0f40  size=199  FUN_500c0f40
+### hits:
+###     00007A44 @ 500c0fda (offset +154)
+############################################################
+// callees:
+//	500c3440  FUN_500c3440
+
+void __cdecl FUN_500c0f40(int param_1)
+
+{
+  if (((*(float *)(param_1 + 0x10) != DAT_5018bf0c) || (*(float *)(param_1 + 0x14) != DAT_5018bf10))
+     || (*(float *)(param_1 + 0x18) != DAT_5018bf14)) {
+    FUN_500c3440((float *)(param_1 + 0x10),(float *)(param_1 + 0x228));
+  }
+  *(undefined4 *)(param_1 + 0x158) = 1;
+  *(undefined4 *)(param_1 + 0x19c) = 0;
+  (*DAT_5015ca0c)(param_1,*(undefined4 *)(param_1 + 0x1a4));
+  *(undefined4 *)(param_1 + 0x118) = 1;
+  *(code **)(param_1 + 0x2c0) = FUN_500c0de0;
+  if (*(float *)(param_1 + 0x21c) == 0.0) {
+    *(undefined4 *)(param_1 + 0x21c) = 0x447a0000;
+  }
+  if ((*(byte *)(param_1 + 0x1b8) & 2) != 0) {
+    *(undefined1 **)(param_1 + 0x2c4) = &LAB_500c0f30;
+  }
+  *(undefined4 *)(param_1 + 0x318) = 0;
+  (*DAT_5015cb28)(param_1);
+  return;
+}
+
+
+
+############################################################
+### FUNC 500c2f80  size=1133  FUN_500c2f80
+### hits:
+###     00007A44 @ 500c3109 (offset +393)
+############################################################
+// callees:
+//	50107520  __ftol
+//	50112880  __strcmpi
+//	500c3880  FUN_500c3880
+//	500c35c0  FUN_500c35c0
+
+void __cdecl FUN_500c2f80(int *param_1,int param_2)
+
+{
+  char *pcVar1;
+  float fVar2;
+  int *piVar3;
+  int iVar4;
+  int iVar5;
+  int *piVar6;
+  int *piVar7;
+  longlong lVar8;
+  
+  if ((float)param_1[0xd9] == 0.0) {
+    if (((param_1[0x6b] != 0) || ((short)param_1[0x6c] != 0)) &&
+       ((*(byte *)(param_2 + 0x118) & 4) == 0)) {
+      if ((short)param_1[0x6c] == 0) {
+        (*DAT_5015ca34)(param_2,&DAT_50142f40,param_1[0x6b]);
+      }
+      else {
+        (*DAT_5015cab0)(param_2,(short)param_1[0x6c]);
+      }
+      iVar4 = param_1[0xd4];
+      if (iVar4 == 0) {
+        iVar4 = (*DAT_5015c9f4)(s_Misc_Talk_wav_50147844,0x3f19999a,0x3f800000,0,0);
+      }
+      (*DAT_5015ca48)(param_2,0,iVar4);
+    }
+    iVar4 = DAT_5015c938;
+    piVar6 = DAT_5015cca0;
+    if (param_1[0x74] != 0) {
+      piVar7 = (int *)0x0;
+      while (pcVar1 = (char *)param_1[0x74], iVar4 = DAT_5015c938, piVar6 = DAT_5015cca0,
+            pcVar1 != (char *)0x0) {
+        piVar3 = DAT_5015cca0;
+        if (piVar7 != (int *)0x0) {
+          piVar3 = piVar7 + 0x119;
+        }
+        piVar7 = piVar3;
+        if (DAT_5015cca0 + DAT_5015c938 * 0x119 <= piVar7) break;
+        while (((piVar7[0x1e] == 0 || ((char *)piVar7[0x72] == (char *)0x0)) ||
+               (iVar5 = __strcmpi((char *)piVar7[0x72],pcVar1), iVar4 = DAT_5015c938,
+               piVar6 = DAT_5015cca0, iVar5 != 0))) {
+          piVar7 = piVar7 + 0x119;
+          if (piVar6 + iVar4 * 0x119 <= piVar7) goto LAB_500c32bd;
+        }
+        FUN_500c3880(piVar7);
+        if (param_1[0x1e] == 0) {
+          (*DAT_5015ca24)(s_entity_was_removed_while_using_k_501514d0);
+          return;
+        }
+      }
+    }
+LAB_500c32bd:
+    if (param_1[0x71] != 0) {
+      piVar7 = (int *)0x0;
+      do {
+        do {
+          pcVar1 = (char *)param_1[0x71];
+          if (pcVar1 == (char *)0x0) {
+            return;
+          }
+          piVar3 = piVar6;
+          if (piVar7 != (int *)0x0) {
+            piVar3 = piVar7 + 0x119;
+          }
+          piVar7 = piVar3;
+          if (piVar6 + iVar4 * 0x119 <= piVar7) {
+            return;
+          }
+          while (((piVar7[0x1e] == 0 || ((char *)piVar7[0x72] == (char *)0x0)) ||
+                 (iVar5 = __strcmpi((char *)piVar7[0x72],pcVar1), iVar4 = DAT_5015c938,
+                 piVar6 = DAT_5015cca0, iVar5 != 0))) {
+            piVar7 = piVar7 + 0x119;
+            if (piVar6 + iVar4 * 0x119 <= piVar7) {
+              return;
+            }
+          }
+          iVar4 = __strcmpi((char *)piVar7[0x6d],s_func_areaportal_5014268c);
+        } while ((iVar4 == 0) &&
+                ((iVar5 = __strcmpi((char *)param_1[0x6d],s_func_door_501420e8),
+                 iVar4 = DAT_5015c938, piVar6 = DAT_5015cca0, iVar5 == 0 ||
+                 (iVar5 = __strcmpi((char *)param_1[0x6d],s_func_door_rotating_501477cc),
+                 iVar4 = DAT_5015c938, piVar6 = DAT_5015cca0, iVar5 == 0))));
+        if (piVar7 == param_1) {
+          (*DAT_5015ca24)(s_WARNING__Entity_used_itself__50150d44);
+        }
+        else if ((code *)piVar7[0xb1] != (code *)0x0) {
+          (*(code *)piVar7[0xb1])(piVar7,param_1,param_2);
+        }
+        iVar4 = DAT_5015c938;
+        piVar6 = DAT_5015cca0;
+      } while (param_1[0x1e] != 0);
+      (*DAT_5015ca24)(s_entity_was_removed_while_using_t_50150d1c);
+    }
+    return;
+  }
+  lVar8 = __ftol();
+  iVar4 = (int)lVar8 + 1;
+  piVar6 = DAT_5015cca0 + iVar4 * 0x119;
+  do {
+    if (DAT_5015c938 <= iVar4) {
+      if (iVar4 == DAT_5015d8cc) {
+        (*DAT_5015cb10)(s_ED_Alloc__no_free_edicts_50151528);
+      }
+      DAT_5015c938 = DAT_5015c938 + 1;
+      FUN_500c35c0(piVar6);
+LAB_500c3045:
+      piVar6[0x6d] = (int)s_DelayedUse_5015151c;
+      fVar2 = DAT_5015ccdc + (float)param_1[0xd9];
+      piVar6[0xae] = (int)FUN_500c2f60;
+      piVar6[0xcb] = param_2;
+      piVar6[0xad] = (int)fVar2;
+      if (param_2 == 0) {
+        (*DAT_5015ca24)(s_Think_Delay_with_no_activator_501514fc);
+      }
+      piVar6[0x6b] = param_1[0x6b];
+      piVar6[0x71] = param_1[0x71];
+      piVar6[0x74] = param_1[0x74];
+      piVar6[0x75] = param_1[0x75];
+      return;
+    }
+    if ((piVar6[0x1e] == 0) &&
+       (((float)piVar6[0x6a] < 2.0 || (0.5 < DAT_5015ccdc - (float)piVar6[0x6a])))) {
+      piVar6[0x1e] = 1;
+      piVar6[0x6d] = (int)s_noclass_50142f34;
+      iVar4 = (int)piVar6 - (int)DAT_5015cca0;
+      piVar6[0xa4] = 0;
+      piVar6[0xa2] = 0x3f800000;
+      piVar6[0xa1] = 0x3f800000;
+      piVar6[0xa3] = 0x3f800000;
+      *piVar6 = iVar4 / 0x464;
+      piVar6[0xa5] = 0x3f000000;
+      piVar6[9] = -1;
+      piVar6[0x59] = 0;
+      piVar6[0xf4] = 0;
+      piVar6[0xf3] = 0;
+      piVar6[0xc6] = 0;
+      piVar6[0x5a] = 0x447a0000;
+      piVar6[0x5b] = 0x447a0000;
+      piVar6[0x5c] = 0x447a0000;
+      piVar6[0x5d] = -0x3b860000;
+      piVar6[0x5e] = -0x3b860000;
+      piVar6[0x5f] = -0x3b860000;
+      piVar6[0x60] = 0x461c4000;
+      piVar6[0x61] = 0x461c4000;
+      piVar6[0x62] = 0x461c4000;
+      piVar6[99] = -1;
+      goto LAB_500c3045;
+    }
+    iVar4 = iVar4 + 1;
+    piVar6 = piVar6 + 0x119;
+  } while( true );
+}
+
+
+
+############################################################
+### FUNC 500c35c0  size=196  FUN_500c35c0
+### hits:
+###     00007A44 @ 500c3636 (offset +118)
+############################################################
+// callees:
+
+void __cdecl FUN_500c35c0(int *param_1)
+
+{
+  int iVar1;
+  
+  param_1[0x1e] = 1;
+  param_1[0x6d] = (int)s_noclass_50142f34;
+  iVar1 = DAT_5015cca0;
+  param_1[0xa5] = 0x3f000000;
+  param_1[0xa2] = 0x3f800000;
+  param_1[0xa1] = 0x3f800000;
+  param_1[0xa3] = 0x3f800000;
+  *param_1 = ((int)param_1 - iVar1) / 0x464;
+  param_1[0xa4] = 0;
+  param_1[0x59] = 0;
+  param_1[0xf4] = 0;
+  param_1[0xf3] = 0;
+  param_1[0xc6] = 0;
+  param_1[9] = -1;
+  param_1[0x5a] = 0x447a0000;
+  param_1[0x5b] = 0x447a0000;
+  param_1[0x5c] = 0x447a0000;
+  param_1[0x5d] = -0x3b860000;
+  param_1[0x5e] = -0x3b860000;
+  param_1[0x5f] = -0x3b860000;
+  param_1[0x60] = 0x461c4000;
+  param_1[0x61] = 0x461c4000;
+  param_1[0x62] = 0x461c4000;
+  param_1[99] = -1;
+  return;
+}
+
+
+
+############################################################
+### FUNC 500c3690  size=403  FUN_500c3690
+### hits:
+###     00007A44 @ 500c3776 (offset +230)
+############################################################
+// callees:
+//	50107520  __ftol
+
+int * FUN_500c3690(void)
+
+{
+  int iVar1;
+  int *piVar2;
+  longlong lVar3;
+  
+  lVar3 = __ftol();
+  iVar1 = (int)lVar3 + 1;
+  piVar2 = (int *)(DAT_5015cca0 + iVar1 * 0x464);
+  do {
+    if (DAT_5015c938 <= iVar1) {
+      if (iVar1 == DAT_5015d8cc) {
+        (*DAT_5015cb10)(s_ED_Alloc__no_free_edicts_50151528);
+      }
+      DAT_5015c938 = DAT_5015c938 + 1;
+      piVar2[0x1e] = 1;
+      piVar2[0x6d] = (int)s_noclass_50142f34;
+LAB_500c375b:
+      iVar1 = (int)piVar2 - DAT_5015cca0;
+      piVar2[0xa3] = 0x3f800000;
+      piVar2[0xa1] = 0x3f800000;
+      piVar2[0xa2] = 0x3f800000;
+      piVar2[0xc6] = 0;
+      piVar2[0xf3] = 0;
+      piVar2[0xf4] = 0;
+      piVar2[0x59] = 0;
+      piVar2[9] = -1;
+      piVar2[0xa5] = 0x3f000000;
+      piVar2[0xa4] = 0;
+      *piVar2 = iVar1 / 0x464;
+      piVar2[0x5c] = 0x447a0000;
+      piVar2[0x5b] = 0x447a0000;
+      piVar2[0x5a] = 0x447a0000;
+      piVar2[0x5f] = -0x3b860000;
+      piVar2[0x5e] = -0x3b860000;
+      piVar2[0x5d] = -0x3b860000;
+      piVar2[0x62] = 0x461c4000;
+      piVar2[0x61] = 0x461c4000;
+      piVar2[0x60] = 0x461c4000;
+      piVar2[99] = -1;
+      return piVar2;
+    }
+    if ((piVar2[0x1e] == 0) &&
+       (((float)piVar2[0x6a] < 2.0 || (0.5 < DAT_5015ccdc - (float)piVar2[0x6a])))) {
+      piVar2[0x1e] = 1;
+      piVar2[0x6d] = (int)s_noclass_50142f34;
+      goto LAB_500c375b;
+    }
+    iVar1 = iVar1 + 1;
+    piVar2 = piVar2 + 0x119;
+  } while( true );
+}
+
+
+
+############################################################
+### FUNC 5010508d  size=281  FUN_5010508d
+### hits:
+###     00007A44 @ 5010513f (offset +178)
+############################################################
+// callees:
+//	50085530  FUN_50085530
+//	50100b10  FUN_50100b10
+
+void FUN_5010508d(undefined2 param_1)
+
+{
+  float fVar1;
+  undefined2 uVar2;
+  undefined4 in_EAX;
+  int iVar3;
+  undefined4 in_ECX;
+  int unaff_EBX;
+  int unaff_ESI;
+  int *unaff_EDI;
+  float10 in_ST0;
+  int unaff_retaddr;
+  
+  *(float *)(unaff_ESI + 0x24c) = (float)in_ST0;
+  *(float *)(unaff_ESI + 0x250) = *(float *)(unaff_EBX + 4) * 800.0;
+  *(float *)(unaff_ESI + 0x254) = *(float *)(unaff_EBX + 8) * 800.0;
+  *(float *)(unaff_ESI + 0x254) = *(float *)(unaff_ESI + 0x254) + 150.0;
+  *(undefined4 *)(unaff_ESI + 0x11c) = in_ECX;
+  *(undefined4 *)(unaff_ESI + 0x120) = in_ECX;
+  *(undefined4 *)(unaff_ESI + 0x124) = 0xc0400000;
+  *(undefined4 *)(unaff_ESI + 0x128) = 0x40000000;
+  *(undefined4 *)(unaff_ESI + 300) = 0x40000000;
+  *(undefined4 *)(unaff_ESI + 0x130) = 0x40400000;
+  *(code **)(unaff_ESI + 0x2b8) = FUN_500c3880;
+  fVar1 = DAT_5015ccdc + 6.0;
+  *(undefined4 *)(unaff_ESI + 0x288) = in_EAX;
+  *(float *)(unaff_ESI + 0x2b4) = fVar1;
+  iVar3 = *unaff_EDI;
+  *(undefined4 *)(unaff_ESI + 0x10) = *(undefined4 *)(iVar3 + 0x10);
+  *(undefined4 *)(unaff_ESI + 0x14) = *(undefined4 *)(iVar3 + 0x14);
+  *(undefined4 *)(unaff_ESI + 0x18) = *(undefined4 *)(iVar3 + 0x18);
+  *(int *)(unaff_ESI + 0x160) = *unaff_EDI;
+  *(undefined4 *)(unaff_ESI + 600) = 0x447a0000;
+  *(undefined4 *)(unaff_ESI + 0x2ec) = 0x28;
+  *(undefined1 **)(unaff_ESI + 0x2c0) = &LAB_50104c70;
+  uVar2 = (*DAT_5015c9f8)(s_weapons_world_conctrail_50155d6c);
+  FUN_50085530(uVar2,unaff_retaddr,param_1);
+  iVar3 = FUN_50100b10(unaff_ESI,(undefined4 *)(*unaff_EDI + 4),unaff_EDI + 1);
+  if (iVar3 != 0) {
+    *(undefined1 **)(unaff_ESI + 0x2b8) = &LAB_50101660;
+    *(float *)(unaff_ESI + 0x2b4) = DAT_5015ccdc + 0.1;
+  }
+  return;
+}
+
+
+

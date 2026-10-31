@@ -1,0 +1,12 @@
+[
+  {"a":"wait","ms":3000},
+  {"a":"state"},
+  {"a":"key","code":"KeyW","down":true},
+  {"a":"key","code":"ControlLeft","down":true},
+  {"a":"wait","ms":2000},
+  {"a":"state"},
+  {"a":"key","code":"KeyW","down":false},
+  {"a":"key","code":"ControlLeft","down":false},
+  {"a":"wait","ms":500},
+  {"a":"state"}
+]

@@ -1,0 +1,11 @@
+[
+	{"a":"state"},
+	{"a":"wait","ms":16000},
+	{"a":"state"},
+	{"a":"key","code":"KeyW","down":true},
+	{"a":"wait","ms":4000},
+	{"a":"key","code":"KeyW","down":false},
+	{"a":"wait","ms":1200},
+	{"a":"state"},
+	{"a":"shot","file":"C:/Users/User/AppData/Local/Temp/opencode/walk1.png"}
+]

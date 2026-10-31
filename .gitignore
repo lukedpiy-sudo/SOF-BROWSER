@@ -1,0 +1,25 @@
+# ---- build output ----
+build/
+dist/
+dump/
+logs/
+**/__pycache__/
+*.obj
+*.lib
+*.exp
+*.pdb
+*.bak
+
+# ---- compiled Windows binaries ----
+*.exe
+*.dll
+*.so
+
+# ---- game install payload ----
+# Base/ holds 964 MB of .pak archives and the retail game binaries.
+# Keep the reverse-engineering notes, ignore the payload.
+/Soldier of Fortune/*
+!/Soldier of Fortune/analysis/
+
+# ---- local scratch ----
+.probe

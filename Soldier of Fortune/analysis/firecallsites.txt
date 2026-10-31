@@ -1,0 +1,24 @@
+﻿indirect CALL sites through weapon-row fire/alt-fire pointers: 20
+  altfire: 11 sites
+  fire   : 9 sites
+
+0x5000BF61  altfire  call [eax+0x12C]
+0x5000BF85  altfire  call [edx+0x12C]
+0x5000BFCF  fire     call [edx+0x128]
+0x5000BFEF  fire     call [eax+0x128]
+0x5000C011  fire     call [edx+0x128]
+0x5000F284  fire     call [eax+0x128]
+0x5000F299  fire     call [edx+0x128]
+0x5000F2B9  altfire  call [edx+0x12C]
+0x5000F2CE  altfire  call [eax+0x12C]
+0x5000F2EB  altfire  call [edx+0x12C]
+0x5000F311  altfire  call [eax+0x12C]
+0x5000F376  altfire  call [edx+0x12C]
+0x5003CCF7  altfire  call [eax+0x12C]
+0x5003CD0A  altfire  call [edx+0x12C]
+0x5006583B  fire     call [edi+0x128]
+0x50065BD6  fire     call [esi+0x128]
+0x50065C8B  fire     call [esi+0x128]
+0x500BB1A8  altfire  call [edx+0x12C]
+0x500FD1C2  fire     call [eax+0x128]
+0x500FD4B2  altfire  call [eax+0x12C]

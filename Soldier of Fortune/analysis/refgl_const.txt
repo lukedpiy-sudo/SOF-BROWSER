@@ -1,0 +1,9 @@
+TARGET: ref_gl.dll  BASE 30000000
+================================================================
+// pattern 00007A44 (4 bytes): 0 hits, 0 inside functions
+// pattern 00008743 (4 bytes): 0 hits, 0 inside functions
+// pattern 0000FA44 (4 bytes): 1 hits, 0 inside functions
+// pattern 7C1F803F (4 bytes): 0 hits, 0 inside functions
+
+// functions containing >=1 hit: 0
+

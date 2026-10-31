@@ -1,0 +1,70 @@
+TARGET: player.dll
+PATTERN: (?:pmove)|(?:PM_)|(?:friction)|(?:accelerate)|(?:slide)|(?:step)|(?:jump)|(?:duck)|(?:crouch)|(?:water)|(?:gravity)|(?:speed)|(?:trace)|(?:box)
+================================================================
+// defined data objects: 4606
+// data type histogram (class simple name -> count, with first example):
+//	ArrayDB	14	40014150 type=UnwindMapEntry[4] repr=
+//	DWordDataType	73	40014250 type=dword repr=14278h
+//	GuidDataType	1	ffdfff50 type=GUID repr=00000000-0000-0000-0000-000000000000
+//	IBO32DataType	4	400146c8 type=ImageBaseOffset32 repr=40001020
+//	PERichTableDataType	1	40000080 type=IMAGE_RICH_HEADER repr=
+//	PointerDB	1132	40008bf0 type=undefined * repr=40008b22
+//	StringDataType	207	40013c86 type=string repr="GAIsProcessorFeaturePresent"
+//	StructureDB	32	40000000 type=IMAGE_DOS_HEADER repr=
+//	TerminatedStringDataType	52	4001433e type=TerminatedCString repr="RtlUnwind"
+//	TypedefDB	9	40014170 type=FuncInfo repr=
+//	Undefined1DataType	30	40013da0 type=undefined1 repr=28h
+//	Undefined2DataType	2	40013d90 type=undefined2 repr=0028h
+//	Undefined4DataType	190	40015184 type=undefined4 repr=00000001h
+//	UnicodeDataType	1	40013d92 type=unicode repr=u"null)"
+//	UnsignedShortDataType	2	ffdfffc8 type=ushort repr=0h
+//	WordDataType	2856	4001433c type=word repr=22Fh
+// string data objects: 207
+// null-valued string objects: 0
+// matching string objects: 1
+// candidate functions reached: 1
+// functions dumped: 1
+
+############################################################
+### FUNC 40010cef  size=137  FUN_40010cef
+### matched strings:
+###     40014100 ""MessageBoxA""
+############################################################
+// callees:
+//	EXTERNAL:0000002b  LoadLibraryA
+//	EXTERNAL:0000000b  GetProcAddress
+
+int __cdecl FUN_40010cef(undefined4 param_1,undefined4 param_2,undefined4 param_3)
+
+{
+  HMODULE hModule;
+  int iVar1;
+  
+  iVar1 = 0;
+  if (DAT_40019b28 == (FARPROC)0x0) {
+    hModule = LoadLibraryA("user32.dll");
+    if (hModule != (HMODULE)0x0) {
+      DAT_40019b28 = GetProcAddress(hModule,"MessageBoxA");
+      if (DAT_40019b28 != (FARPROC)0x0) {
+        DAT_40019b2c = GetProcAddress(hModule,"GetActiveWindow");
+        DAT_40019b30 = GetProcAddress(hModule,"GetLastActivePopup");
+        goto LAB_40010d3e;
+      }
+    }
+    iVar1 = 0;
+  }
+  else {
+LAB_40010d3e:
+    if (DAT_40019b2c != (FARPROC)0x0) {
+      iVar1 = (*DAT_40019b2c)();
+      if ((iVar1 != 0) && (DAT_40019b30 != (FARPROC)0x0)) {
+        iVar1 = (*DAT_40019b30)(iVar1);
+      }
+    }
+    iVar1 = (*DAT_40019b28)(iVar1,param_1,param_2,param_3);
+  }
+  return iVar1;
+}
+
+
+

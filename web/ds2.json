@@ -1,0 +1,10 @@
+﻿[
+ { "a": "eval", "expr": "location.reload(); 'r'" },
+ { "a": "wait", "ms": 13000 },
+ { "a": "key", "code": "KeyW", "key": "w", "vk": 87, "down": true },
+ { "a": "wait", "ms": 3000 },
+ { "a": "key", "code": "KeyW", "key": "w", "vk": 87, "down": false },
+ { "a": "wait", "ms": 500 },
+ { "a": "shot", "file": "C:/Users/User/AppData/Local/Temp/opencode/walk2.png" },
+ { "a": "eval", "expr": "JSON.stringify({v:window.sofdebug().vel,vmax:window.sofdebug().velMax,porig:window.sofdebug().playerOrigin})" }
+]

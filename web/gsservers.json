@@ -1,0 +1,37 @@
+{
+ "servers": [
+  {
+   "ip": "127.0.0.1",
+   "port": 29000,
+   "hostname": "SoF browser server",
+   "mapname": "NYCDM1",
+   "protocol": 3,
+   "dedicated": 1,
+   "players": 0,
+   "maxplayers": 16,
+   "seen": 1792653258804
+  },
+  {
+   "ip": "127.0.0.1",
+   "port": 28912,
+   "hostname": "127.0.0.1:28912",
+   "mapname": "",
+   "protocol": 3,
+   "dedicated": 1,
+   "players": 0,
+   "maxplayers": 16,
+   "seen": 1792621823363
+  },
+  {
+   "ip": "127.0.0.1",
+   "port": 28910,
+   "hostname": "SoF browser server",
+   "mapname": "NYCDM1",
+   "protocol": 3,
+   "dedicated": 1,
+   "players": 0,
+   "maxplayers": 16,
+   "seen": 1792651294606
+  }
+ ]
+}

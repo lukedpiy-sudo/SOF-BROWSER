@@ -1,0 +1,8 @@
+﻿[
+ { "a": "eval", "expr": "location.reload(); 'r'" },
+ { "a": "wait", "ms": 12000 },
+ { "a": "eval", "expr": "(function(){ var b = Buffer.from([1,2,3,4,5,6,7,8]); var s = b.subarray(2,5); return JSON.stringify({len:s.length, bytes:Array.from(s), read:s.readUInt16LE(0)}); })()" },
+ { "a": "eval", "expr": "JSON.stringify({ents:window.sofdebug().ents.length, self:window.sofdebug().self, porig:window.sofdebug().playerOrigin})" },
+ { "a": "eval", "expr": "window.sofps() ? window.sofps().length : 'none'" },
+ { "a": "shot", "file": "C:/Users/User/AppData/Local/Temp/opencode/shim.png" }
+]

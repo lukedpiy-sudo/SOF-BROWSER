@@ -1,0 +1,3711 @@
+[
+ {
+  "classname": "worldspawn",
+  "origin": null,
+  "model": null
+ },
+ {
+  "classname": "item_weapon_machinegun",
+  "origin": [
+   -933,
+   -1789,
+   227
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_intermission",
+  "origin": [
+   -1256,
+   -1208,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_grenade",
+  "origin": [
+   -1664,
+   -768,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_light_goggles",
+  "origin": [
+   -525,
+   -881,
+   100
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -1515,
+   -193,
+   -24
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol2",
+  "origin": [
+   -611,
+   -409,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_rocket",
+  "origin": [
+   -1923,
+   -1247,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_rocketlauncher",
+  "origin": [
+   -645,
+   -1539,
+   -21
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_large",
+  "origin": [
+   -282,
+   -1768,
+   112
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_shotgun",
+  "origin": [
+   -928,
+   -32,
+   3
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -2048,
+   -2088,
+   8
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -2144,
+   -656,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -1442,
+   -346,
+   -21
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -808,
+   -1600,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_shotgun",
+  "origin": [
+   -544,
+   -1040,
+   99
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -424,
+   -1468,
+   102
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -728,
+   -1768,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -583,
+   -1020,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -934,
+   -472,
+   143
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_large",
+  "origin": [
+   -890,
+   -512,
+   256
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -2046,
+   -800,
+   175
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_armor",
+  "origin": [
+   -895,
+   -383,
+   133
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1560,
+   -992,
+   0
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -1885,
+   -725,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -1442,
+   -602,
+   137
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1360,
+   24,
+   0
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -1024,
+   -500,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_pistol2",
+  "origin": [
+   -800,
+   -800,
+   2
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1744,
+   -232,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_sniper",
+  "origin": [
+   -2048,
+   -320,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1696,
+   16,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_pistol2",
+  "origin": [
+   -2088,
+   -448,
+   178
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_assault_rifle",
+  "origin": [
+   -1980,
+   -832,
+   166
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -2208,
+   -956,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_shotgun",
+  "origin": [
+   -808,
+   -1044,
+   -29
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -1050,
+   -1250,
+   10
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -467,
+   -939,
+   102
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -355,
+   -1403,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -808,
+   -1628,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -424,
+   -1536,
+   256
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_armor",
+  "origin": [
+   -429,
+   -1551,
+   225
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -1184,
+   -2140,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_assault_rifle",
+  "origin": [
+   -1660,
+   -1664,
+   134
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_large",
+  "origin": [
+   -2250,
+   -1360,
+   64
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1480,
+   -616,
+   -8
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1360,
+   208
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1664,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "func_wall",
+  "origin": null,
+  "model": "*1"
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -832,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -728,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1820,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -1744,
+   176
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1088,
+   -1664,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light_generic_alley_wall",
+  "origin": [
+   -1524,
+   -777,
+   261
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1508,
+   -776,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light_generic_alley_wall",
+  "origin": [
+   -1320,
+   47,
+   261
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1320,
+   32,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light_generic_alley_wall",
+  "origin": [
+   -1024,
+   -632,
+   197
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1024,
+   -648,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1040,
+   -942,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "misc_generic_barrel_burning",
+  "origin": [
+   -1041,
+   -942,
+   12
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1040,
+   -942,
+   54
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_null",
+  "origin": [
+   -1300,
+   -788,
+   324
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1336,
+   -824,
+   488
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1184,
+   -1824,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1312,
+   -1824,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1504,
+   -1664,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1504,
+   -1536,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1824,
+   -1664,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1824,
+   -1536,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1568,
+   -2152,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1696,
+   -2152,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1184,
+   -2152,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1312,
+   -2152,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -2048,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -1920,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1216,
+   -1664,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1664,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1560,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1448,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1088,
+   -1664,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1216,
+   -1664,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1664,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1560,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1344,
+   -1448,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1632,
+   -1472,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1632,
+   -1664,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1632,
+   -1856,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1504,
+   -1952,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1312,
+   -1952,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1120,
+   -1952,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1512,
+   -1504,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1512,
+   -1632,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1512,
+   -1760,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -1664,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -1536,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1152,
+   -1832,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1280,
+   -1832,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1408,
+   -1832,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1184,
+   -1768,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1312,
+   -1768,
+   224
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -1768,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1376,
+   -1768,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -1696,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -1504,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -1664,
+   176
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -2020,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1540,
+   -1664,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -1392,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -1536,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1680,
+   -1664,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1872,
+   -1664,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1664,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -2176,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2176,
+   -2176,
+   8
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2204,
+   -1920,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -1920,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2304,
+   -2044,
+   64
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -1392,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -1392,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -1392,
+   8
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2304,
+   -1920,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2304,
+   -2176,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1984,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1856,
+   -48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1152,
+   -1888,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1280,
+   -1888,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1408,
+   -1888,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1568,
+   -1696,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1568,
+   -1568,
+   336
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -1984,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -1792,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -1600,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "light_generic_alley_wall",
+  "origin": [
+   -712,
+   -480,
+   197
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -696,
+   -480,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -768,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -768,
+   176
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -960,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -960,
+   176
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -864,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -864,
+   176
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -768,
+   328
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -928,
+   328
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -1088,
+   328
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1680,
+   -1064,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2112,
+   -1256,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2112,
+   -1320,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -1920,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2176,
+   -832,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2176,
+   -968,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2176,
+   -1152,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -1152,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -1224,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -1224,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1032,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -968,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -824,
+   160
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -664,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -792,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1768,
+   -928,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -832,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2192,
+   -832,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2192,
+   -968,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2192,
+   -1152,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1984,
+   -1224,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -1224,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -960,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -792,
+   128
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -128,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -256,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -512,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -384,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -616,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -616,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -472,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -472,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -168,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -168,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -24,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -24,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -24,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -24,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -168,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -168,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -472,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -472,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -616,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -616,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -320,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -320,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -320,
+   312
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -320,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -616,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -320,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -24,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1536,
+   -320,
+   200
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -320,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -64,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -576,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -56,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -520,
+   104
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -376,
+   104
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -264,
+   104
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -120,
+   104
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -192,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1832,
+   -448,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -448,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -192,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -616,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -616,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -24,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1664,
+   -24,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -24,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -616,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -616,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -448,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -320,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -192,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1792,
+   -24,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2104,
+   -616,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2104,
+   -448,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2104,
+   -320,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2104,
+   -192,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2104,
+   -24,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -616,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -448,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -320,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -192,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1480,
+   -24,
+   248
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -320,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1448,
+   -520,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2152,
+   -448,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2152,
+   -192,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2152,
+   -448,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2152,
+   -192,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1328,
+   -96,
+   216
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1328,
+   -16,
+   216
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1324,
+   -56,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -544,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   -544,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   -544,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   -544,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   64,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   64,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   64,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   64,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -40,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   -40,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   -40,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   -40,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -168,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   -168,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   -168,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   -168,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -312,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   -312,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   -312,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   -312,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1176,
+   -440,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -840,
+   -440,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1056,
+   -440,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -960,
+   -440,
+   392
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -896,
+   -512,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -896,
+   -384,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -928,
+   -72,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1992,
+   -192,
+   0
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1992,
+   -448,
+   0
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1680,
+   -1000,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1032,
+   -544,
+   112
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -800,
+   -480,
+   112
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1384,
+   -320,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1384,
+   -520,
+   192
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1328,
+   -144,
+   216
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1696,
+   -512,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1696,
+   -384,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1696,
+   -256,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1696,
+   -128,
+   424
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -704,
+   -896,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -704,
+   -1024,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -704,
+   -1152,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -832,
+   -1152,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light_generic_alley_wall",
+  "origin": [
+   -1220,
+   -1417,
+   261
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1204,
+   -1416,
+   344
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1408,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1088,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1664,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1408,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1088,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1056,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1056,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -800,
+   -1320,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -800,
+   -1320,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -2048,
+   88
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -2048,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -576,
+   -2048,
+   136
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -576,
+   -2048,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -640,
+   -1792,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -640,
+   -1792,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -856,
+   -1800,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -856,
+   -1800,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -936,
+   -1664,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -936,
+   -1664,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -928,
+   -1792,
+   296
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -928,
+   -1792,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -576,
+   -1824,
+   296
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -576,
+   -1824,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -680,
+   -1336,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -680,
+   -1336,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -376,
+   -1800,
+   232
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -376,
+   -1800,
+   216
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -416,
+   -896,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -416,
+   -896,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1664,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -320,
+   -1664,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -736,
+   -1568,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -736,
+   -1568,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1568,
+   168
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1568,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -736,
+   -1568,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -736,
+   -1568,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1568,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -544,
+   -1568,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -928,
+   -1472,
+   40
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -928,
+   -1472,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -992,
+   -1710,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "misc_generic_barrel_burning",
+  "origin": [
+   -993,
+   -1710,
+   -20
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -992,
+   -1710,
+   22
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -592,
+   -990,
+   134
+  ],
+  "model": null
+ },
+ {
+  "classname": "misc_generic_barrel_burning",
+  "origin": [
+   -593,
+   -990,
+   108
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -592,
+   -990,
+   150
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -496,
+   -1358,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "misc_generic_barrel_burning",
+  "origin": [
+   -497,
+   -1358,
+   -20
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -496,
+   -1358,
+   22
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -640,
+   -1568,
+   296
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -640,
+   -1568,
+   280
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2296,
+   -1304,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2296,
+   -1464,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1992,
+   -1320,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1992,
+   -1464,
+   144
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2112,
+   -1376,
+   80
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1920,
+   -1360,
+   208
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1480,
+   -24,
+   -8
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -2304,
+   -1920,
+   16
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1536,
+   -1392,
+   -104
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -936,
+   -1664,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -320,
+   -1664,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1344,
+   -992,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1344,
+   -1448,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -800,
+   -1320,
+   -8
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -800,
+   -624,
+   24
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1128,
+   56,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1824,
+   -2144,
+   88
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1696,
+   -176,
+   152
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -2080,
+   -608,
+   56
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1856,
+   -960,
+   56
+  ],
+  "model": null
+ },
+ {
+  "classname": "info_player_deathmatch",
+  "origin": [
+   -1584,
+   -1072,
+   120
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -1752,
+   88
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2048,
+   -2088,
+   88
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -1312,
+   -2140,
+   72
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -355,
+   -1339,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -1114,
+   -1250,
+   10
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -1178,
+   -1250,
+   10
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -2208,
+   -1020,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_sniper",
+  "origin": [
+   -1984,
+   -320,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -1744,
+   -104,
+   48
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_weapon_pistol2",
+  "origin": [
+   -2044,
+   -1920,
+   -126
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -2107,
+   -1920,
+   -2
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -1088,
+   -500,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -1152,
+   -500,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1296,
+   24,
+   0
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -1442,
+   -658,
+   137
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -1498,
+   -658,
+   137
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -1823,
+   -725,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -2141,
+   -725,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -2077,
+   -725,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1856,
+   -1248,
+   184
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -1984,
+   -1248,
+   184
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -1280,
+   -1828,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -1344,
+   -1828,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -1408,
+   -1828,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -2046,
+   -864,
+   175
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -870,
+   -472,
+   143
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -274,
+   -1274,
+   -23
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -274,
+   -1210,
+   -23
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_flashpack",
+  "origin": [
+   -274,
+   -1146,
+   -23
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -583,
+   -1084,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -583,
+   -1148,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -424,
+   -1532,
+   102
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol",
+  "origin": [
+   -424,
+   -1596,
+   102
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -808,
+   -1536,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -1442,
+   -282,
+   -21
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -416,
+   -1758,
+   6
+  ],
+  "model": null
+ },
+ {
+  "classname": "misc_generic_barrel_burning",
+  "origin": [
+   -417,
+   -1758,
+   -20
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -416,
+   -1758,
+   22
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -440,
+   -1832,
+   -32
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -400,
+   -1832,
+   -32
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2176,
+   -1360,
+   208
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2216,
+   -1416,
+   96
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -2048,
+   -1752,
+   8
+  ],
+  "model": null
+ },
+ {
+  "classname": "light",
+  "origin": [
+   -2256,
+   -1360,
+   208
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_large",
+  "origin": [
+   -1922,
+   -448,
+   -16
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_armor",
+  "origin": [
+   -1925,
+   -191,
+   -15
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_c4",
+  "origin": [
+   -434,
+   -1506,
+   235
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_rocket",
+  "origin": [
+   -1731,
+   -1246,
+   38
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_shotgun",
+  "origin": [
+   -1995,
+   -1919,
+   -2
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol2",
+  "origin": [
+   -547,
+   -408,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_pistol2",
+  "origin": [
+   -483,
+   -407,
+   -26
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_ammo_auto",
+  "origin": [
+   -1515,
+   -448,
+   -23
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_grenade",
+  "origin": [
+   -1664,
+   -832,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_equip_grenade",
+  "origin": [
+   -1664,
+   -896,
+   32
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -480,
+   -576,
+   -32
+  ],
+  "model": null
+ },
+ {
+  "classname": "item_health_small",
+  "origin": [
+   -480,
+   -640,
+   -32
+  ],
+  "model": null
+ }
+]

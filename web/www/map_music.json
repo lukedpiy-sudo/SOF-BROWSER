@@ -1,0 +1,701 @@
+{
+ "arm1": {
+  "bsp": "maps/arm1.bsp",
+  "message": "ARM1"
+ },
+ "arm2": {
+  "bsp": "maps/arm2.bsp",
+  "message": "ARM2"
+ },
+ "arm3": {
+  "bsp": "maps/arm3.bsp",
+  "message": "ARM3"
+ },
+ "gerctf1": {
+  "bsp": "maps/dm/gerctf1.bsp",
+  "musicset": "DM5",
+  "startmusic": "1"
+ },
+ "irqctf1": {
+  "bsp": "maps/dm/irqctf1.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "IRQCTF1"
+ },
+ "irqdm1": {
+  "bsp": "maps/dm/irqdm1.bsp",
+  "musicset": "dm3",
+  "startmusic": "1",
+  "message": "IRQDM1"
+ },
+ "irqdm2": {
+  "bsp": "maps/dm/irqdm2.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "IRQDM2"
+ },
+ "jpnctf1": {
+  "bsp": "maps/dm/jpnctf1.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "JPNCTF1"
+ },
+ "jpndm2": {
+  "bsp": "maps/dm/jpndm2.bsp",
+  "musicset": "DM1",
+  "startmusic": "1",
+  "message": "JPNDM2"
+ },
+ "kosdm1": {
+  "bsp": "maps/dm/kosdm1.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "KOSDM1"
+ },
+ "nycctf1": {
+  "bsp": "maps/dm/nycctf1.bsp",
+  "musicset": "DM1",
+  "startmusic": "1",
+  "message": "NYCCTF1"
+ },
+ "nycdm1": {
+  "bsp": "maps/dm/nycdm1.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "NYCDM1"
+ },
+ "nycdm2": {
+  "bsp": "maps/dm/nycdm2.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "NYCDM2"
+ },
+ "nycdm3": {
+  "bsp": "maps/dm/nycdm3.bsp",
+  "musicset": "DM3",
+  "startmusic": "1",
+  "message": "NYCDM3"
+ },
+ "nycdm4": {
+  "bsp": "maps/dm/nycdm4.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "NYCDM4"
+ },
+ "nycdm5": {
+  "bsp": "maps/dm/nycdm5.bsp",
+  "musicset": "dm5",
+  "startmusic": "1",
+  "message": "NYCDM5"
+ },
+ "raven": {
+  "bsp": "maps/dm/raven.bsp",
+  "musicset": "DM2",
+  "startmusic": "1",
+  "message": "RAVEN"
+ },
+ "sibctf1": {
+  "bsp": "maps/dm/sibctf1.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "SIBCTF1"
+ },
+ "sudctf1": {
+  "bsp": "maps/dm/sudctf1.bsp",
+  "musicset": "DM3",
+  "startmusic": "1",
+  "message": "SUDCTF1"
+ },
+ "sudctf2": {
+  "bsp": "maps/dm/sudctf2.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "SUDCTF2"
+ },
+ "suddm1": {
+  "bsp": "maps/dm/suddm1.bsp",
+  "musicset": "dm3",
+  "startmusic": "1",
+  "message": "SUDDM1"
+ },
+ "suddm2": {
+  "bsp": "maps/dm/suddm2.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "SUDDM2"
+ },
+ "suddm3": {
+  "bsp": "maps/dm/suddm3.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "SUDDM3"
+ },
+ "ger1": {
+  "bsp": "maps/ger1.bsp",
+  "musicset": "ger1",
+  "message": "GER1"
+ },
+ "ger2": {
+  "bsp": "maps/ger2.bsp",
+  "musicset": "ger2",
+  "message": "GER2"
+ },
+ "ger3": {
+  "bsp": "maps/ger3.bsp",
+  "musicset": "ger3",
+  "message": "GER3"
+ },
+ "ger4": {
+  "bsp": "maps/ger4.bsp",
+  "musicset": "ger4",
+  "message": "GER4"
+ },
+ "irq1a": {
+  "bsp": "maps/irq1a.bsp",
+  "musicset": "irq1a",
+  "message": "IRQ1A"
+ },
+ "irq1b": {
+  "bsp": "maps/irq1b.bsp",
+  "musicset": "irq1a",
+  "message": "IRQ1B"
+ },
+ "irq2a": {
+  "bsp": "maps/irq2a.bsp",
+  "musicset": "irq2a",
+  "message": "IRQ2A"
+ },
+ "irq2b": {
+  "bsp": "maps/irq2b.bsp",
+  "musicset": "irq2a",
+  "message": "IRQ2B"
+ },
+ "irq3a": {
+  "bsp": "maps/irq3a.bsp",
+  "musicset": "irq3a",
+  "message": "IRQ3A"
+ },
+ "irq3b": {
+  "bsp": "maps/irq3b.bsp",
+  "musicset": "irq3a",
+  "message": "IRQ3B"
+ },
+ "jpn1": {
+  "bsp": "maps/jpn1.bsp",
+  "musicset": "jpn1",
+  "message": "JPN1"
+ },
+ "jpn2": {
+  "bsp": "maps/jpn2.bsp",
+  "musicset": "jpn2",
+  "message": "JPN2"
+ },
+ "jpn3": {
+  "bsp": "maps/jpn3.bsp",
+  "musicset": "jpn3",
+  "message": "JPN3"
+ },
+ "kos1": {
+  "bsp": "maps/kos1.bsp",
+  "musicset": "kos1",
+  "message": "KOS1"
+ },
+ "kos2": {
+  "bsp": "maps/kos2.bsp",
+  "musicset": "kos2",
+  "message": "KOS2"
+ },
+ "kos3": {
+  "bsp": "maps/kos3.bsp",
+  "musicset": "kos3",
+  "message": "KOS3"
+ },
+ "nyc1": {
+  "bsp": "maps/nyc1.bsp",
+  "musicset": "nyc1",
+  "message": "NYC1"
+ },
+ "nyc2": {
+  "bsp": "maps/nyc2.bsp",
+  "musicset": "nyc2"
+ },
+ "nyc3": {
+  "bsp": "maps/nyc3.bsp",
+  "musicset": "nyc3",
+  "message": "NYC3"
+ },
+ "sib1": {
+  "bsp": "maps/sib1.bsp",
+  "musicset": "sib1",
+  "message": "SIB1"
+ },
+ "sib2": {
+  "bsp": "maps/sib2.bsp",
+  "musicset": "sib2",
+  "message": "SIB2"
+ },
+ "sib3": {
+  "bsp": "maps/sib3.bsp",
+  "musicset": "sib3",
+  "message": "SIB3"
+ },
+ "sud1": {
+  "bsp": "maps/sud1.bsp",
+  "musicset": "sud1",
+  "message": "SUD1"
+ },
+ "sud2": {
+  "bsp": "maps/sud2.bsp",
+  "musicset": "sud2",
+  "message": "SUD2"
+ },
+ "sud3": {
+  "bsp": "maps/sud3.bsp",
+  "musicset": "sud3",
+  "message": "SUD3"
+ },
+ "trn1": {
+  "bsp": "maps/trn1.bsp",
+  "musicset": "trn1",
+  "message": "TRN1"
+ },
+ "tsr1": {
+  "bsp": "maps/tsr1.bsp",
+  "musicset": "tsr1",
+  "message": "TSR1"
+ },
+ "tsr2": {
+  "bsp": "maps/tsr2.bsp",
+  "musicset": "tsr2",
+  "message": "TSR2"
+ },
+ "tut1": {
+  "bsp": "maps/tut1.bsp",
+  "message": "TUT1"
+ },
+ "gercon1": {
+  "bsp": "maps/dm/gercon1.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "gercon1"
+ },
+ "gerctb1": {
+  "bsp": "maps/dm/gerctb1.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "GERCTB1"
+ },
+ "irqcon1": {
+  "bsp": "maps/dm/irqcon1.bsp",
+  "musicset": "dm5",
+  "startmusic": "1"
+ },
+ "irqctb1": {
+  "bsp": "maps/dm/irqctb1.bsp",
+  "musicset": "dm2",
+  "startmusic": "1",
+  "message": "irqctb1"
+ },
+ "irqctb2": {
+  "bsp": "maps/dm/irqctb2.bsp",
+  "musicset": "dm3",
+  "startmusic": "1",
+  "message": "irqCTB2"
+ },
+ "irqctb3": {
+  "bsp": "maps/dm/irqctb3.bsp",
+  "musicset": "dm4",
+  "startmusic": "1"
+ },
+ "jpncon1": {
+  "bsp": "maps/dm/jpncon1.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "jpncon1"
+ },
+ "jpnctb1": {
+  "bsp": "maps/dm/jpnctb1.bsp",
+  "musicset": "dm3",
+  "startmusic": "1"
+ },
+ "koscon1": {
+  "bsp": "maps/dm/koscon1.bsp",
+  "musicset": "dm1",
+  "startmusic": "1"
+ },
+ "koscon2": {
+  "bsp": "maps/dm/koscon2.bsp",
+  "musicset": "dm5",
+  "startmusic": "1"
+ },
+ "kosctb1": {
+  "bsp": "maps/dm/kosctb1.bsp",
+  "musicset": "dm3",
+  "startmusic": "1"
+ },
+ "nycctb1": {
+  "bsp": "maps/dm/nycctb1.bsp",
+  "musicset": "DM5",
+  "startmusic": "1"
+ },
+ "nycctb2": {
+  "bsp": "maps/dm/nycctb2.bsp",
+  "musicset": "dm1",
+  "startmusic": "1",
+  "message": "nycCTB2"
+ },
+ "sibcon1": {
+  "bsp": "maps/dm/sibcon1.bsp",
+  "musicset": "DM4",
+  "startmusic": "1",
+  "message": "SIBCON1"
+ },
+ "sibctb1": {
+  "bsp": "maps/dm/sibctb1.bsp",
+  "musicset": "DM3",
+  "startmusic": "1"
+ },
+ "sibctb2": {
+  "bsp": "maps/dm/sibctb2.bsp",
+  "musicset": "DM4",
+  "startmusic": "1",
+  "message": "SIBCTB2"
+ },
+ "sudcon1": {
+  "bsp": "maps/dm/sudcon1.bsp",
+  "musicset": "dm3",
+  "startmusic": "1"
+ },
+ "sudctb1": {
+  "bsp": "maps/dm/sudctb1.bsp",
+  "musicset": "dm4",
+  "startmusic": "1"
+ },
+ "factorydm": {
+  "bsp": "maps/dm/factorydm.bsp"
+ },
+ "plantdm": {
+  "bsp": "maps/dm/plantdm.bsp",
+  "musicset": "sud1"
+ },
+ "labdm": {
+  "bsp": "maps/dm/labdm.bsp",
+  "musicset": "jpn3"
+ },
+ "irqdesertdm": {
+  "bsp": "maps/dm/irqdesertdm.bsp",
+  "musicset": "irq2a"
+ },
+ "airportdm": {
+  "bsp": "maps/dm/airportdm.bsp",
+  "musicset": "irq3a"
+ },
+ "akercity": {
+  "bsp": "maps/dm/akercity.bsp",
+  "musicset": "DM1",
+  "startmusic": "1",
+  "message": "\u0004Akercity - Made by Yuna and Timurothi"
+ },
+ "aztec2": {
+  "bsp": "maps/dm/aztec2.bsp",
+  "message": "Aztec2 by WOLF"
+ },
+ "aztec2001": {
+  "bsp": "maps/dm/aztec2001.bsp",
+  "message": "Aztec by Chris Auty - SOF remake by GODh"
+ },
+ "basement": {
+  "bsp": "maps/dm/basement.bsp",
+  "message": "\u0004CTF Basement by \u0002Sentinel"
+ },
+ "bronx": {
+  "bsp": "maps/dm/bronx.bsp"
+ },
+ "containeryard": {
+  "bsp": "maps/dm/containeryard.bsp",
+  "musicset": "DM1",
+  "startmusic": "1",
+  "message": "\u0004Containeryard - Made by Beuker"
+ },
+ "crate_ctf_v1": {
+  "bsp": "maps/dm/crate_ctf_v1.bsp",
+  "message": "\u0003Crate_Ctf_V1 \u0002By: \u0001ÖRBÌT"
+ },
+ "cst_iraq1": {
+  "bsp": "maps/dm/cst_iraq1.bsp",
+  "message": "\u0004cst_iraq1 by \u0002Sentinel \u0004for\u0003 CyberSport Tournament"
+ },
+ "cst_roof1": {
+  "bsp": "maps/dm/cst_roof1.bsp",
+  "message": "\u0004cst_roof1 by \u0002Sentinel \u0004for\u0003 CyberSport Tournament"
+ },
+ "ctf3": {
+  "bsp": "maps/dm/ctf3.bsp"
+ },
+ "ctfharbour": {
+  "bsp": "maps/dm/ctfharbour.bsp"
+ },
+ "dl_irq2006ctf": {
+  "bsp": "maps/dm/dl_irq2006ctf.bsp"
+ },
+ "dust2001": {
+  "bsp": "maps/dm/dust2001.bsp",
+  "message": "Dust by Dave Johnston - 2001 remake for SOF by DrEaMsDoA and GODh"
+ },
+ "dust2002": {
+  "bsp": "maps/dm/dust2002.bsp",
+  "message": "Dust2 by Dave Johnson - 2002 remake for SOF by GODh"
+ },
+ "egypt2003": {
+  "bsp": "maps/dm/egypt2003.bsp",
+  "message": "map by warmongr & remzone 2003 textures by war-rem"
+ },
+ "egypt2004": {
+  "bsp": "maps/dm/egypt2004.bsp",
+  "message": "Designed and constructed by WaRmongR/remZone"
+ },
+ "football": {
+  "bsp": "maps/dm/football.bsp",
+  "musicset": "dm2",
+  "startmusic": "1"
+ },
+ "germany": {
+  "bsp": "maps/dm/germany.bsp",
+  "musicset": "DM5",
+  "startmusic": "1"
+ },
+ "gertclwar1": {
+  "bsp": "maps/dm/gertclwar1.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "use the darkest skin possible ...WaRmongR"
+ },
+ "gicctf": {
+  "bsp": "maps/dm/gicctf.bsp"
+ },
+ "gicctf2": {
+  "bsp": "maps/dm/gicctf2.bsp",
+  "message": "Designed and built by remZone / Forklift Design by waRmongR"
+ },
+ "gotcha2007": {
+  "bsp": "maps/dm/gotcha2007.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "\bN\u0002O\bTTM\u0002O\bT\u0002O Map - A Tribute to GODh"
+ },
+ "hard_target": {
+  "bsp": "maps/dm/hard_target.bsp",
+  "message": "\u0002H\u0001ard \u0002T\u0001arget. Brought to you by \u0001=[\u0002V\u0001]=[\u0002R\u0001]="
+ },
+ "holdingyard": {
+  "bsp": "maps/dm/holdingyard.bsp"
+ },
+ "husoctf1": {
+  "bsp": "maps/dm/husoctf1.bsp"
+ },
+ "iran2004": {
+  "bsp": "maps/dm/iran2004.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "\u0004IRAN2004 - Made by Timurothi"
+ },
+ "iraq_final": {
+  "bsp": "maps/dm/iraq_final.bsp",
+  "message": "Map made by \u0004·\u001cJÙ\u0001LÌ\u001cN\u0004!"
+ },
+ "iraq_small": {
+  "bsp": "maps/dm/iraq_small.bsp",
+  "message": "\u0004Small place in Iraq CTF by \u0002Sentinel"
+ },
+ "iraq_small2": {
+  "bsp": "maps/dm/iraq_small2.bsp",
+  "message": "\u0004iraq_small2 -\u0004 Made by\u0003 Mateo\u0005L"
+ },
+ "irq2014": {
+  "bsp": "maps/dm/irq2014.bsp",
+  "message": "\u0003   IRQ2014\u0002                Made\u0002  by\u0003  HusO\u0002  and\u0003  HayO"
+ },
+ "irqctf2": {
+  "bsp": "maps/exp/irqctf2.bsp",
+  "message": "exp/irqctf2 - Rock Valley - by WaRmongR"
+ },
+ "irqtclwar1": {
+  "bsp": "maps/dm/irqtclwar1.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "IRQCTF1"
+ },
+ "japan": {
+  "bsp": "maps/dm/japan.bsp",
+  "message": "japan beta Authors WaRmongR and remZone"
+ },
+ "jpnjump": {
+  "bsp": "maps/dm/jpnjump.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "map by warmongr jump idea by time"
+ },
+ "jpntclwar1": {
+  "bsp": "maps/dm/jpntclwar1.bsp",
+  "message": "jpnctfWaR use the darkest skin you can enjoy"
+ },
+ "jpntclx": {
+  "bsp": "maps/dm/jpntclx.bsp",
+  "musicset": "DM5",
+  "startmusic": "1",
+  "message": "JPNTCLX"
+ },
+ "lebctf": {
+  "bsp": "maps/dm/lebctf.bsp",
+  "message": "dm/lebctf\u0003   Made By \u0002 HusO"
+ },
+ "losttomb": {
+  "bsp": "maps/dm/losttomb.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "Lost Tomb by GODh (August 2001)"
+ },
+ "madrange": {
+  "bsp": "maps/dm/madrange.bsp",
+  "message": "\u0001Clan <MAD> \tRange DM \u0001- \u000bhttp://mad.sofclans.com/"
+ },
+ "marocctf1": {
+  "bsp": "maps/dm/marocctf1.bsp",
+  "message": "MarocCTF1 -  sunny marocco -  by \u0003Lì\u0005óÑ\u0001*"
+ },
+ "motorpool": {
+  "bsp": "maps/dm/motorpool.bsp"
+ },
+ "nyctclwar1": {
+  "bsp": "maps/dm/nyctclwar1.bsp",
+  "musicset": "DM1",
+  "startmusic": "1",
+  "message": "NYCCTF1"
+ },
+ "ra_ctfdm": {
+  "bsp": "maps/dm/ra_ctfdm.bsp",
+  "message": "RA CTF/DM   (c)09/2000  by turbo"
+ },
+ "saiyanswarehouse(final)": {
+  "bsp": "maps/dm/saiyanswarehouse(final).bsp",
+  "message": "SAIYAN CTF"
+ },
+ "sewerctf1": {
+  "bsp": "maps/dm/sewerctf1.bsp",
+  "message": "\u0004Sewer CTF by \u0002Sentinel"
+ },
+ "sibctf2": {
+  "bsp": "maps/dm/sibctf2.bsp"
+ },
+ "sibctf3": {
+  "bsp": "maps/dm/sibctf3.bsp",
+  "musicset": "DM4",
+  "startmusic": "1",
+  "message": "SIBCTF3 -  Antartica  -  by raven modified by LioN and WOLF"
+ },
+ "snqpctf2b": {
+  "bsp": "maps/dm/snqpctf2b.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "\u0002SN\u0004QP\u0001CTF2-B by \fGåµÐ£®ïØ\u0002SN\u0004QP - 2006  \u0003BR\u0004AS\u0005IL"
+ },
+ "sofiactf": {
+  "bsp": "maps/dm/sofiactf.bsp",
+  "message": "SoFia CTF by RenderMan and DarkLord"
+ },
+ "stationctf": {
+  "bsp": "maps/dm/stationctf.bsp",
+  "message": "Capture The Station by PointyGit"
+ },
+ "storage_beta": {
+  "bsp": "maps/dm/storage_beta.bsp",
+  "musicset": "DM3",
+  "startmusic": "1",
+  "message": "\u0004Storage - Made by Time"
+ },
+ "strongholds": {
+  "bsp": "maps/dm/strongholds.bsp",
+  "message": "StrongHolds by RenderMan and DarkLord"
+ },
+ "subwayctf1": {
+  "bsp": "maps/dm/subwayctf1.bsp",
+  "message": "\u0004Subway CTF by \u0002Sentinel"
+ },
+ "sudctf3": {
+  "bsp": "maps/dm/sudctf3.bsp",
+  "musicset": "dm3",
+  "startmusic": "1"
+ },
+ "sudtclwar1": {
+  "bsp": "maps/dm/sudtclwar1.bsp",
+  "musicset": "DM3",
+  "startmusic": "1",
+  "message": "SUDCTF1"
+ },
+ "sudtclwar2": {
+  "bsp": "maps/dm/sudtclwar2.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "SUDCTF2"
+ },
+ "temple": {
+  "bsp": "maps/dm/temple.bsp"
+ },
+ "terror51ctf_mod2": {
+  "bsp": "maps/dm/terror51ctf_mod2.bsp",
+  "musicset": "nyc1"
+ },
+ "the_ramp": {
+  "bsp": "maps/dm/the_ramp.bsp",
+  "message": "\u0002Map By: \u0001ÖRBÌT"
+ },
+ "valleyctf": {
+  "bsp": "maps/dm/valleyctf.bsp",
+  "message": "Valleyctf - Map made by \u0004·\u001cJÙ\u0001LÌ\u001cN\u0004!"
+ },
+ "velruf": {
+  "bsp": "maps/dm/velruf.bsp",
+  "musicset": "kos2",
+  "message": "\u0004A map by \u0005A\u0004c\u0005a\u0001di\u0002e"
+ },
+ "rustctf1": {
+  "bsp": "maps/exp/rustctf1.bsp",
+  "musicset": "trn1",
+  "message": "exp/rustctf1 - In Rust We Trust - by Tsyrak"
+ },
+ "fractf2": {
+  "bsp": "maps/exp/fractf2.bsp",
+  "message": "exp/fractf2 - Paris Is Burning - by Tsyrak"
+ },
+ "gerctf2": {
+  "bsp": "maps/exp/gerctf2.bsp",
+  "musicset": "DM2",
+  "startmusic": "1",
+  "message": "exp/gerctf2 - Stone - by Tsyrak"
+ },
+ "mexctf1": {
+  "bsp": "maps/exp/mexctf1.bsp",
+  "musicset": "dm4",
+  "message": "exp/mexctf1 - Sunny Death - by Tsyrak"
+ },
+ "nycctf2": {
+  "bsp": "maps/exp/nycctf2.bsp",
+  "musicset": "DM2",
+  "startmusic": "1",
+  "message": "exp/nycctf2 - The Hotels - by Tsyrak"
+ },
+ "nycctf3": {
+  "bsp": "maps/exp/nycctf3.bsp",
+  "musicset": "dm4",
+  "startmusic": "1",
+  "message": "exp/nycctf3 - Back Alleys - CTF conversion by Tsyrak"
+ },
+ "soccer": {
+  "bsp": "maps/exp/soccer.bsp",
+  "message": "exp/soccer - Soccer! (Euro Footy! :]) - by Tsyrak"
+ },
+ "tennis": {
+  "bsp": "maps/exp/tennis.bsp",
+  "message": "exp/tennis - Tennis! - by Tsyrak"
+ }
+}

@@ -1,0 +1,37 @@
+S->C OOB : "getchallenge 1\n"
+S->C OOB : "challenge 1210259646"
+S->C OOB : "connect 33 3 1210259646 1792783894 3.14 \"\\name\\webclient\\spectator\\0\\cl_violence\\63\\fov\\95\\rate\\3000\\team_red_"
+S->C OOB : "client_connect"
+*** client_connect ***
+C->S cmd : "new"
+[NET] Sending reliableHdr with relToggle=1 ack=0
+[NET] RECV: len=91 srvSeq=1 frag=true srvRelToggle=0
+*** server asks: configstrings 42 0
+C->S cmd : "configstrings 42 0"
+[NET] RECV: len=8 srvSeq=2 frag=false srvRelToggle=0
+[NET] Sending reliableHdr with relToggle=1 ack=2
+[NET] RECV: len=735 srvSeq=3 frag=true srvRelToggle=0
+*** server asks: configstrings 42 397
+C->S cmd : "configstrings 42 397"
+[NET] Sending reliableHdr with relToggle=1 ack=3
+[NET] RECV: len=739 srvSeq=4 frag=true srvRelToggle=1
+*** server asks: configstrings 42 518
+node:internal/buffer:78
+    throw new ERR_OUT_OF_RANGE('value', range, value);
+    ^
+
+RangeError [ERR_OUT_OF_RANGE]: The value of "value" is out of range. It must be >= 0 and <= 4294967295. Received -2147483644
+    at checkInt (node:internal/buffer:78:11)
+    at writeU_Int32LE (node:internal/buffer:698:3)
+    at Buffer.writeUInt32LE (node:internal/buffer:711:10)
+    at unrelHdr (C:\Users\User\q2work\sof2\web\sofproto.js:156:4)
+    at sendStringCmd (C:\Users\User\q2work\sof2\web\sofproto.js:176:37)
+    at answer (C:\Users\User\q2work\sof2\web\sofproto.js:481:9)
+    at processPacket (C:\Users\User\q2work\sof2\web\sofproto.js:503:5)
+    at Object.onDatagram (C:\Users\User\q2work\sof2\web\sofproto.js:389:21)
+    at Socket.<anonymous> (C:\Users\User\q2work\sof2\web\sofclient.js:55:9)
+    at Socket.emit (node:events:509:28) {
+  code: 'ERR_OUT_OF_RANGE'
+}
+
+Node.js v24.16.0

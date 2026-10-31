@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Soldier of Fortune - browser client</title>
+<style>
+	html, body { margin: 0; padding: 0; background: #0f1115; overflow: hidden;
+		font-family: monospace; color: #d0d0d0; }
+	#wrap { position: relative; width: 100vw; height: 100vh; }
+	#gl { display: block; width: 100%; height: 100%; }
+	#hud { position: absolute; left: 0; top: 0; pointer-events: none; }
+	#bar { position: absolute; left: 0; bottom: 0; width: 100%; padding: 6px 10px;
+		background: rgba(0,0,0,0.55); font-size: 12px; }
+	a { color: #6cf; }
+	#console { position: absolute; left: 0; right: 0; bottom: 34px; display: none;
+		background: rgba(5,8,10,0.94); border-top: 1px solid #2a3a2f; padding: 8px 10px; }
+	#consoleLog { max-height: 34vh; overflow-y: auto; font-size: 12px; line-height: 1.35; }
+	#consoleLog div.cmd { color: #9fe8a0; }
+	#consoleLog div.info { color: #7fb0ff; }
+	#consoleInput { width: 100%; background: #0f1216; color: #d8d8d8; border: 1px solid #2a3a2f;
+		font-family: monospace; font-size: 12px; padding: 3px 5px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+	<canvas id="gl"></canvas>
+	<canvas id="hud" width="640" height="330"></canvas>
+	<div id="console">
+		<div id="consoleLog"></div>
+		<input id="consoleInput" type="text" autocomplete="off" spellcheck="false"
+			placeholder="type a command and press enter (help)">
+	</div>
+	<div id="bar">
+		Soldier of Fortune browser client &mdash;
+		<a href="?relay=127.0.0.1:8080&amp;server=127.0.0.1&amp;port=29000">relay 127.0.0.1:8080</a> /
+		server 127.0.0.1:29000 &mdash; click the view for mouse look, WASD to move,
+		<b>`</b> for the console, <b>V</b> for the third person camera
+	</div>
+</div>
+<script src="bundle.js"></script>
+<script src="sof.js"></script>
+<script src="app.js"></script>
+<script src="viewmodel.js"></script>
+<script src="sofgl.js"></script>
+<script src="soflight.js"></script>
+<script src="sofsurface.js"></script>
+<script src="sofpredict.js"></script>
+<script src="sofmusic.js"></script>
+<script src="eft.js"></script>
+<script src="effects.js"></script>
+</body>
+</html>

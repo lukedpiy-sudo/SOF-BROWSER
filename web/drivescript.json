@@ -1,0 +1,10 @@
+[
+ { "a": "wait", "ms": 11000 },
+ { "a": "eval", "expr": "window.sofauto({cls:'item_weapon_',use:true})" },
+ { "a": "wait", "ms": 14000 },
+ { "a": "eval", "expr": "JSON.stringify({auto:window.sofdebug().auto,ents:window.sofdebug().ents.length,porig:window.sofdebug().playerOrigin})" },
+ { "a": "shot", "file": "C:/Users/User/AppData/Local/Temp/opencode/use1.png" },
+ { "a": "wait", "ms": 12000 },
+ { "a": "eval", "expr": "JSON.stringify({auto:window.sofdebug().auto,ents:window.sofdebug().ents.length,porig:window.sofdebug().playerOrigin})" },
+ { "a": "shot", "file": "C:/Users/User/AppData/Local/Temp/opencode/use2.png" }
+]
