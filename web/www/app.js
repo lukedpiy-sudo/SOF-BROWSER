@@ -155,6 +155,18 @@
 		} catch (e) { glError = String(e.message || e); gl = null; }
 	}
 
+	/* bind the entity draw state: the program, the matrix and the unit
+	 * cube.  The Ghoul model draw uses its own program and buffers, so
+	 * this has to be restored after every model. */
+	function bindEntityState(mvp) {
+		if (!gl) return;
+		gl.useProgram(prog);
+		if (mvp) gl.uniformMatrix4fv(uMVP, false, mvp);
+		gl.bindBuffer(gl.ARRAY_BUFFER, entityVBO);
+		gl.enableVertexAttribArray(entityLoc);
+		gl.vertexAttribPointer(entityLoc, 3, gl.FLOAT, false, 0, 0);
+	}
+
 	// ------------------------------------------------------- the map mesh
 	// The geometry comes from web/map_<name>.json, which bsp2json.js builds
 	// from the .bsp: the faces, their plane normals and the vertexes.
@@ -817,13 +829,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				}
 			}
 			/* then the live entities */
-			gl.useProgram(prog);
-			gl.uniformMatrix4fv(uMVP, false, mvp);
-			/* the map draw rebound the array buffer, so the entity cube has to
-			 * be bound and its attribute pointer set again */
-			gl.bindBuffer(gl.ARRAY_BUFFER, entityVBO);
-			gl.enableVertexAttribArray(entityLoc);
-			gl.vertexAttribPointer(entityLoc, 3, gl.FLOAT, false, 0, 0);
+			bindEntityState(mvp);
 			state.entities.forEach(function (e) {
 				if (e.removed || !e.state) return;
 				const o = entityOrigin(e);
@@ -847,6 +853,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					gl.uniform3f(uColor, 0.75, 0.65, 0.25);
 					gl.drawArrays(gl.TRIANGLES, 0, 36);
 					drawn++;
+					return;
+				}
+				/* the original Ghoul model, when its geometry is decoded: the
+				 * static meshes are, the animated ones (the characters and
+				 * the weapons) are not yet */
+				if (window.sofmodel && sofmodel.drawEntity && sofmodel.drawEntity(e, mvp, o)) {
+					drawn++;
+					/* the model draw uses its own program and buffers */
+					bindEntityState(mvp);
 					return;
 				}
 				/* another player */

@@ -1,0 +1,27 @@
+
+undefined * FUN_200ab2b0(void)
+
+{
+  int in_ECX;
+  undefined4 local_14;
+  
+  if (*(int *)(in_ECX + 0x108) == 0) {
+    local_14 = 0;
+  }
+  else {
+    local_14 = *(undefined4 *)(*(int *)(in_ECX + 0x108) + 8);
+  }
+  FUN_200fabac(&DAT_20403ed0,s_Mat_Blocks__d_cPos__d_cTex__d_cN_20157b48,
+               *(int *)(in_ECX + 0x34) - *(int *)(in_ECX + 0x30),
+               *(int *)(in_ECX + 0x38) - *(int *)(in_ECX + 0x34),
+               *(int *)(in_ECX + 0x3c) - *(int *)(in_ECX + 0x38),
+               *(int *)(in_ECX + 0x40) - *(int *)(in_ECX + 0x3c),
+               *(int *)(in_ECX + 0x44) - *(int *)(in_ECX + 0x40),
+               *(int *)(in_ECX + 0x48) - *(int *)(in_ECX + 0x44),
+               *(int *)(in_ECX + 0x4c) - *(int *)(in_ECX + 0x48),
+               *(int *)(in_ECX + 0x50) - *(int *)(in_ECX + 0x4c),
+               *(int *)(in_ECX + 0x54) - *(int *)(in_ECX + 0x50),
+               *(int *)(in_ECX + 0xa4) - *(int *)(in_ECX + 0x54),local_14);
+  return &DAT_20403ed0;
+}
+

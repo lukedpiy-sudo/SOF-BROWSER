@@ -14,7 +14,8 @@ const MODULES = [
 	"./cmdenc.js",
 	"./playerstate.js",
 	"./snapshot.js",
-	"./sofproto.js"
+	"./sofproto.js",
+	"./ghb.js"
 ];
 
 const RUNTIME = `
@@ -128,6 +129,7 @@ for (const rel of MODULES) {
 out += "\nwindow.sofproto = window.__sofRequire('./sofproto.js');\n";
 out += "window.sofsnapshot = window.__sofRequire('./snapshot.js');\n";
 out += "window.sofplayerstate = window.__sofRequire('./playerstate.js');\n";
+out += "window.sofghb = window.__sofRequire('./ghb.js');\n";
 
 const outPath = path.join(__dirname, "www", "bundle.js");
 fs.mkdirSync(path.dirname(outPath), { recursive: true });

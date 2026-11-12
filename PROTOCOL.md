@@ -427,10 +427,69 @@ used at `0x2000EDEB`:
 | 15 (0x0F) | `svc_configstring` | the configstring records (see above) |
 | 21 (0x15) | `svc_packetentities` | the entity list inside a frame |
 | 23 (0x17) | `svc_frame` | the frame itself |
-| 26 (0x1A) | `svc_ghoulreliable` | **the ghoul string table** - the table that names the Ghoul models and the sounds |
+| 26 (0x1A) | `svc_ghoulreliable` | **the Ghoul instance state**, reliably |
 | 27 (0x1B) | `svc_ghoulunreliable` | the same, unreliably |
 
-The **ghoul string table** is decoded by the **game module**
+### 3.1 The Ghoul service bytes (2026-11-11)
+
+The Ghoul is **split over two binaries**:
+
+| piece | binary |
+|---|---|
+| the renderer, the model loader, the geometry and animation decoders | `SoF.exe` (`0x2009xxxx`-`0x200bxxxx`) |
+| the game logic: the sequences, the AI, the netcode | **`gamex86.dll`** (byte identical to `ghoulmod.dll`, md5 `152b6b788d0b84c0adfb1bdd1eddc0af`) |
+
+`gamex86.dll` exports exactly one symbol, `GetGameAPI` (RVA `0xAD9B0`).
+It returns a **0x120 byte export struct** at `0x5015C8D0`:
+
+```
++0x00  i32   3                  the API version
++0x04  ..    24 function pointers
++0x64  i32   0x464              the size of ONE Ghoul instance record
+```
+
+The full table (from `gamex86.dll 0x500AD9B0`):
+
+| offset | function | what |
+|---|---|---|
+| `+0x04` | `0x500AC970` | the game init |
+| `+0x34` | `0x5008A6D0` | the entity spawn |
+| `+0x38` | `0x500F53A0` | the entity think |
+| `+0x3C` | `0x500AD990` | the client entity spawn |
+| `+0x40` | `0x500AE7D0` | the **Ghoul reliable writer** |
+| `+0x44` | `0x500AE850` | the **Ghoul unreliable writer** |
+| `+0x5C` | `0x500AE340` | the **Ghoul client decoder** |
+| `+0x60` | the instance array pointer | `0x5015CCA0` (set at `0x500AD33C`) |
+| `+0x64` | `0x464` | the instance record size |
+| `+0x68` | the instance count + 1 | `0x5015D8C8` is the count |
+
+**The client path** (`SoF.exe 0x2008ECD0`):
+
+```asm
+call   0x20069630        ; the module's API object (0x20403A48)
+mov    (%eax),%edx       ; the vtable
+...
+call   *0x60(%edx)       ; -> gamex86.dll 0x500AE340, the decoder
+```
+
+The decoder walks the instance array at `0x5015CCA0` with the **stride
+0x464** and the count at `0x5015D8C8`.  It skips an instance when the
+record's `+0x93C` is null or its `+0x3E4` is null.
+
+**The server path** (`SoF.exe 0x2008EAC0`):
+
+```asm
+call   *0x40(%edx)       ; -> gamex86.dll 0x500AE7D0, the reliable writer
+...
+; then the overflow checks:
+push   $0x20157164       ; "Ghoul reliable overflow"
+push   $0x20157180       ; "Ghoul unreliable overflow"
+```
+
+So the **Ghoul instance state really does travel on the wire**; the engine
+never decodes it, it only hands the payload to the module.
+
+**The Ghoul string table** is decoded by the **game module**
 (`gamex86.dll`), never by the client: the engine hands the packet to the
 module at `0x2008ED40` (the client-API vtable, `0x20403A48`: entry `0x64` =
 decode, entry `0x24` = resolve index -> sound list).  The entity state's
@@ -439,6 +498,16 @@ nor an index into the engine's global string table (measured: `cs[+0x28]` is
 undefined for every entity of nycdm1 and `names[+0x28]` is garbage), so
 without the ghoul table no entity can be named - neither the characters nor
 the sound entities.
+
+**The animation is scripted server side.**  The Ghoul's animation is *not*
+derived from the entity state: the state machine lives in the game module
+(`gamex86.dll 0x5007EC40`, a bytecode interpreter whose cursor is at
+`+0x114` and whose code is at `+0x104`), and it maps a state code to a
+**sequence name** (e.g. `"std_jupto_n_a_a"`) plus a blend time and a
+duration.  The sequence names are the lowercased clip names of the `.ghb`
+model, and the list of the sequences a model supports is in the `.gsq`
+side file.  This is why the entity state only carries the Ghoul *model*
+index (`+0x28`) and no animation state at all.
 
 ## 4. Usercmds (the movement channel)
 
@@ -1090,9 +1159,12 @@ with the real game textures.
 
 
 
-### The Ghoul model format (`.ghb`) - mostly decoded 2026-10-21
+### The Ghoul model format (`.ghb`) - the mesh is decoded 2026-11-10
 
-The player and weapon models are Ghoul binaries.  The reader is `web/ghb.js`.
+The player and weapon models are Ghoul binaries.  The reader is `web/ghb.js`
+(it runs in node and in the browser: the browser bundle exposes it as
+`window.sofghb`).  The full write up with the function provenance is
+`analysis/ghb_format.md`.
 
 **The container** (12 bytes):
 
@@ -1117,6 +1189,7 @@ The player and weapon models are Ghoul binaries.  The reader is `web/ghb.js`.
           u32  counter ; u32 count ; count x 0xEC objects
           u32  counter ; u32 count ; count x 0x108 objects  (the bones)
           the skeleton
+          the Comp header (see below), its subdata and the blob descriptor
 ```
 
 A **clip** is a vec3 position, an f32 length in frames, the name, the event
@@ -1133,66 +1206,113 @@ then two arrays of 0x0C byte elements and four arrays of 4 byte elements.  In
 the shipped files **every one of those arrays is a placeholder**, so the real
 geometry is not in the model stream.
 
-**The geometry is in the block 1 tail** (after the skeleton) and in block 2:
-
-* the tail starts with two u32 sizes, then an index table, then per submesh a
-  header of three u32 and the **vertex records**;
-* a vertex record is **44 bytes**: three floats (the UVs) at +0x00, three
-  floats (the position) at +0x0C and 20 further bytes (the normal, the bone
-  weights);
-* the positions are in the model's own units and fall inside the model's
-  bounding box, which is how the record layout was confirmed;
-* the 45 "bolt" objects (ABOLT_HEAD_T, SBOLT_MOUTH, QUAKE_ORIGIN, ...) each
-  carry a u32 offset into block 2 and a track of `frames` 8 byte records
-  (4 x int16) - the bolt's position and rotation for every animation frame.
-  The offsets form an exact arithmetic progression of `frames * 8`.
-
-What is **not** decoded yet: the exact meaning of the four int16 fields in a
-bolt track, the index table's semantics, the 20 remaining bytes of a vertex
-record and the block 2 tail (6.5 MB of high entropy data in the human model).
-
-### The Ghoul geometry (the block 1 tail)
-
-The geometry of a `.ghb` is **not** in the model stream: the meshes
-there only hold placeholders.  The real geometry is in the **block 1
-tail**, between the end of the model stream and block 2:
+**The Comp blob.**  The mesh is a *Comp* object: a 0x114 byte struct whose
+ten sections live in block 2.  The **Comp header is inside the model
+stream** and is **not 4 byte aligned** (0x429 in `ACC_BOX_HIP.ghb`, 0x2170 in
+`FEM_ARM.ghb`), so it is found by scanning for the `0xFFFFFFFF` marker and
+checking the ten blob cursors it carries.  The header is the Comp struct's
+fields serialised flat (`SoF.exe 0x200ab850`):
 
 ```
-+0x00  u32  the size of the model's vertex buffer
-+0x04  u32  the size of the model's animation data (the frames x 256)
-+0x08  u32  0
-+0x0C  u32  0
-+0x10  u32  0
-+0x14  u32  0
-+0x18  u32  0
-+0x1C  u32  0
-+0x20  u32  the index table: the vertex indices shifted left by 8 bits,
-             each one repeated once per face that uses it (the list is
-             sorted, so it is a valence histogram and NOT a triangle list)
-...    21 bytes: five u32 of sub mesh data
-...    the vertex records, 43 bytes each:
-             +0x00  3 floats  the UV coordinates (0..1)
-             +0x0C  3 floats  the position
-             +0x18  19 bytes  the packed attributes: the three bone
-                            indices, the valence and the offsets
++0x00 u32  0xFFFFFFFF marker
++0x04 u32  Comp+0x110 (the version)
++0x08 u32  Comp+0x04
++0x0C u32  Comp+0x08   the number of material blocks
++0x10 u32  Comp+0x0C   the number of shared positions
++0x14 u32  Comp+0x10   the number of shared texcoords
++0x18 u32  Comp+0x14   the number of shared normals
++0x1C u32  Comp+0x18   the number of face groups
++0x20 u32  Comp+0x1C   the number of elements
++0x24 u32  Comp+0x20   the number of corners
++0x28 u32  Comp+0x24   the number of ANIMATED vertices
++0x2C u32  Comp+0x28   the number of animated texcoords
++0x30 u32  Comp+0x2C   the number of ANIMATED normals
++0x34 u32 x10  Comp+0x30 .. Comp+0x54, the ten blob section cursors
++0x5C u8    Comp+0x70, +0x5D u8 Comp+0x71
++0x5E vec3  the bbox min
++0x6A vec3  the bbox max
++0x76 vec3  the scale (100.8), +0x82 vec3 the inverse scale
++0x8E vec3  the centre, +0x9A vec3 the 0.375 constant
++0xA6 u8    the subdata flag, +0xA7 the subdata
 ```
 
-**The proof of the layout**: the highest index in the index table is
-exactly the number of vertex records (522 for `MESO_IRQ3B`, 337 for
-`FEMALE`, 25 for the sniper rifle) and every record's UV and position
-are in range.  The second header value is the frame count times 256
-(checked on four models).  The records are **not** 4 byte aligned in the
-file (the stride is 43), so every field has to be read at its own
-offset.
+The **blob descriptor** follows the Comp header and its subdata: the blob
+size, the blob offset relative to block 2 and the marker `0x05DC159F`.  It
+is **not** always at the end of the model stream (the animated models keep
+more data behind it), so it is found by scanning for the marker.  With
+`blobBase = block2Offset + blobOffset` the ten sections are:
 
-**Still open**: the *triangle* topology.  The index table is a valence
-histogram, so the faces are either in the 19 packed bytes of each
-vertex or in the compressed high entropy region of block 2.  Until that
-is decoded the model can only be drawn as its vertices.
+```
+MatBlocks  N x u32 (matIndex, faceGroupStart, faceGroupCount)
+cPos       N x vec3 float   the shared (static) positions
+cTex       N x vec2 float   the shared texture coordinates
+cNorm      N x vec3 float   the shared normals
+Mesh       N x {u16 A, u16 elemStart, u16 elemCount}   one per face group
+Elem       N x u16          the topology primitive stream
+Corn       N x {i16 posIndex, i16 normIndex, i16 texIndex}
+aPos       the animated positions
+aTex       the animated texture coordinates
+aNorm      the animated normals
+```
+
+**The topology - SOLVED.**  The Elem section is a sequence of primitives,
+proven by `SoF.exe 0x200b09e0` (the Ghoul renderer), which reads it as:
+
+| header | primitive | count |
+|---|---|---|
+| `> 0` | `GL_TRIANGLE_STRIP` | `n = header` vertex indices follow |
+| `== 0` | `GL_TRIANGLES` | the next u16 is `n`; `n/3` triangles |
+| `< 0` | `GL_TRIANGLE_FAN` | `n = -header` vertex indices follow |
+
+The renderer then indexes the runtime corner array with
+`corner = *(int *)(comp+0x10c) + (short)index * 0x4c`, so the indices are
+**signed**.  Validation on four real models out of `pak0.pak`:
+
+| model | face groups | triangles | malformed groups | corner index range |
+|---|---|---|---|---|
+| `FEM_ARM.ghb` | 27 | 719 | **0** | 0..554 (= numCorners 555) |
+| `FEMALE.ghb` | 80 | 1132 | **0** | 0..988 (= 989) |
+| `ACC_BOX_HIP.ghb` | 1 | 20 | **0** | 0..31 (= 32) |
+| `EXPLODE20.ghb` | 1 | 20 | **0** | 0..21 (= 22) |
+
+Every triangle index is in range on every model and every face group
+consumes exactly its declared element count.
+
+**The corners.**  A **negative** index selects the shared array
+(`shared[-v - 1]`), a **positive** one the animated array.
+`SoF.exe 0x200ab360` (the Comp -> runtime mesh builder) copies the shared
+values into the 76 byte runtime corner struct:
+
+```
++0x00 u32  flags      +0x04 i32 position index   +0x08 vec3 position
++0x14 i32  normal index  +0x18 vec3 normal
++0x24 i32  texcoord index  +0x28 vec2 uv
+```
+
+The static path is verified end to end on `ACC_BOX_HIP.ghb` (12 shared
+positions, 19 shared UVs, 12 shared normals, 32 corners, 20 triangles - a
+2 x 3.5 x 4.3 box whose winding matches the bbox).
+
+**Still open**: the **animated** vertex path.  The character and weapon
+models have empty `cPos`/`cNorm`/`aPos`/`aNorm` sections; their positions
+come from the animation data in block 2 (a compressed stream in front of
+the blob) and the bone weights.  Until that is decoded the browser can draw
+the **static** Ghoul meshes as real triangles but not the characters.
 
 Two traps for the browser: a `TypedArray`'s `toString()` ignores its
 arguments (the strings have to be decoded by hand) and the pak's names
 are lower case while the engine's string table is upper case.
+
+### Dead hypotheses (do not repeat them)
+
+* The **43 byte vertex record** and the **valence histogram index table**
+  (`web/ghb.js`'s old `parseGeometry`).  There is no such table: the
+  browser was reinterpreting the *Comp blob* as vertex records, which gave
+  49 junk vertices for `FEM_ARM` and **none at all** for the static props.
+* The **32 byte face record**.  That is the *GHL/text* mesh loader
+  (`0x200aa250`), a different format.  The Ghoul face record is 6 bytes
+  and the topology is the Elem primitive stream above.
+* The **44 byte vertex record** (the earlier variant of the same idea).
 
 ### The game data (`.pak`)
 

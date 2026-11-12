@@ -23,3 +23,5 @@ logs/
 
 # ---- local scratch ----
 .probe
+.probe.txt
+samples/

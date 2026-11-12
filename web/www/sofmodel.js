@@ -2,30 +2,34 @@
  * sofmodel.js - the original Ghoul models in the browser.
  *
  * The models are the game's own .ghb files, served straight out of pak0.pak
- * at /pak/<path in the pak>.  This file reads a model, extracts its vertex
- * data and draws it.
+ * at /pak/<path in the pak>.  The reader is the shared one, web/ghb.js,
+ * which the browser bundle exposes as window.sofghb; the format is
+ * documented in analysis/ghb_format.md.
  *
- * The layout of the geometry (proved on the shipped models, see
- * web/ghb.js and analysis/PROTOCOL.md):
+ * The mesh is the Comp blob in block 2 of the .ghb:
  *
- *   the container:  u32 magic, u32 the file offset of block 2, u32 its size
- *   the model stream starts at 0x0C and holds the clips, the meshes, the
- *   objects (the bolts and the bones) and the skeleton
- *   the block 1 tail (between the end of the model stream and block 2):
- *     +0x00  u32  the size of the vertex buffer
- *     +0x04  u32  the size of the animation data (the frames x 256)
- *     +0x20  the index table: the vertex indices shifted left by 8 bits,
- *            each one repeated once per face that uses it
- *     ...    21 bytes of sub mesh data
- *     ...    the vertex records, 43 bytes each:
- *              +0x00  3 floats  the UV coordinates
- *              +0x0C  3 floats  the position
- *              +0x18  19 bytes  the packed attributes (the bone indices,
- *                             the valence and the offsets)
+ *   the Comp header lives inside the model stream and is not 4 byte
+ *   aligned, so it is found by a marker scan; it carries ten blob cursors
+ *   that delimit ten sections:
  *
- * The triangle topology is not decoded yet, so the model is drawn as its
- * vertices (one point per vertex, coloured with the skin).  When the
- * topology is known the same buffers draw the real triangles.
+ *     MatBlocks  N x u32 (matIndex, faceGroupStart, faceGroupCount)
+ *     cPos       N x vec3 float   the shared (static) positions
+ *     cTex       N x vec2 float   the shared texture coordinates
+ *     cNorm      N x vec3 float   the shared normals
+ *     Mesh       N x {u16 A, u16 elemStart, u16 elemCount}
+ *     Elem       N x u16          the topology primitive stream
+ *     Corn       N x {i16 posIndex, i16 normIndex, i16 texIndex}
+ *     aPos, aTex, aNorm            the animated per object data
+ *
+ *   The Elem stream is a sequence of primitives: a header > 0 is a
+ *   triangle strip with that many vertices, a header of 0 is a triangle
+ *   list whose count is the next u16, and a header < 0 is a triangle fan
+ *   with -header vertices.
+ *
+ *   A negative index in a corner means the shared array (shared[-v - 1]);
+ *   a positive one means the animated array.  The character and weapon
+ *   models are animated: their positions come from the animation bit stream
+ *   in the Comp subdata, which web/ghb.js decodes (decodeAnimation).
  */
 (function () {
 	"use strict";
@@ -33,192 +37,14 @@
 	var models = {};       /* the loaded models, by path */
 	var state = { loaded: 0, failed: 0, errors: [] };
 
-	/* ------------------------------------------------------------- the reader */
+	/* the shared reader: web/ghb.js, bundled into bundle.js */
+	function GH() { return window.sofghb; }
+	function parseGhoul(buf) { return GH().parseGhoul(buf); }
+	function parseGeometry(buf, model) { return GH().parseGeometry(buf, model); }
+	function decodeAnimation(buf, comp) { return GH().decodeAnimation(buf, comp); }
+
 	/* the browser has no Buffer, so the little endian reads are done here */
-	function rd32(b, o) {
-		return (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
-	}
-	function rdf(b, o) {
-		return new Float32Array(new Uint32Array([rd32(b, o)]).buffer)[0];
-	}
 	function rd16(b, o) { return b[o] | (b[o + 1] << 8); }
-
-	function Reader(buf, off) { this.b = buf; this.p = off || 0; }
-	Reader.prototype.u8 = function () { return this.b[this.p++]; };
-	Reader.prototype.u32 = function () { const v = rd32(this.b, this.p); this.p += 4; return v; };
-	Reader.prototype.i32 = function () { const v = rd32(this.b, this.p) | 0; this.p += 4; return v; };
-	Reader.prototype.f32 = function () { const v = rdf(this.b, this.p); this.p += 4; return v; };
-	Reader.prototype.vec3 = function () { return [this.f32(), this.f32(), this.f32()]; };
-	Reader.prototype.str = function () {
-		/* a TypedArray's toString takes no arguments, so the bytes are
-		 * decoded by hand */
-		const n = this.u32();
-		let s = "";
-		for (let i = 0; i < n; i++) s += String.fromCharCode(this.b[this.p + i]);
-		this.p += n;
-		return s;
-	};
-	Reader.prototype.bool = function () { return this.u8() === 1; };
-
-	function readBBox(r) {
-		return { a: r.bool(), b: r.bool(), min: r.vec3(), max: r.vec3() };
-	}
-	function readTexBitmap(r) {
-		if (!r.bool()) {
-			const n = r.u32();
-			r.p += ((n + 31) >> 5) * 4;
-			return { kind: "inline", count: n };
-		}
-		r.bool();
-		return { kind: "external" };
-	}
-	function readObjectE8(r) {
-		const o = {};
-		o.name = r.str();
-		o.name2 = r.str();
-		o.tex = readTexBitmap(r);
-		o.flags = [r.bool(), r.bool(), r.bool()];
-		o.bbox = readBBox(r);
-		o.mode = r.i32();
-		if (o.mode !== 0) {
-			o.v1 = r.vec3(); o.v2 = r.vec3(); o.v3 = r.vec3();
-			o.block2Offset = r.u32();
-		} else {
-			const flag = r.bool();
-			if (!flag) { const n = r.i32(); r.p += n * 0x44; } else { r.p += 0x44; }
-		}
-		return o;
-	}
-	function readObject108(r) {
-		const o = readObjectE8(r);
-		o.extra = readBBox(r);
-		return o;
-	}
-	function readArray(r, elemSize) {
-		if (r.bool()) { r.p += elemSize; return { kind: "external" }; }
-		const n = r.i32();
-		r.p += n * elemSize;
-		return { kind: "inline", count: n };
-	}
-	function readMesh(r) {
-		const m = {};
-		m.name = r.str();
-		m.flags = [r.bool(), r.bool()];
-		m.i32 = [r.i32(), r.i32()];
-		m.submeshes = [];
-		for (let i = 0; i < 2; i++) {
-			const s = {};
-			s.name = r.str();
-			s.name2 = r.str();
-			s.flags = [r.bool(), r.bool(), r.bool(), r.bool()];
-			s.verts = readArray(r, 1);
-			s.faces = readArray(r, 0x44);
-			s.flag = r.bool();
-			m.submeshes.push(s);
-		}
-		m.vec3a = readArray(r, 0x0C);
-		m.vec3b = readArray(r, 0x0C);
-		m.u32 = [readArray(r, 4), readArray(r, 4), readArray(r, 4), readArray(r, 4)];
-		return m;
-	}
-
-	/* the model stream */
-	function parseGhoul(buf) {
-		if (buf.length < 12) throw new Error("too short");
-		const magic = rd32(buf, 0);
-		if (magic !== 0x198237FE) throw new Error("bad container magic");
-		const out = {
-			block2Offset: rd32(buf, 4),
-			block2Size: rd32(buf, 8),
-			fileSize: buf.length
-		};
-		const r = new Reader(buf, 0x0C);
-		out.magic = r.u32();
-		out.version = r.u32();
-		out.thunk = r.u32();
-		out.path = r.str();
-		out.frameCount = r.i32();
-		const nclip = r.i32();
-		out.clips = [];
-		for (let i = 0; i < nclip; i++) {
-			const c = {};
-			c.pos = r.vec3();
-			c.scale = r.f32();
-			c.name = r.str();
-			const n = r.i32();
-			c.events = [];
-			for (let k = 0; k < n; k++) c.events.push({ value: r.i32(), index: r.i32(), name: r.str(), param: r.str() });
-			c.tail = [r.i32(), r.i32()];
-			out.clips.push(c);
-		}
-		const nmesh = r.i32();
-		out.meshes = [];
-		for (let i = 0; i < nmesh; i++) out.meshes.push(readMesh(r));
-		out.bbox = readBBox(r);
-		r.u32();
-		let n = r.i32();
-		if (n < 0 || n > 100000) n = 0;
-		out.objA = [];
-		for (let i = 0; i < n; i++) out.objA.push(readObjectE8(r));
-		r.u32();
-		n = r.i32();
-		if (n < 0 || n > 100000) n = 0;
-		out.objB = [];
-		for (let i = 0; i < n; i++) out.objB.push(readObjectE8(r));
-		r.u32();
-		n = r.i32();
-		if (n < 0 || n > 100000) n = 0;
-		out.objC = [];
-		for (let i = 0; i < n; i++) out.objC.push(readObject108(r));
-		const v4 = r.i32();
-		if (v4 === -1) { r.i32(); r.i32(); } else { /* the id */ }
-		for (let i = 0; i < 21; i++) r.i32();
-		readBBox(r);
-		r.vec3(); r.vec3(); r.vec3(); r.vec3();
-		out.end = r.p;
-		return out;
-	}
-
-	/* the geometry: the block 1 tail */
-	function parseGeometry(buf, model) {
-		const t = model.end, end = model.block2Offset;
-		if (end <= t) return null;
-		const g = {
-			vertexBufferSize: rd32(buf, t),
-			animationSize: rd32(buf, t + 4),
-			indexTable: [], vertices: []
-		};
-		let p = t + 0x20, last = -1, run = 0;
-		const maxIndex = Math.floor((end - t) / 43) + 1;
-		while (p + 4 <= end) {
-			const v = rd32(buf, p);
-			if (v % 256 !== 0 || v < last || run > 16 || v >= maxIndex * 256) break;
-			if (v === last) run++; else { run = 1; last = v; }
-			g.indexTable.push(v >>> 8);
-			p += 4;
-		}
-		const start = p + 21;
-		let n = 0;
-		for (const v of g.indexTable) if (v + 1 > n) n = v + 1;
-		g.vertexCount = n;
-		for (let i = 0; i < n && start + i * 43 + 43 <= end; i++) {
-			const o = start + i * 43;
-			const a = buf.subarray(o, o + 43);
-			g.vertices.push({
-				uv: [rdf(a, 0), rdf(a, 4), rdf(a, 8)],
-				position: [rdf(a, 12), rdf(a, 16), rdf(a, 20)],
-				bones: [a[24], a[25], a[26]],
-				valence: a[39],
-				/* the two 16 bit offsets into block 2 and the corner index */
-				offsetA: a[27] | (a[28] << 8),
-				offsetB: a[31] | (a[32] << 8),
-				mesh: a[29],
-				corner: a[35]
-			});
-		}
-		g.cornerCount = g.indexTable.length;
-		return g;
-	}
 
 	/* ------------------------------------------------------------ the skin */
 	/* a TGA: an 18 byte header and then the pixels, 24 or 32 bits, plain or
@@ -284,6 +110,54 @@
 		return "/pak/" + path.replace(/\\/g, "/").replace(/^\/+/, "");
 	}
 
+	/* The skin of a model: the .tga that sits next to it in the pak.  The
+	 * names do not always match exactly (ACC_BOX_HIP.GHB is skinned with
+	 * ACC_BOX_HIP_BLK.TGA), so the string table of the engine is used to
+	 * find the skin of a model path. */
+	var skinMap = null;
+	function buildSkinMap() {
+		if (skinMap) return skinMap;
+		skinMap = {};
+		var t = window.sofmodel && window.sofmodel.stringTable;
+		if (!t) return skinMap;
+		var byDir = {};
+		for (var i = 0; i < t.length; i++) {
+			var n = t[i];
+			if (typeof n !== "string" || !/\.tga$/i.test(n)) continue;
+			var p = n.replace(/\\/g, "/");
+			var d = p.replace(/[^/]+$/, "");
+			var b = p.slice(p.lastIndexOf("/") + 1).replace(/\.tga$/i, "");
+			(byDir[d] = byDir[d] || []).push(b.toUpperCase());
+		}
+		for (var i = 0; i < t.length; i++) {
+			var n = t[i];
+			if (typeof n !== "string" || !/\.ghb$/i.test(n)) continue;
+			var p = n.replace(/\\/g, "/");
+			var d = p.replace(/[^/]+$/, "");
+			var b = p.slice(p.lastIndexOf("/") + 1).replace(/\.ghb$/i, "").toUpperCase();
+			var list = byDir[d] || [];
+			var pick = null;
+			for (var k = 0; k < list.length; k++) {
+				if (list[k] === b) { pick = list[k]; break; }
+			}
+			if (!pick) {
+				/* the longest name that starts with the model's name */
+				var best = null;
+				for (var k = 0; k < list.length; k++) {
+					if (list[k].indexOf(b) === 0 && (!best || list[k].length < best.length)) best = list[k];
+				}
+				pick = best;
+			}
+			if (pick) skinMap[p.toLowerCase()] = d + pick + ".TGA";
+		}
+		return skinMap;
+	}
+	function skinPathFor(modelPath) {
+		var map = buildSkinMap();
+		var p = modelPath.replace(/\\/g, "/").toLowerCase();
+		return map[p] || null;
+	}
+
 	function loadModel(path, gl) {
 		if (models[path]) return models[path];
 		var m = { path: path, state: "loading", vertices: null, geometry: null };
@@ -298,10 +172,15 @@
 			m.model = model;
 			m.geometry = geom;
 			m.vertices = geom ? geom.vertices : [];
+			m.triCount = geom ? geom.triCount : 0;
+			m.animated = geom ? !geom.staticPositions : true;
 			m.frameCount = model.frameCount;
 			m.meshes = model.meshes;
+			/* the animation: the bit packed vertex positions */
+			m.anim = geom ? decodeAnimation(buf, geom.comp) : null;
+			m.animFrames = m.anim ? m.anim.frames : 0;
 			/* the skin: the .tga next to the model */
-			const skin = path.replace(/\.ghb$/i, ".tga");
+			const skin = skinPathFor(path) || path.replace(/\.ghb$/i, ".tga");
 			return fetch(pakPath(skin)).then(function (r) {
 				return r.ok ? r.arrayBuffer() : null;
 			}).catch(function () { return null; });
@@ -338,31 +217,34 @@
 	}
 
 	/* ------------------------------------------------------------ the draw */
-	/* the model is drawn as its vertices: the triangle topology of the Ghoul
-	 * format is not decoded yet, so the draw buffers hold the positions and
-	 * the UVs and the skin colours the points. */
+	/* The model is drawn as real triangles: the vertex buffer holds one
+	 * vertex per corner (the position, the normal and the UV) and the
+	 * index buffer holds the expanded triangle list of the Elem stream. */
 	var VS = [
 		"attribute vec3 aPos;",
+		"attribute vec3 aNrm;",
 		"attribute vec2 aUV;",
 		"uniform mat4 uMVP;",
-		"uniform float uSize;",
 		"uniform float uScale;",
 		"varying vec2 vUV;",
+		"varying vec3 vNrm;",
 		"void main(){",
 		"  vUV = aUV;",
+		"  vNrm = aNrm;",
 		"  gl_Position = uMVP * vec4(aPos * uScale,1.0);",
-		"  gl_PointSize = uSize;",
 		"}"
 	].join("\n");
 	var FS = [
 		"precision mediump float;",
 		"varying vec2 vUV;",
+		"varying vec3 vNrm;",
 		"uniform sampler2D uTex;",
 		"uniform float uTexOn;",
 		"void main(){",
 		"  vec3 c = vec3(0.7,0.7,0.7);",
 		"  if (uTexOn > 0.5) c = texture2D(uTex, vUV).rgb;",
-		"  gl_FragColor = vec4(c, 1.0);",
+		"  float l = 0.55 + 0.45 * abs(normalize(vNrm).z);",
+		"  gl_FragColor = vec4(c * l, 1.0);",
 		"}"
 	].join("\n");
 
@@ -374,29 +256,53 @@
 		return s;
 	}
 
+	/* Build the draw buffers.  A model whose corners have animated
+	 * positions (the characters and the weapons) gets its positions from
+	 * the animation buffer; the buffer is then refreshed every frame. */
 	function buildMesh(gl, m) {
 		if (m.mesh) return m.mesh;
-		const n = (m.vertices || []).length;
-		const data = new Float32Array(n * 5);
+		const g = m.geometry;
+		if (!g || !g.corners.length || !g.tris.length) return null;
+		/* every corner needs a position; the animated ones come from the
+		 * animation, the static ones from the shared array */
+		let missing = 0;
+		for (const c of g.corners) {
+			if (c.pos < 0 ? !g.cPos[-c.pos - 1] : !m.anim) missing++;
+		}
+		if (missing) { m.noGeometry = "animated positions"; return null; }
+
+		const n = g.corners.length;
+		const data = new Float32Array(n * 8);
+		/* the normals of the static models are the shared ones; the
+		 * animated models have their normals in the animation, but those
+		 * are palette indices, so the normals are rebuilt from the
+		 * geometry (the face normals, accumulated per normal index) */
+		const nrm = modelNormals(g, m);
 		for (let i = 0; i < n; i++) {
-			const v = m.vertices[i];
-			/* the world models are Z up, the renderer is Y up; the view
-			 * models are in the engine's eye space (the forward -X, the up
-			 * +Z, the right +Y), which the renderer takes as
-			 * (-y, z, x) */
-			if (m.space === "view") {
-				/* the view model: the x is the width, the y is the barrel
-				 * (it points away from the eye) and the z is the height */
-				data[i * 5 + 0] = -v.position[0];
-				data[i * 5 + 1] = v.position[2];
-				data[i * 5 + 2] = v.position[1];
-			} else {
-				data[i * 5 + 0] = v.position[0];
-				data[i * 5 + 1] = v.position[2];
-				data[i * 5 + 2] = v.position[1];
-			}
-			data[i * 5 + 3] = v.uv[0];
-			data[i * 5 + 4] = v.uv[1];
+			const c = g.corners[i];
+			const p = c.pos < 0 ? g.cPos[-c.pos - 1] : [0, 0, 0];
+			const nn = nrm ? nrm[i] : (c.nrm < 0 ? g.cNorm[-c.nrm - 1] : null);
+			const uv = c.tex < 0 ? g.cTex[-c.tex - 1] : null;
+			/* the world models are Z up and the matrix turns them into the
+			 * renderer's Y up; the view models are already in the engine's
+			 * eye space (the forward -X, the up +Z, the right +Y), which
+			 * the renderer takes as (-y, z, x) */
+			let x, y, z;
+			if (m.space === "view") { x = -p[1]; y = p[2]; z = p[0]; }
+			else { x = p[0]; y = p[1]; z = p[2]; }
+			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
+			data[i * 8 + 3] = nn ? nn[0] : 0;
+			data[i * 8 + 4] = nn ? nn[1] : 0;
+			data[i * 8 + 5] = nn ? nn[2] : 1;
+			data[i * 8 + 6] = uv ? uv[0] : 0;
+			data[i * 8 + 7] = uv ? uv[1] : 0;
+		}
+		/* the index buffer: the expanded triangles */
+		const idx = new Uint16Array(g.tris.length * 3);
+		for (let i = 0; i < g.tris.length; i++) {
+			idx[i * 3 + 0] = g.tris[i].i[0];
+			idx[i * 3 + 1] = g.tris[i].i[1];
+			idx[i * 3 + 2] = g.tris[i].i[2];
 		}
 		const p = gl.createProgram();
 		gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, VS));
@@ -404,33 +310,109 @@
 		gl.linkProgram(p);
 		const vbo = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-		gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, data, m.anim ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW);
+		const ibo = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
 		m.mesh = {
 			program: p,
 			vbo: vbo,
-			count: n,
+			ibo: ibo,
+			count: idx.length,
+			vertices: n,
+			data: data,
+			frame: -1,
+			dynamic: !!m.anim,
 			mvp: gl.getUniformLocation(p, "uMVP"),
-			size: gl.getUniformLocation(p, "uSize"),
 			scale: gl.getUniformLocation(p, "uScale"),
 			tex: gl.getUniformLocation(p, "uTex"),
 			texOn: gl.getUniformLocation(p, "uTexOn"),
 			pos: gl.getAttribLocation(p, "aPos"),
+			nrm: gl.getAttribLocation(p, "aNrm"),
 			uv: gl.getAttribLocation(p, "aUV")
 		};
 		return m.mesh;
 	}
 
-	/* the model's scale: the Ghoul models are in their own units.  The
-	 * engine's player is 56 units tall (the Quake player height), so the
-	 * scale is 56 / the model's height.  The models are Z up: the tallest
-	 * axis of the bounding box is the up axis. */
-	function modelExtent(m) {
-		if (!m.geometry || !m.vertices || !m.vertices.length) return null;
-		let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
-		for (const v of m.vertices) for (let i = 0; i < 3; i++) {
-			if (v.position[i] < mn[i]) mn[i] = v.position[i];
-			if (v.position[i] > mx[i]) mx[i] = v.position[i];
+	/* The normals of an animated model.  The engine keeps the normals in a
+	 * 256 entry palette of directions and stores a palette index per normal
+	 * group, so the palette is what gives the exact normals.  Without it the
+	 * normals are rebuilt from the geometry: the face normals of the
+	 * triangles, accumulated per normal index and normalised.  That keeps
+	 * the hard edges (a normal index is shared by the corners of one smooth
+	 * group) and is what the palette holds anyway. */
+	function modelNormals(g, m) {
+		if (!m.anim) return null;
+		const anim = m.anim;
+		const nrmCount = anim.norms;
+		const acc = new Float32Array(nrmCount * 3);
+		const pos = anim.pos, frames = anim.frames;
+		const corners = g.corners;
+		for (const t of g.tris) {
+			const c0 = corners[t.i[0]], c1 = corners[t.i[1]], c2 = corners[t.i[2]];
+			const p = [c0, c1, c2].map((c) => (c.pos < 0 ? g.cPos[-c.pos - 1] : cornerPos(c, anim, 0)));
+			const ux = p[1][0] - p[0][0], uy = p[1][1] - p[0][1], uz = p[1][2] - p[0][2];
+			const vx = p[2][0] - p[0][0], vy = p[2][1] - p[0][1], vz = p[2][2] - p[0][2];
+			const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+			for (const c of [c0, c1, c2]) {
+				if (c.nrm < 0 || c.nrm >= nrmCount) continue;
+				acc[c.nrm * 3] += nx; acc[c.nrm * 3 + 1] += ny; acc[c.nrm * 3 + 2] += nz;
+			}
 		}
+		const out = new Array(corners.length);
+		for (let i = 0; i < corners.length; i++) {
+			const c = corners[i];
+			if (c.nrm < 0 || c.nrm >= nrmCount) { out[i] = [0, 0, 1]; continue; }
+			let x = acc[c.nrm * 3], y = acc[c.nrm * 3 + 1], z = acc[c.nrm * 3 + 2];
+			const l = Math.hypot(x, y, z);
+			if (l > 1e-6) { x /= l; y /= l; z /= l; } else { x = 0; y = 0; z = 1; }
+			out[i] = [x, y, z];
+		}
+		void frames;
+		return out;
+	}
+
+	/* the position of a corner at an animation frame */
+	function cornerPos(c, anim, frame) {
+		if (c.pos < 0) return c.shared;
+		const o = (c.pos * anim.frames + frame) * 3;
+		return [anim.pos[o], anim.pos[o + 1], anim.pos[o + 2]];
+	}
+
+	/* Refresh the positions of an animated model for one frame. */
+	function updateFrame(gl, m, frame) {
+		const mesh = m.mesh, anim = m.anim;
+		if (!mesh || !anim) return;
+		let fr = frame | 0;
+		fr %= anim.frames;
+		if (fr < 0) fr += anim.frames;
+		if (mesh.frame === fr) return;
+		mesh.frame = fr;
+		const data = mesh.data;
+		const g = m.geometry;
+		const corners = g.corners;
+		for (let i = 0; i < corners.length; i++) {
+			const c = corners[i];
+			let p;
+			if (c.pos < 0) p = g.cPos[-c.pos - 1];
+			else {
+				const o = (c.pos * anim.frames + fr) * 3;
+				p = [anim.pos[o], anim.pos[o + 1], anim.pos[o + 2]];
+			}
+			let x, y, z;
+			if (m.space === "view") { x = -p[1]; y = p[2]; z = p[0]; }
+			else { x = p[0]; y = p[1]; z = p[2]; }
+			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
+		}
+		gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vbo);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+	}
+
+	/* the model's extent: the Comp header carries the bounding box */
+	function modelExtent(m) {
+		if (!m.geometry || !m.geometry.comp) return null;
+		const c = m.geometry.comp;
+		const mn = c.bboxMin, mx = c.bboxMax;
 		return { mn: mn, mx: mx, size: [mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]] };
 	}
 	function modelScale(m) {
@@ -448,13 +430,23 @@
 		return up;
 	}
 
-	function drawModel(gl, m, mvp, scale, pointSize) {
-		if (!m || m.state !== "ready" || !m.vertices || !m.vertices.length) return false;
+	/* the current animation frame of the world: the models that have no
+	 * animation state of their own (the world models) use this */
+	var worldFrame = 0;
+	function tickFrames(dt) {
+		/* the animation of the Ghoul models runs at about 15 frames a
+		 * second, the walk cycle of the characters is 8 frames long */
+		worldFrame = (worldFrame + dt * 15) | 0;
+	}
+
+	function drawModel(gl, m, mvp, scale, frame) {
+		if (!m || m.state !== "ready") return false;
 		const mesh = buildMesh(gl, m);
-		const s = scale !== undefined ? scale : modelScale(m);
+		if (!mesh) return false;
+		if (mesh.dynamic) updateFrame(gl, m, frame === undefined ? worldFrame : frame);
+		const s = scale !== undefined ? scale : 1;
 		gl.useProgram(mesh.program);
 		gl.uniformMatrix4fv(mesh.mvp, false, mvp);
-		gl.uniform1f(mesh.size, pointSize !== undefined ? pointSize : 3);
 		gl.uniform1f(mesh.scale, s);
 		gl.uniform1i(mesh.tex, 0);
 		gl.uniform1f(mesh.texOn, m.texture ? 1 : 0);
@@ -462,10 +454,13 @@
 		gl.bindTexture(gl.TEXTURE_2D, m.texture || null);
 		gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vbo);
 		gl.enableVertexAttribArray(mesh.pos);
-		gl.vertexAttribPointer(mesh.pos, 3, gl.FLOAT, false, 20, 0);
+		gl.vertexAttribPointer(mesh.pos, 3, gl.FLOAT, false, 32, 0);
+		gl.enableVertexAttribArray(mesh.nrm);
+		gl.vertexAttribPointer(mesh.nrm, 3, gl.FLOAT, false, 32, 12);
 		gl.enableVertexAttribArray(mesh.uv);
-		gl.vertexAttribPointer(mesh.uv, 2, gl.FLOAT, false, 20, 12);
-		gl.drawArrays(gl.POINTS, 0, mesh.count);
+		gl.vertexAttribPointer(mesh.uv, 2, gl.FLOAT, false, 32, 24);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.ibo);
+		gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
 		return true;
 	}
 
@@ -573,7 +568,7 @@
 			if (up === 2) local = m4mul(local, m4rotX(-Math.PI / 2));
 			local = m4mul(local, m4scale(s));
 			const view = mvp ? m4mul(mvp, local) : local;
-			return drawModel(gl, m, view, 1);
+			return drawModel(gl, m, view, 1, o2.frame);
 		} catch (e) { return false; }
 	}
 

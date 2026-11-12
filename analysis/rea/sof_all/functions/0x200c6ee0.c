@@ -1,0 +1,87 @@
+// rea decompile_all
+// name: FUN_200c6ee0
+// address: 0x200c6ee0
+// body: available
+// range: 0x200c6ee0-0x200c6fef inclusive
+// non_contiguous: false
+// provider: Ghidra 12.1.4 (ghidra)
+// analysis_profile: e1ad533d4cc0333c2136fe0894217de2d61feea098240326e78633f9e4ddcbf9
+// limitations: The session serves operations only after Ghidra reports default auto-analysis complete; incomplete analysis does not expose partial results.; The imported Program and temporary project are ephemeral and deleted on close. Annotation operations edit session database metadata; original executable bytes are never written.; Cancelling an active Ghidra request terminates its ephemeral database and discards session annotations. The selected target remains open; the next provider query imports the original artifact again.; Default-space addresses use lowercase 0x-prefixed hexadecimal; other address spaces use <percent-encoded-space>:0x<hex>.; Pseudocode is Ghidra decompiler output, not original source and not text-equivalent to Hopper output.; External functions and functions without an analyzable body return null; other decompiler failures remain explicit.
+// pseudocode: provider-specific; not original source
+
+
+void FUN_200c6ee0(undefined4 param_1,undefined4 param_2,char *param_3)
+
+{
+  char cVar1;
+  undefined4 *in_ECX;
+  uint uVar2;
+  uint uVar3;
+  char *pcVar4;
+  void *pvStack_c;
+  undefined1 *puStack_8;
+  undefined4 local_4;
+  
+  puStack_8 = &LAB_2010dff6;
+  pvStack_c = ExceptionList;
+  ExceptionList = &pvStack_c;
+  *(undefined1 *)(in_ECX + 3) = (undefined1)param_1;
+  in_ECX[4] = 0;
+  in_ECX[5] = 0;
+  in_ECX[6] = 0;
+  *(undefined1 *)(in_ECX + 7) = (undefined1)param_1;
+  in_ECX[8] = 0;
+  in_ECX[9] = 0;
+  in_ECX[10] = 0;
+  uVar2 = 0xffffffff;
+  in_ECX[1] = param_2;
+  in_ECX[2] = 0;
+  pcVar4 = param_3;
+  do {
+    if (uVar2 == 0) break;
+    uVar2 = uVar2 - 1;
+    cVar1 = *pcVar4;
+    pcVar4 = pcVar4 + 1;
+  } while (cVar1 != '\0');
+  uVar2 = ~uVar2 - 1;
+  local_4 = 1;
+  if (0xfffffffd < uVar2) {
+    FUN_201075d0();
+  }
+  in_ECX[5] = 0;
+  if ((in_ECX[4] == 0) || (*(char *)(in_ECX[4] + -1) == '\0')) {
+    if (uVar2 == 0) {
+      FUN_2000a5b0(1);
+      *in_ECX = param_1;
+      ExceptionList = pvStack_c;
+      return;
+    }
+    if (((uint)in_ECX[6] < 0x20) && (uVar2 <= (uint)in_ECX[6])) goto LAB_200c6fae;
+    FUN_2000a5b0(1);
+  }
+  else if (uVar2 == 0) {
+    FUN_2000a5b0(1);
+    *in_ECX = param_1;
+    ExceptionList = pvStack_c;
+    return;
+  }
+  FUN_2000a840(uVar2);
+LAB_200c6fae:
+  pcVar4 = (char *)in_ECX[4];
+  for (uVar3 = uVar2 >> 2; uVar3 != 0; uVar3 = uVar3 - 1) {
+    *(undefined4 *)pcVar4 = *(undefined4 *)param_3;
+    param_3 = param_3 + 4;
+    pcVar4 = pcVar4 + 4;
+  }
+  for (uVar3 = uVar2 & 3; uVar3 != 0; uVar3 = uVar3 - 1) {
+    *pcVar4 = *param_3;
+    param_3 = param_3 + 1;
+    pcVar4 = pcVar4 + 1;
+  }
+  in_ECX[5] = uVar2;
+  *(undefined1 *)(uVar2 + in_ECX[4]) = 0;
+  *in_ECX = param_1;
+  ExceptionList = pvStack_c;
+  return;
+}
+
