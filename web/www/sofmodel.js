@@ -267,7 +267,10 @@
 		 * animation, the static ones from the shared array */
 		let missing = 0;
 		for (const c of g.corners) {
-			if (c.pos < 0 ? !g.cPos[-c.pos - 1] : !m.anim) missing++;
+			/* posIndex is the raw corner index: a negative one selects the
+			 * shared array (already resolved into c.pos), a positive one
+			 * the animated array (so the model needs an animation) */
+			if (c.posIndex < 0 ? !c.pos : !m.anim) missing++;
 		}
 		if (missing) { m.noGeometry = "animated positions"; return null; }
 
@@ -280,9 +283,13 @@
 		const nrm = modelNormals(g, m);
 		for (let i = 0; i < n; i++) {
 			const c = g.corners[i];
-			const p = c.pos < 0 ? g.cPos[-c.pos - 1] : [0, 0, 0];
-			const nn = nrm ? nrm[i] : (c.nrm < 0 ? g.cNorm[-c.nrm - 1] : null);
-			const uv = c.tex < 0 ? g.cTex[-c.tex - 1] : null;
+			/* posIndex is the raw corner index: negative selects the
+			 * shared array (resolved into c.pos), otherwise the position
+			 * comes from the animation buffer and is refreshed every
+			 * frame by updateFrame() */
+			const p = c.posIndex < 0 ? c.pos : [0, 0, 0];
+			const nn = nrm ? nrm[i] : (c.nrmIndex < 0 ? c.nrm : null);
+			const uv = c.texIndex < 0 ? c.uv : null;
 			/* the world models are Z up and the matrix turns them into the
 			 * renderer's Y up; the view models are already in the engine's
 			 * eye space (the forward -X, the up +Z, the right +Y), which
@@ -350,20 +357,20 @@
 		const corners = g.corners;
 		for (const t of g.tris) {
 			const c0 = corners[t.i[0]], c1 = corners[t.i[1]], c2 = corners[t.i[2]];
-			const p = [c0, c1, c2].map((c) => (c.pos < 0 ? g.cPos[-c.pos - 1] : cornerPos(c, anim, 0)));
+			const p = [c0, c1, c2].map((c) => (c.posIndex < 0 ? c.pos : cornerPos(c, anim, 0)));
 			const ux = p[1][0] - p[0][0], uy = p[1][1] - p[0][1], uz = p[1][2] - p[0][2];
 			const vx = p[2][0] - p[0][0], vy = p[2][1] - p[0][1], vz = p[2][2] - p[0][2];
 			const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
 			for (const c of [c0, c1, c2]) {
-				if (c.nrm < 0 || c.nrm >= nrmCount) continue;
-				acc[c.nrm * 3] += nx; acc[c.nrm * 3 + 1] += ny; acc[c.nrm * 3 + 2] += nz;
+				if (c.nrmIndex < 0 || c.nrmIndex >= nrmCount) continue;
+				acc[c.nrmIndex * 3] += nx; acc[c.nrmIndex * 3 + 1] += ny; acc[c.nrmIndex * 3 + 2] += nz;
 			}
 		}
 		const out = new Array(corners.length);
 		for (let i = 0; i < corners.length; i++) {
 			const c = corners[i];
-			if (c.nrm < 0 || c.nrm >= nrmCount) { out[i] = [0, 0, 1]; continue; }
-			let x = acc[c.nrm * 3], y = acc[c.nrm * 3 + 1], z = acc[c.nrm * 3 + 2];
+			if (c.nrmIndex < 0 || c.nrmIndex >= nrmCount) { out[i] = [0, 0, 1]; continue; }
+			let x = acc[c.nrmIndex * 3], y = acc[c.nrmIndex * 3 + 1], z = acc[c.nrmIndex * 3 + 2];
 			const l = Math.hypot(x, y, z);
 			if (l > 1e-6) { x /= l; y /= l; z /= l; } else { x = 0; y = 0; z = 1; }
 			out[i] = [x, y, z];
@@ -374,8 +381,8 @@
 
 	/* the position of a corner at an animation frame */
 	function cornerPos(c, anim, frame) {
-		if (c.pos < 0) return c.shared;
-		const o = (c.pos * anim.frames + frame) * 3;
+		if (c.posIndex < 0) return c.pos;
+		const o = (c.posIndex * anim.frames + frame) * 3;
 		return [anim.pos[o], anim.pos[o + 1], anim.pos[o + 2]];
 	}
 
@@ -394,9 +401,9 @@
 		for (let i = 0; i < corners.length; i++) {
 			const c = corners[i];
 			let p;
-			if (c.pos < 0) p = g.cPos[-c.pos - 1];
+			if (c.posIndex < 0) p = c.pos;
 			else {
-				const o = (c.pos * anim.frames + fr) * 3;
+				const o = (c.posIndex * anim.frames + fr) * 3;
 				p = [anim.pos[o], anim.pos[o + 1], anim.pos[o + 2]];
 			}
 			let x, y, z;
@@ -582,6 +589,10 @@
 		modelScale: modelScale,
 		modelExtent: modelExtent,
 		modelUpAxis: modelUpAxis,
+		/* the animation clock of the world models: tickFrames(dt) advances
+		 * it and worldFrame() gives the current frame */
+		tickFrames: tickFrames,
+		worldFrame: function () { return worldFrame; },
 		/* the Ghoul string table of the svc 0x1A datagram: the index of the
 		 * model of an entity to the name of its model */
 		ghoulStrings: null,

@@ -788,6 +788,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		resize();
 		frameEntities();
 		updateCamera(dt);
+		/* the Ghoul animation clock of the world models */
+		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
 		let drawn = 0;
 		mapDrawn = 0;
 		if (gl) {

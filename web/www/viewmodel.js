@@ -164,7 +164,14 @@
 			 * and the points are bigger than the world's */
 			var depth = gl.isEnabled ? gl.isEnabled(gl.DEPTH_TEST) : false;
 			if (gl.disable) gl.disable(gl.DEPTH_TEST);
-			SM().drawModel(gl, m, mvp, s, o.pointSize || 6);
+			/* the 5th argument of drawModel is the animation frame (the
+			 * shader has no point size, so the old value was a mistake) */
+			var frame = o.frame;
+			if (frame === undefined) {
+				var sm = SM();
+				frame = (sm && sm.worldFrame) ? sm.worldFrame() : 0;
+			}
+			SM().drawModel(gl, m, mvp, s, frame);
 			if (depth && gl.enable) gl.enable(gl.DEPTH_TEST);
 			st.drawn = (st.drawn || 0) + 1;
 			return true;

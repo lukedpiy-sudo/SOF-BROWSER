@@ -1,0 +1,119 @@
+The engine -> game module import table (99 dwords).
+
+Built on the stack by SoF.exe 0x2005CDD1..0x2005D1AB.  The table base is
+esp+0 (taken by `lea 0x0(%esp),%eax` at 0x2005D0EF and pushed as the single
+argument of the module loader 0x20065F20 at 0x2005D1AF).  The module's
+GetGameAPI (gamex86.dll 0x500AD9B0) copies the 99 dwords into the module's
+own table:
+
+    puVar2 = &DAT_5015c9f0;
+    for (iVar1 = 99; iVar1 != 0; iVar1--) { *puVar2++ = *param_1++; }
+
+so the module's DAT_5015c9f0 + 4*i is import[i] below, and the module's
+DAT_5015c9f0 + 4*i is the C symbol DAT_5015c9f0 + 4*i (the decompiles call
+them DAT_5015ca24, DAT_5015cab0, ...).
+
+The anchor: import[60] = 0x2008EA40 = DAT_5015cae0 = the server API getter
+(the module calls it with no arguments in GetGameAPI).
+
+Slot 24 is not written by this function (it is filled elsewhere or stays 0).
+
+  0  0x2005d530
+  1  0x2005d550
+  2  0x2005d570
+  3  0x2005d590
+  4  0x2005d5f0
+  5  0x200594e0
+  6  0x2005cae0
+  7  0x2005c970
+  8  0x2005ca10
+  9  0x20018d20
+ 10  0x20018d30
+ 11  0x20018d50
+ 12  0x200618d0
+ 13  0x2005c2a0
+ 14  0x2005c2e0
+ 15  0x2005c3b0
+ 16  0x2005c5a0
+ 17  0x2005c490
+ 18  0x2005c670
+ 19  0x20061a00
+ 20  0x2005c790
+ 21  0x2005c870
+ 22  0x2005cd30
+ 23  0x20061f50
+ 24  0x00000000   <MISSING>
+ 25  0x200232f0
+ 26  0x20023470
+ 27  0x20016630
+ 28  0x2005cd90
+ 29  0x20061a80
+ 30  0x2005c210
+ 31  0x2005cb40
+ 32  0x2005cb40
+ 33  0x2005cb60
+ 34  0x2005cb80
+ 35  0x2005cba0
+ 36  0x2005cbc0
+ 37  0x2005cbe0
+ 38  0x2005cc00
+ 39  0x2005cc20
+ 40  0x2001cb00
+ 41  0x2001cb70
+ 42  0x2001cbf0
+ 43  0x2005cc50
+ 44  0x2005cc80
+ 45  0x2005cc40
+ 46  0x2005c8c0
+ 47  0x20057f20
+ 48  0x20058280
+ 49  0x200584c0
+ 50  0x20058800
+ 51  0x20058110
+ 52  0x20064e60
+ 53  0x20065280
+ 54  0x20064770
+ 55  0x2001c580
+ 56  0x2001c370
+ 57  0x2005ccb0
+ 58  0x2001bfb0
+ 59  0x2001c090
+ 60  0x2008ea40
+ 61  0x200494c0
+ 62  0x20048e10
+ 63  0x200490a0
+ 64  0x20049100
+ 65  0x20049190
+ 66  0x20049390
+ 67  0x20396ddc
+ 68  0x2005ca40
+ 69  0x2001e700
+ 70  0x2001e730
+ 71  0x2001e7b0
+ 72  0x2005c930
+ 73  0x20065bf0
+ 74  0x20066100
+ 75  0x20066090
+ 76  0x2001f300
+ 77  0x2001f350
+ 78  0x20063e60
+ 79  0x20063c10
+ 80  0x20064720
+ 81  0x20054750
+ 82  0x2001f090
+ 83  0x2001ebc0
+ 84  0x2001f010
+ 85  0x20060230
+ 86  0x20060490
+ 87  0x20021ae0
+ 88  0x20022190
+ 89  0x20022350
+ 90  0x20022170
+ 91  0x20022c60
+ 92  0x200216d0
+ 93  0x20025370
+ 94  0x20025420
+ 95  0x20025760
+ 96  0x20024d60
+ 97  0x20024df0
+ 98  0x20018180

@@ -486,8 +486,66 @@ push   $0x20157164       ; "Ghoul reliable overflow"
 push   $0x20157180       ; "Ghoul unreliable overflow"
 ```
 
-So the **Ghoul instance state really does travel on the wire**; the engine
+**The Ghoul instance state really does travel on the wire**; the engine
 never decodes it, it only hands the payload to the module.
+
+### The wire framing (solved 2026-11-12)
+
+The service byte is followed by a **little endian `u16` length** and then the
+payload:
+
+```
+[svc 0x1A][u16 LE length][payload]
+```
+
+The server writes the length with `MSG_WriteShort` (`SoF.exe 0x2001E740`),
+the client reads it with `MSG_ReadShort` (`SoF.exe 0x2001E290`).  The client
+dispatch is at `SoF.exe 0x2000F3A0` (reliable -> `FUN_2008ECD0`) and
+`0x2000F42F` (unreliable); the error strings are `"Bad Ghoul reliable
+packet"` (`0x2011F05C`) and `"Bad Ghoul unreliable packet"` (`0x2011F040`).
+
+### The engine's Ghoul API vtable
+
+The engine owns the serialiser.  `FUN_20069630(isClient, isShared)` selects
+the API object (server `0x204036A0`, client `0x20403A48`, shared
+`0x20403878`) and `*(the object)` is the vtable pointer.  The real vtable is
+at **`0x20112048`** (49 engine functions, `+0x00`..`+0xC3`, a NULL at `+0xC4`,
+then the stubs `0x200FC6EA`); `0x20112110` is only a stub table that
+`FUN_2006FD90` replaces with the real one.
+
+| slot | function | what |
+|---|---|---|
+| `+0x40` | `0x2006BD80` | **write** the Ghoul state of an entity |
+| `+0x5C` | `0x2006BEB0` | **drain** the pending Ghoul queue |
+| `+0x60` | `0x2006BF70` | **queue** / **decode** one Ghoul record |
+
+`FUN_2008EAC0` (the server path) calls slot `+0x40` and copies the payload
+into the caller's buffer; the byte count comes back in `*param_2` and an
+oversized payload raises `"Ghoul reliable overflow"`.  `FUN_2008ECD0` (the
+client path) builds a reader over the payload (`FUN_200BE300`) and calls slot
+`+0x60`.
+
+The manager keeps a pending queue: the vector header at `this+0x138` (begin
+at `+0x13C`, end at `+0x140`) and the storage at `+0x13C`.  A queued record
+is **`[u32 length][payload]`**.  The flag at `this+0x38` selects the two
+faces of slot `+0x60`: 0 = append to the queue, non-zero = decode (the drain
+sets it before walking the queue).
+
+The **engine -> module import table** (99 dwords) is in
+`analysis/rea/sof_import_table.txt`.
+
+### The payload's internal layout (partial)
+
+The decode path at `SoF.exe 0x2006C0FA` reads:
+
+```
+u8   tag        ; 0 = an empty record
+u16  count      ; only present when tag != 0; the low byte is the count N
+byte block[4 + N*4]
+```
+
+The block starts with a `u16` index: `0` ends the record, otherwise the index
+is negated before use.  The rest of the block is not decoded yet.
 
 **The Ghoul string table** is decoded by the **game module**
 (`gamex86.dll`), never by the client: the engine hands the packet to the

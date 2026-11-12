@@ -315,15 +315,110 @@ state - which is why the entity state only carries the Ghoul *model* index
 | `0x1A` | `svc_ghoulreliable` | the Ghoul instance state, reliably |
 | `0x1B` | `svc_ghoulunreliable` | the same, unreliably |
 
-The engine never decodes them: it hands the payload to the **game module**
-(`SoF.exe 0x2008ECD0` -> the module export at `+0x60`,
-`gamex86.dll 0x500AE340`) and the module applies it to the client-side Ghoul
-objects.  The server side is the mirror image (`SoF.exe 0x2008EAC0`, the
-`"Ghoul reliable overflow"` / `"Ghoul unreliable overflow"` checks).
+### 9.1 The wire framing (SOLVED 2026-11-12)
 
-The **Ghoul instance record is `0x464` (1124) bytes** - the module exports
-that size at `+0x64` and keeps its instances in an array with that stride
-(`0x5015CCA0`, stride `0x464`, the count at `0x5015D8C8`).
+The service byte is followed by a **little endian `u16` length** and then the
+payload:
+
+```
+[svc 0x1A][u16 LE length][payload]
+```
+
+* the server writes the length with `MSG_WriteShort` (`SoF.exe 0x2001E740`),
+* the client reads it with `MSG_ReadShort` (`SoF.exe 0x2001E290`, which
+  computes `(ushort)b[1] * 0x100 + b[0]`, i.e. little endian).
+
+The client dispatch is at `SoF.exe 0x2000F3A0` (reliable -> `FUN_2008ECD0`)
+and `0x2000F42F` (unreliable); the error strings are `"Bad Ghoul reliable
+packet"` (`0x2011F05C`, xref `0x2000F3C0`) and `"Bad Ghoul unreliable
+packet"` (`0x2011F040`, xref `0x2000F44F`).
+
+The service byte names live in the table at `0x2011E7D0` (descending order):
+`svc_ghoulreliable` at `0x2011E808`, `svc_ghoulunreliable` at `0x2011E80C`.
+
+### 9.2 The engine's Ghoul API vtable
+
+The engine owns the Ghoul serialiser.  The API object is selected by
+`FUN_20069630(isClient, isShared)`:
+
+| call | the object |
+|---|---|
+| `FUN_20069630(0,0)` (server) | `0x204036A0` |
+| `FUN_20069630(1,0)` (client) | `0x20403A48` |
+| `FUN_20069630(0,1)` (shared) | `0x20403878` |
+
+`*(the object)` is the vtable pointer.  The **real** vtable is at
+**`0x20112048`** (49 engine functions, slots `+0x00`..`+0xC3`, a NULL at
+`+0xC4` and then the stubs `0x200FC6EA`).  `0x20112110` is only a *stub*
+table, written during construction by `FUN_2006FD90`, which installs the real
+one at the end with `*in_ECX = &PTR_FUN_20112048`.
+
+The slots that matter for the Ghoul:
+
+| slot | function | what |
+|---|---|---|
+| `+0x00` | `0x2006AF10` | |
+| `+0x08` | `0x2006CD10` | |
+| `+0x10` / `+0x14` | `0x2008A990` | |
+| `+0x18` | `0x2006CCB0` | |
+| `+0x1C` | `0x2006D120` | |
+| `+0x40` | `0x2006BD80` | **write** the Ghoul state of an entity |
+| `+0x54` | `0x2006BC30` | |
+| `+0x5C` | `0x2006BEB0` | **drain** the pending Ghoul queue |
+| `+0x60` | `0x2006BF70` | **queue** / **decode** one Ghoul record |
+| `+0x88` | `0x2006CEF0` | |
+| `+0x98` | `0x20070D40` | the detail level (called by `GetGameAPI`) |
+
+The engine -> module import table (99 dwords) is in
+`analysis/rea/sof_import_table.txt`; it is built on the stack by
+`SoF.exe 0x2005CDD1`..`0x2005D1AB` and copied into the module's
+`0x5015C9F0` by `GetGameAPI` (`gamex86.dll 0x500AD9B0`).
+
+### 9.3 The two handlers
+
+**The server** (`SoF.exe 0x2008EAC0`): it calls the server API's slot `+0x40`
+(`0x2006BD80`), which returns the payload in a heap block, and then copies it
+into the caller's buffer.  The byte count is returned in `*param_2`; if the
+payload does not fit, `Sys_Error("Ghoul ...", "Ghoul reliable overflow")`.
+
+**The client** (`SoF.exe 0x2008ECD0`): it builds a reader over the payload
+(`FUN_200BE300`) and calls the client API's slot `+0x60` (`0x2006BF70`).
+
+`0x2006BF70` has two faces, selected by the flag at `this+0x38`:
+
+* `+0x38 == 0` - **append** the payload to the pending queue.  The queue
+  lives in the manager object: the vector header at `this+0x138` (begin at
+  `+0x13C`, end at `+0x140`) and the storage at `this+0x13C`.  A record is
+  stored as **`[u32 length][payload]`**.
+* `+0x38 != 0` - the **decode** path (the drain is running).  It resets the
+  state object at `this+0x88` (`FUN_2006A560`) and then reads the record.
+
+The drain (`0x2006BEB0`, slot `+0x5C`) sets `this+0x37` and `this+0x38` to
+1, walks the queue as a stream of `[u32 length][payload]` records and calls
+slot `+0x60` once per record.
+
+### 9.4 The payload's internal layout (PARTIAL)
+
+The first bytes of a payload are read by the decode path at `SoF.exe
+0x2006C0FA` (the reader is `FUN_200BE390`, which reads N bytes into a
+destination):
+
+```
+u8   tag        ; 0 = an empty record
+u16  count      ; only present when tag != 0; the low byte is the count N
+byte block[4 + N*4]
+```
+
+The block starts with a `u16` index: `0` ends the record, otherwise the index
+is negated before use.  The rest of the block (the `N` dwords) has not been
+decoded yet.
+
+### 9.5 The module side
+
+The module keeps its instances in an array at `0x5015CCA0` with the stride
+**`0x464` (1124)** (exported at `+0x64`, the count at `0x5015D8C8`).  The
+module's client decoder (`gamex86.dll 0x500AE340`, the export at `+0x5C`)
+walks that array and skips an instance whose `+0x93C` or `+0x3E4` is null.
 
 ## 7. Dead hypotheses (do not repeat them)
 
