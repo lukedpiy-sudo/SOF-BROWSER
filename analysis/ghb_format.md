@@ -397,23 +397,114 @@ The drain (`0x2006BEB0`, slot `+0x5C`) sets `this+0x37` and `this+0x38` to
 1, walks the queue as a stream of `[u32 length][payload]` records and calls
 slot `+0x60` once per record.
 
-### 9.4 The payload's internal layout (PARTIAL)
+### 9.4 The payload is a BIT stream (SOLVED 2026-11-13)
 
-The first bytes of a payload are read by the decode path at `SoF.exe
-0x2006C0FA` (the reader is `FUN_200BE390`, which reads N bytes into a
-destination):
+The earlier "tag / count / block" reading was wrong: the payload is not a
+byte/word stream at all, it is a **bit stream**.
+
+* the writer is `FUN_200BDCA0(writer, src, nbits)` — it appends the low
+  `nbits` bits of `src`, **LSB first**, to the writer's byte buffer
+  (`writer+0x0C` = the buffer, `writer+0x18` = the bit position);
+* the reader is `FUN_200BE390(reader, dst, nbits)` — the mirror image
+  (`reader+0x04` = the buffer, `reader+0x10` = the bit position,
+  `reader+0x14` = the overrun flag).
+
+Every 16-bit quantity in the payload is written with one primitive, the
+**encoded-u16**:
 
 ```
-u8   tag        ; 0 = an empty record
-u16  count      ; only present when tag != 0; the low byte is the count N
-byte block[4 + N*4]
+[1 bit  : non-zero flag]              0 => the value is 0, nothing else follows
+[2 bits : class c]                    c = 0..3
+[4*(c+1) bits : the value]            the low (c+1) nibbles, LSB first
 ```
 
-The block starts with a `u16` index: `0` ends the record, otherwise the index
-is negated before use.  The rest of the block (the `N` dwords) has not been
-decoded yet.
+`c` is the smallest class that fits the value (`c=0` → 4 bits, `c=1` → 8,
+`c=2` → 12, `c=3` → 16), so a value of 0 costs **1 bit**, 15 costs 5 bits,
+16 costs 8, 255 costs 10, 4095 costs 14 and 65535 costs 19.
 
-### 9.5 The module side
+* writer: `FUN_200BDCA0(&flag,1)`, `FUN_200BDCA0(&class,2)`,
+  `FUN_200BDCA0(&value,4+class*4)`;
+* reader: `FUN_200BE390(&flag,1)`, `FUN_200BE390(&class,2)`,
+  `FUN_200BE390(&value,4+class*4)` — the helper `FUN_2008E450(dst)` does the
+  whole thing in one call.
+
+**The "index 0 ends the section" mystery is solved**: the section terminator
+is simply an encoded-u16 whose value is 0 (a single 0 bit).  The client
+negates every index it reads before using it as a BST key, so the index is
+stored on the wire as `-index`.
+
+### 9.5 The payload's sections (SOLVED 2026-11-13)
+
+The body of a svc `0x1A` payload is:
+
+```
+string table        read by FUN_2006A560 (SoF.exe 0x2006C0FB)
+section 1           the entity states   (0x2006C10A)
+section 2           the spawn/create list (0x2006C1AB)
+section 3           the extra list       (0x2006C22F)
+```
+
+**the string table** — a run of `[encoded-u16 index][length-prefixed string]`
+pairs, terminated by an index of 0 (the error `"StringTable underflowed"`,
+`0x20156CB8`).  The strings are at most 250 bytes (`"Huge Ghoul String"`,
+`0x2015805E`).  The writer is `FUN_2006A370`; the reader is `FUN_2006A560`,
+and the table is an array of `char*` at `table+0x14` with its end at
+`table+0x18`.  `FUN_2006A240(table, index)` is the lookup.
+
+**section 1** (the entity states) —
+
+```
+repeat:
+    v = encoded-u16
+    if v == 0: break                     ; the terminator
+    index = -v
+    node = lookup(BST at manager+0x3C, index)
+    if node != sentinel(manager+0x40):
+        obj = FUN_2006AF30(manager, index)
+        FUN_2008B4D0(obj, reader)         ; apply the record
+    else:
+        vtable[0x6C](node->0x10)          ; create the object
+```
+
+**section 2** — the same shape, but it only calls `vtable[0x6C]` on the
+objects it finds (the BST at `manager+0x3C`).
+
+**section 3** — the same shape, but against the BST at `manager+0x124`, and
+it calls `vtable[0xD4]`.
+
+### 9.6 The per-entity record (SOLVED 2026-11-13)
+
+The client applier is `FUN_2008B4D0(obj, reader)` and the server writer is
+`FUN_2008ACC0(writer)`.  They are the same group structure; the record is a
+run of groups, each group being
+
+```
+[encoded-u16 count]
+[count × encoded-u16 delta]
+```
+
+The list values are **delta encoded**: `v_i = raw_i - (raw_{i-1} + 1)`, so the
+absolute values are strictly increasing with a gap of at least 1.  The
+absolute value is an index into the global string table.
+
+| group | client (reader) | server (writer) |
+|---|---|---|
+| 1 | the count sizes the `u16` vector at `obj+0x1C` **and** the 8-byte vector at `obj+0x58`; the elements are resolved to strings and handed to `FUN_20087FE0` (which appends to the `u16` vector, bumps `obj+0x0C` and appends an `{index, id}` pair to the 8-byte vector) | the count at `obj+0x0C`, the elements from the `u16*` at `obj+0x1C` |
+| 2 | the count sizes the `0x18`-byte vector at `obj+0x7C`; the elements go to `FUN_20088F10` | the count at `obj+0x0E`, the elements from the `0x18`-byte records at `obj+0x80` (the `u16` at the head of each record) |
+| 3 | the count is stored back at `obj+0x10`; the elements are resolved to strings and passed to `vtable[0x2C]` | the count at `obj+0x10`, the elements from the `u16*` at `obj+0xE0` |
+| 4 | the count sizes the `0x14`-byte vector at `obj+0xA0`; the elements go to `FUN_200897F0` | the count at `obj+0x12`, the elements from the `0x14`-byte records at `obj+0xA0` |
+| 5 | a count plus a per-element `{1-bit optional flag, optional encoded-u16, encoded-u16 delta}` → `FUN_20089D90` | the count at `obj+0x14`, the elements from the linked list at `obj+0xC0` |
+
+The record ends by allocating a `0xE8`-byte object into `obj+0x130`
+(`FUN_20077040(obj+0x0E)`), then `FUN_200786B0`, then `vtable[0x08]`.
+
+The writer emits **one leading field** before the groups — the `u16` at
+`obj+0x04` — and that is the field the client's section-1 loop consumes as
+the entity index (it negates it before the BST lookup).  The leading field
+doubles as the cursor into the global string table in `FUN_2006A370`, which
+is the one detail of the record that is still not fully reconciled.
+
+### 9.7 The module side
 
 The module keeps its instances in an array at `0x5015CCA0` with the stride
 **`0x464` (1124)** (exported at `+0x64`, the count at `0x5015D8C8`).  The

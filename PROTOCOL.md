@@ -534,18 +534,59 @@ sets it before walking the queue).
 The **engine -> module import table** (99 dwords) is in
 `analysis/rea/sof_import_table.txt`.
 
-### The payload's internal layout (partial)
+### The payload's internal layout (solved 2026-11-13)
 
-The decode path at `SoF.exe 0x2006C0FA` reads:
+The payload body is a **bit stream**, not a byte/word stream.  The writer is
+`FUN_200BDCA0(writer, src, nbits)` (LSB first, the bit position at
+`writer+0x18`), the reader is `FUN_200BE390(reader, dst, nbits)`.
+
+Every 16-bit quantity uses one primitive, the **encoded-u16**:
 
 ```
-u8   tag        ; 0 = an empty record
-u16  count      ; only present when tag != 0; the low byte is the count N
-byte block[4 + N*4]
+[1 bit  : non-zero flag]              0 => the value is 0, nothing else follows
+[2 bits : class c]                    c = 0..3
+[4*(c+1) bits : the value]            the low (c+1) nibbles, LSB first
 ```
 
-The block starts with a `u16` index: `0` ends the record, otherwise the index
-is negated before use.  The rest of the block is not decoded yet.
+`c` is the smallest class that fits the value, so 0 costs 1 bit and 65535
+costs 19.  The reader's helper is `FUN_2008E450(dst)`.
+
+The body is:
+
+```
+string table   FUN_2006A560  (SoF.exe 0x2006C0FB)
+section 1      the entity states   (0x2006C10A)
+section 2      the create list     (0x2006C1AB)
+section 3      the extra list      (0x2006C22F)
+```
+
+The **string table** is a run of `[encoded-u16 index][length-prefixed string]`
+pairs ended by an index of 0 (`"StringTable underflowed"`, `0x20156CB8`);
+the strings are at most 250 bytes (`"Huge Ghoul String"`, `0x2015805E`).  The
+writer is `FUN_2006A370`, the lookup is `FUN_2006A240(table, index)`.
+
+Each of the three sections is a run of encoded-u16 values; **0 ends the
+section** and every other value is the *negated* entity index.  Section 1
+looks the index up in the BST at `manager+0x3C` and applies the record with
+`FUN_2008B4D0(obj, reader)` (or creates the object with `vtable[0x6C]` when
+it is missing); section 2 only calls `vtable[0x6C]`; section 3 uses the BST
+at `manager+0x124` and calls `vtable[0xD4]`.
+
+The **per-entity record** (the applier `FUN_2008B4D0`, the writer
+`FUN_2008ACC0`) is a run of groups, each `[encoded-u16 count][count ×
+encoded-u16 delta]`.  The list values are delta encoded
+(`v_i = raw_i - (raw_{i-1} + 1)`) and are absolute string-table indices.  The
+five groups map onto the object as:
+
+| group | client | server |
+|---|---|---|
+| 1 | the count sizes the `u16` vector at `obj+0x1C` and the 8-byte vector at `obj+0x58`; the elements go to `FUN_20087FE0` | the count at `obj+0x0C`, the elements from `obj+0x1C` |
+| 2 | the count sizes the `0x18` vector at `obj+0x7C`; the elements go to `FUN_20088F10` | the count at `obj+0x0E`, the elements from `obj+0x80` |
+| 3 | the count is stored at `obj+0x10`; the elements go to `vtable[0x2C]` | the count at `obj+0x10`, the elements from `obj+0xE0` |
+| 4 | the count sizes the `0x14` vector at `obj+0xA0`; the elements go to `FUN_200897F0` | the count at `obj+0x12`, the elements from `obj+0xA0` |
+| 5 | a count plus a per-element `{1-bit flag, optional encoded-u16, encoded-u16 delta}` → `FUN_20089D90` | the count at `obj+0x14`, the elements from the list at `obj+0xC0` |
+
+See `analysis/ghb_format.md` §9.4-§9.6 for the full layout.
 
 **The Ghoul string table** is decoded by the **game module**
 (`gamex86.dll`), never by the client: the engine hands the packet to the
