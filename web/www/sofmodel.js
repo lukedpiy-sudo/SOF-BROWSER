@@ -437,13 +437,43 @@
 		return up;
 	}
 
-	/* the current animation frame of the world: the models that have no
-	 * animation state of their own (the world models) use this */
+	/* The current animation frame of the world: the models that have no
+	 * animation state of their own (the world models) use this.
+	 *
+	 * The Ghoul clips carry their own frame rate: the clip's f32 is the
+	 * FRAME PERIOD in milliseconds (SoF.exe 0x2007D200), so the clip plays
+	 * at 1000/f32 frames a second - 20 fps for the 50 ms clips, 10 fps for
+	 * the 100 ms ones.  playClip() selects a clip and the clock then runs
+	 * at that clip's rate and wraps at its frame count. */
 	var worldFrame = 0;
+	var worldFps = 15;			/* the fallback when no clip is selected */
+	var worldClip = null;
 	function tickFrames(dt) {
-		/* the animation of the Ghoul models runs at about 15 frames a
-		 * second, the walk cycle of the characters is 8 frames long */
-		worldFrame = (worldFrame + dt * 15) | 0;
+		if (worldClip) {
+			const n = Math.max(1, worldClip.frameCount);
+			worldFrame = worldClip.firstFrame +
+				((worldFrame - worldClip.firstFrame) + dt * worldClip.fps) % n;
+			worldFrame = Math.floor(worldFrame);
+			return;
+		}
+		worldFrame = (worldFrame + dt * worldFps) | 0;
+	}
+	/* select the clip of a model by name (the case does not matter: the
+	 * .ghb clips are upper case and the .gsq entries are lower case) and
+	 * make the world clock run at the clip's rate */
+	function playClip(model, name) {
+		if (!model || !model.clips) { worldClip = null; return null; }
+		const want = String(name || "").toLowerCase();
+		let clip = null;
+		for (const c of model.clips) {
+			if (c.name.toLowerCase() === want) { clip = c; break; }
+		}
+		worldClip = clip;
+		if (clip) {
+			worldFps = clip.fps;
+			worldFrame = clip.firstFrame;
+		}
+		return clip;
 	}
 
 	function drawModel(gl, m, mvp, scale, frame) {
@@ -593,9 +623,28 @@
 		 * it and worldFrame() gives the current frame */
 		tickFrames: tickFrames,
 		worldFrame: function () { return worldFrame; },
+		/* the clip driven clock: playClip(model, name) picks the clip (the
+		 * frame rate comes from the clip's own frame period) */
+		playClip: playClip,
+		worldClip: function () { return worldClip; },
+		setWorldFps: function (f) { worldFps = f; worldClip = null; },
 		/* the Ghoul string table of the svc 0x1A datagram: the index of the
-		 * model of an entity to the name of its model */
+		 * model of an entity to the name of its model.
+		 *
+		 * The datagram never carries raw strings: it carries indices into
+		 * the GLOBAL table at SoF.exe 0x2013ADF8 (3713 entries, dumped to
+		 * ghoulstrings.json by analysis/ghb_global_strings.py).  The
+		 * server appends the strings it does not know yet (the .ghb model
+		 * paths) at the end of that table, so the static part is what the
+		 * browser can resolve on its own. */
 		ghoulStrings: null,
+		loadGhoulStrings: function () {
+			if (this.ghoulStrings) return Promise.resolve(this.ghoulStrings);
+			return fetch("ghoulstrings.json").then(function (r) { return r.json(); }).then(function (j) {
+				window.sofmodel.ghoulStrings = j.names || j;
+				return window.sofmodel.ghoulStrings;
+			}).catch(function () { return null; });
+		},
 		parseGhoul: parseGhoul,
 		parseGeometry: parseGeometry,
 		decodeTGA: decodeTGA,

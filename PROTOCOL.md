@@ -560,10 +560,27 @@ section 2      the create list     (0x2006C1AB)
 section 3      the extra list      (0x2006C22F)
 ```
 
-The **string table** is a run of `[encoded-u16 index][length-prefixed string]`
-pairs ended by an index of 0 (`"StringTable underflowed"`, `0x20156CB8`);
-the strings are at most 250 bytes (`"Huge Ghoul String"`, `0x2015805E`).  The
-writer is `FUN_2006A370`, the lookup is `FUN_2006A240(table, index)`.
+The **string table** is a run of `[encoded-u16 index][encoded-u16 global
+index]` pairs ended by an index of 0 (`"StringTable underflowed"`,
+`0x20156CB8`); the strings are at most 250 bytes (`"Huge Ghoul String"`,
+`0x2015805E`).  The writer is `FUN_2006A370`, the lookup is
+`FUN_2006A240(table, index)`.
+
+**The payload never carries raw strings.**  The second `encoded-u16` is an
+index into a **global string table** baked into `SoF.exe`:
+
+```
+count   u32    at 0x2013ADF0    (3713 in the shipped SoF.exe)
+table   char*[] at 0x2013ADF8
+```
+
+`FUN_200BDE30` appends a string to that table if it is not there and writes
+its index; `FUN_200BE060` looks the index up.  The static table holds the
+`GHOUL/.../*.GHL` paths, the plain bolt-on model names and the animation
+event names in upper case (`FIRE`, `INAIR`, `JUMP`, `SOUND`, `THUD`).  The
+`.ghb` model paths are appended at runtime, so their indices depend on the
+server's load order.  The table is dumped to `web/www/ghoulstrings.json` by
+`analysis/ghb_global_strings.py`.
 
 Each of the three sections is a run of encoded-u16 values; **0 ends the
 section** and every other value is the *negated* entity index.  Section 1

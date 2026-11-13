@@ -1671,14 +1671,33 @@ function parseGhoul(buf) {
 	for (let i = 0; i < nclip; i++) {
 		const c = {};
 		c.pos = r.vec3();
-		c.scale = r.f32();
+		/* The f32 is the FRAME PERIOD in milliseconds (SoF.exe 0x2007D200,
+		 * the Ghoul entity vtable slot +0x6C):
+		 *
+		 *   duration_s = f32 * 0.001 * speed * globalSpeed * span
+		 *
+		 * so the clip plays at 1000/f32 frames a second and lasts
+		 * f32 * frameCount milliseconds.  It used to be called "scale". */
+		c.frameMs = r.f32();
+		c.scale = c.frameMs;			// the old name, kept for the probes
 		c.name = r.str();
 		const n = r.i32();
 		c.events = [];
 		for (let k = 0; k < n; k++) {
-			c.events.push({ value: r.i32(), index: r.i32(), name: r.str(), param: r.str() });
+			/* the event record is 0x28 bytes: two f32 and two strings.
+			 * The first f32 is the absolute time in ms inside the clip
+			 * (it lands on a frame boundary), the second one is a float
+			 * too (0xffffffff = NaN in every shipped model). */
+			const e = { timeMs: r.f32(), aux: r.f32(), name: r.str(), param: r.str() };
+			e.value = e.timeMs;
+			e.index = e.aux;
+			c.events.push(e);
 		}
 		c.tail = [r.i32(), r.i32()];
+		c.firstFrame = c.tail[0];
+		c.frameCount = c.tail[1];
+		c.fps = 1000 / c.frameMs;
+		c.durationMs = c.frameMs * c.frameCount;
 		out.clips.push(c);
 	}
 	out.clipEnd = r.p;

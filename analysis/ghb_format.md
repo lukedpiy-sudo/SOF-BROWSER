@@ -213,24 +213,114 @@ clip starts on an animation-record boundary.  `FEM_ARM`: 23 clips, 49
 records, 317 frames; clip 0 `CCH_XCROUCH_UP_MRS_2` = `[0,8)` = record 0;
 clip 4 `STD_ISHIFT_N_A_N` = `[38,44)` spans records 6-11.
 
-### 8.3 The clip `f32`
+### 8.3 The clip `f32` — SOLVED 2026-11-13: it is the FRAME PERIOD in ms
 
-The `.ghb` value is 50, 100 or 200.  A **`.ghl`** side file
-(`ghoul/<dir>/<name>.ghl`) overrides it - the `.ghl` parser
-(`SoF.exe 0x200A2DF0`) does
+The `.ghb` value is 50, 66.6667, 100 or 200.  **It is the time of ONE
+animation frame, in milliseconds** - the clip plays at `1000 / f32` frames a
+second (50 → 20 fps, 66.67 → 15 fps, 100 → 10 fps, 200 → 5 fps) and the
+whole clip lasts `f32 * frameCount` milliseconds.
+
+The proof is the engine's own duration computation, in the Ghoul **entity
+vtable slot `+0x6C`** (`SoF.exe 0x2007D200`, a Ghidra gap, so read from
+`analysis/rea/sof_disasm.txt`; REA's `inspect-native-instruction` shows its
+only incoming reference is the DATA ref from `0x20112264` = the vtable base
+`0x201121F8` + `0x6C`):
+
+```c
+/* 0x2007D200:  float vtbl_6C(u16 stateCode, int mode, float *out) */
+model  = ent + 0x1C4;                       /* the Ghoul model object   */
+clip  = model->clips[model->seq[stateCode].clipIndex];
+ent->frameCount = model->frameCounts[model->seq[stateCode].clipIndex];  /* +0x134 */
+
+duration = clip->f32            /* 0x1C  the FRAME PERIOD in ms */
+          * 0.001f              /* 0x20111B00 */
+          * speedTable[ent->speedIndex]   /* 0x20156FCC, ent + 0x98 */
+          * 1.0f                /* 0x20157000, the global speed   */
+          * span;               /* mode 0: frameCount
+                                   mode 1: frameCount - 1
+                                   mode 2: 2*frameCount - 1       */
+```
+
+So `ent + 0x12C` is the clip duration **in seconds**, and it is the *frame
+period* that is stored in the `.ghb`, multiplied by the frame count to get
+the whole clip.
+
+**The clip events** carry an **absolute time in milliseconds** inside the
+clip.  The event record is `0x28` bytes (`FUN_200A1890`):
+
+```
++0x00  f32   the time in ms
++0x04  f32   a second float (0xffffffff = NaN in every shipped model)
++0x08  str   the event name  ("jump", "inair", "thud", "fire", "sound", ...)
++0x18  str   the event parameter (a sound path, ...)
+```
+
+**Verified against the ground truth**: of the 327 events in the 292 clips of
+the 16 sampled models, **325 (99.4 %) land exactly on a frame boundary**
+(`time / f32` is an integer) and 325 are inside the clip.  The only two
+exceptions are the same authoring quirk in two models
+(`STD_JSTRAITUP_LAND_A_A`, a "thud" at `-766.67 ms`, i.e. a negative time).
+`analysis/ghb_clip_timing.py` runs the check.
+
+The clip playback follows from this:
+
+* the normalised clip time is `(now - ent->start) / ent->duration`
+  (`FUN_2007D090`, `ent + 0x12C` is the divisor, `ent + 0x9C` the start);
+* the frame inside the clip is `(int)(frameCount * normalisedTime)`
+  (`FUN_2007CFA0`), the global frame is `clip.firstFrame + that`;
+* the loop restart test is `ent->duration <= now - ent->clipStart`
+  (`SoF.exe 0x2007F3B0`, `+0x130` and `+0x190`).
+
+The internal animation clock is quantised to **1/120 s** (`FUN_200786B0`:
+`ent->time = base + ticks * 0.008333334f`), and every frame period in the
+shipped models is an exact multiple of 1/120 s (50 ms = 6 ticks, 66.67 ms =
+8, 100 ms = 12, 200 ms = 24).
+
+A **`.ghl`** side file (`ghoul/<dir>/<name>.ghl`) overrides the field - the
+`.ghl` parser (`SoF.exe 0x200A2DF0`) reads two times and does
 
 ```c
 *(float *)(clip + 0x1c) = (float)((endTime - startTime) * 1000.0);
 ```
 
-and then normalises every event time by `1 / duration`.  So the field is a
-**duration in milliseconds**.  (No `.ghl` ships with SoF, so the `.ghb`
-value is what the game actually uses.)  The runtime check that restarts a
-looping clip is in `SoF.exe 0x2007F3B0`:
+with a default of `100.0f` when only one time is present, and then
+normalises every event time by `1 / duration`.  (No `.ghl` ships with SoF,
+so the `.ghb` value is what the game actually uses.)
 
-```c
-*(float *)(ent + 0x130) <= now - *(float *)(ent + 0x190)
-```
+### 8.3.1 The Ghoul entity layout (the animated object)
+
+The entity's vtable is at **`0x201121F8`** (`SoF.exe`, the constructor
+`FUN_20079100` does `*in_ECX = &PTR_LAB_201121f8`).
+
+| offset | contents |
+|---|---|
+| `+0x00` | the vtable pointer |
+| `+0x4C` | the clip pointer array (the model fills it) |
+| `+0x8C` | an int scale |
+| `+0x90` | a float scale |
+| `+0x94` | a u16 (the "sub state") |
+| `+0x96` | a byte (the entity is animated) |
+| `+0x98` | an int: the index into the **playback speed table** `0x20156FCC` (0.5, 0.625, 0.75, ... 2.0 in steps of 0.125 - 13 entries) |
+| `+0x9C` | a float: the animation start time (seconds) |
+| `+0xA0` | a float: a fixed animation time |
+| `+0xA8` | a byte: use the fixed time |
+| `+0xA9` | a byte: the play direction (1 = backwards) |
+| `+0xAE` | a u16: the **animation state code** (the index into the model's sequence table) |
+| `+0xB0` | an int: the playback mode (0 = loop, 1 = once, 2 = ping-pong) |
+| `+0x120` | a float: the current time |
+| `+0x12C` | a float: the **clip duration in seconds** |
+| `+0x134` | an int: the **frame count of the current clip** |
+| `+0x190` | a float: the clip start time |
+| `+0x1C4` | the Ghoul **model** object (the one with the clip arrays) |
+
+The vtable slots that matter:
+
+| slot | function | what |
+|---|---|---|
+| `+0x18` | `0x20080BD0` | set the playback speed index (`ent+0x98`) |
+| `+0x1C` | `0x20080BE0` | get the playback speed index |
+| `+0x44` | `0x2007B430` | set the animation state (the state code, the mode, the blend) |
+| `+0x6C` | `0x2007D200` | resolve the clip: returns the **duration in seconds** and fills `ent+0x130` |
 
 ### 8.4 The runtime animation state
 
@@ -444,12 +534,34 @@ section 2           the spawn/create list (0x2006C1AB)
 section 3           the extra list       (0x2006C22F)
 ```
 
-**the string table** — a run of `[encoded-u16 index][length-prefixed string]`
-pairs, terminated by an index of 0 (the error `"StringTable underflowed"`,
-`0x20156CB8`).  The strings are at most 250 bytes (`"Huge Ghoul String"`,
-`0x2015805E`).  The writer is `FUN_2006A370`; the reader is `FUN_2006A560`,
-and the table is an array of `char*` at `table+0x14` with its end at
-`table+0x18`.  `FUN_2006A240(table, index)` is the lookup.
+**the string table** — a run of `[encoded-u16 index][encoded-u16 global
+index]` pairs, terminated by an index of 0 (the error `"StringTable
+underflowed"`, `0x20156CB8`).  The strings are at most 250 bytes (`"Huge
+Ghoul String"`, `0x2015805E`).  The writer is `FUN_2006A370`; the reader is
+`FUN_2006A560`, and the table is an array of `char*` at `table+0x14` with
+its end at `table+0x18`.  `FUN_2006A240(table, index)` is the lookup.
+
+**the payload never carries raw strings.**  The second `encoded-u16` of each
+pair is an index into a **global string table** baked into `SoF.exe`:
+
+```
+count   u32    at 0x2013ADF0    (3713 in the shipped SoF.exe)
+table   char*[] at 0x2013ADF8
+```
+
+`FUN_200BDE30` (the writer) binary-searches that table, appends the string
+if it is not there and writes the index with the encoded-u16 primitive;
+`FUN_200BE060` (the reader) looks the index up and copies the bytes out.
+The static table holds the 1730 `GHOUL/.../*.GHL` bolt-on paths, the 1979
+plain names (the bolt-on model names, `ABOLT_HEAD`, ...) and the animation
+event names in upper case (`FIRE` 478, `INAIR` 2934, `JUMP` 2943, `SOUND`
+3204, `THUD` 3242).  The `.ghb` model paths are **not** in it - the server
+appends them at runtime when it loads a model, so their indices depend on
+the load order.
+
+`analysis/ghb_global_strings.py` dumps the table to
+`web/www/ghoulstrings.json` (the browser loads it with
+`sofmodel.loadGhoulStrings()`).
 
 **section 1** (the entity states) —
 
