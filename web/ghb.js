@@ -827,8 +827,19 @@ function normalVector(anim, n, frame) {
  *
  * .gsq - the sequence list: the animation names a model supports.  It is
  *        a plain text file, CRLF, one lowercased name per line.
- * .gpm - the player model script: a line oriented text format with
- *        { ... } blocks for the attach points and the bolt-ons.
+ * .gpm - the player model script.  SOLVED 2026-11-13 from the engine's
+ *        own parser (SoF.exe 0x20047680 / 0x200478C0 / 0x20047F40,
+ *        the tokenizer vtable at 0x20111D88); see analysis/gpm_format.md.
+ *
+ * The .gpm parser is POSITIONAL: the kind of a block is decided by where
+ * it appears, not by what is in it.  The header is seven tokens, then
+ * three blocks in this exact order:
+ *
+ *   block 1  three tokens: <state> <model file> <flag>
+ *   block 2  four tokens:  <.gbm path> <bolt name> <to name> <scale>
+ *   block 3  two tokens:   <name> <flag>
+ *
+ * and then one trailing token.  A "}" ends a block.
  * ------------------------------------------------------------------ */
 function parseGsq(buf) {
 	const text = typeof buf === "string" ? buf : Buffer.from(buf).toString("latin1");
@@ -840,19 +851,133 @@ function parseGsq(buf) {
 	return names;
 }
 
+/* the tokenizer of SoF.exe 0x20047550: the tokens are separated by the
+ * whitespace, the braces are structural, a "..." is a quoted string and
+ * a // starts a comment that runs to the end of the line */
+function gpmTokens(text) {
+	const toks = [];
+	let i = 0;
+	const n = text.length;
+	while (i < n) {
+		let c = text.charAt(i);
+		/* the separators and the comments */
+		while (i < n) {
+			c = text.charAt(i);
+			if (c === " " || c === "\t" || c === "\r" || c === "\n" ||
+				c === "\f" || c === "\v") { i++; continue; }
+			if (c === "/" && text.charAt(i + 1) === "/") {
+				while (i < n && text.charAt(i) !== "\n") i++;
+				continue;
+			}
+			break;
+		}
+		if (i >= n) break;
+		c = text.charAt(i);
+		if (c === "{") { i++; continue; }              /* a block opener */
+		if (c === "}") { i++; toks.push(null); continue; } /* a block end */
+		if (c === "\"") {
+			i++;
+			let s = "";
+			while (i < n && text.charAt(i) !== "\"") s += text.charAt(i++);
+			if (i < n) i++;                            /* the closing quote */
+			toks.push(s);
+			continue;
+		}
+		let s = "";
+		while (i < n) {
+			c = text.charAt(i);
+			if (c === " " || c === "\t" || c === "\r" || c === "\n" ||
+				c === "\f" || c === "\v" || c === "{" || c === "}") break;
+			if (c === "/" && text.charAt(i + 1) === "/") break;
+			s += c; i++;
+		}
+		toks.push(s);
+	}
+	return toks;
+}
+
 function parseGpm(buf) {
 	const text = typeof buf === "string" ? buf : Buffer.from(buf).toString("latin1");
-	const out = { models: [], blocks: [] };
-	let block = null;
-	for (let raw of text.split(/\r?\n/)) {
-		const line = raw.trim();
-		if (!line) continue;
-		if (line === "{") { block = []; out.blocks.push(block); continue; }
-		if (line === "}") { block = null; continue; }
-		if (line.startsWith('"')) continue;            /* a quoted comment */
-		if (block) { block.push(line.split(/\s+/)); continue; }
-		out.models.push(line);
+	const toks = gpmTokens(text);
+	let p = 0;
+	/* the next token, or null at the end of the file */
+	const next = function () {
+		if (p >= toks.length) return null;
+		const t = toks[p++];
+		return (t === null) ? null : t;
+	};
+	/* the next token of a block; null at the "}" or at the end */
+	const nextIn = function () {
+		const t = next();
+		return (t === null || t === "") ? null : t;
+	};
+
+	const header = [];
+	for (let i = 0; i < 7; i++) {
+		const t = next();
+		if (t === null) break;
+		header.push(t);
 	}
+	const path = header[0] || "";
+	const name = header[1] || "";
+
+	const out = {
+		/* the seven header tokens, in the engine's order */
+		header: header,
+		path: path,
+		name: name,
+		/* the .ghl override of the menu model: "ghoul/<path>/<name>.ghl" */
+		ghl: "ghoul/" + path + "/" + name + ".ghl",
+		playerModel: header[2] || "",
+		bossModel: header[3] || "",
+		team: header[4] || "",
+		ragdoll: header[5] || "",
+		prefix: header[6] || "",
+		/* block 1: the animation bindings */
+		bindings: [],
+		/* block 2: the bolt-ons */
+		boltons: [],
+		/* block 3: the extra meshes */
+		meshes: [],
+		/* the trailing token */
+		tail: ""
+	};
+
+	/* block 1: three tokens at a time */
+	for (;;) {
+		const a = nextIn();
+		if (a === null) break;
+		const b = nextIn();
+		if (b === null) break;
+		const c = nextIn();
+		if (c === null) break;
+		/* the third field is empty when it is "0" (FUN_20047F40) */
+		out.bindings.push({ state: a, model: b, alt: (c === "0") ? "" : c });
+	}
+	/* block 2: four tokens at a time (FUN_200478C0) */
+	for (;;) {
+		const a = nextIn();
+		if (a === null) break;
+		const b = nextIn();
+		if (b === null) break;
+		const c = nextIn();
+		if (c === null) break;
+		const d = nextIn();
+		if (d === null) break;
+		out.boltons.push({ path: a, bolt: b, to: c, scale: parseFloat(d) || 0 });
+	}
+	/* block 3: two tokens at a time */
+	for (;;) {
+		const a = nextIn();
+		if (a === null) break;
+		const b = nextIn();
+		if (b === null) break;
+		/* the flag is (atoi(flag) != 0) */
+		out.meshes.push({ name: a, on: (parseInt(b, 10) || 0) !== 0 });
+	}
+	/* the trailing token */
+	const tail = next();
+	out.tail = (tail === null) ? "" : tail;
 	return out;
 }
 
