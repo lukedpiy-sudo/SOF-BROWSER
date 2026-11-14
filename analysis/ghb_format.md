@@ -429,30 +429,62 @@ strings, e.g. `s_std_jupto_n_a_a_50135e58` = `"std_jupto_n_a_a"`, and a
 giant switch maps a state code to a sequence name plus a blend time and a
 duration.
 
-**The instruction is four bytes:**
+**The instruction is four bytes** (`gamex86.dll 0x5007EC40`; the cursor is
+at `+0x114` and the code at `+0x104`, so the instruction is read as four
+successive bytes and the cursor is advanced by four):
 
 | byte | meaning |
 |---|---|
-| 0 | the **flags** (all eight bits are used) |
-| 1 | the flags, bit 1 |
-| 2, 3 | the operands |
+| 0 | the **operand flags** — what to pop off the stack |
+| 1 | the **object flags** — which extra objects to pop |
+| 2, 3 | the operands (they are passed on **raw** to `FUN_50080D30`) |
 
-The flags of byte 0 pop values off the interpreter's stack:
+The stack is the vector at `+0x144` (the begin) with the count at
+`+0x148`; popping unlinks the node and frees it.
+
+**The operand flags (byte 0)** — each set bit pops one object off the
+stack and calls a slot of that object's vtable:
+
+| flag | what it pops | where it goes |
+|---|---|---|
+| `0x01` | vtable `+0x04` | the **repeat count** — the whole instruction is executed that many times (the default is 1) |
+| `0x02` | vtable `+0x0C` (a vec3) | the **"look"** vector — the command's `+0x08` |
+| `0x04` | vtable `+0x0C` (a vec3) | the **"origin"** vector — the command's `+0x14` |
+| `0x08` | the object itself | `FUN_50081520(script, entity, obj, 2)` — an aim/attach call; the object is released at the end |
+| `0x10` | vtable `+0x10` | discarded |
+| `0x20` | nothing | sets the **"has value"** flag — the command's `+0x20` |
+| `0x40` | vtable `+0x08` (a float) | the **blend time** — the command's `+0x04` |
+| `0x80` | vtable `+0x10` | the **value** — the command's `+0x38` |
+
+**The object flags (byte 1)**:
 
 | flag | what it pops |
 |---|---|
-| `0x01` | the repeat count (the instruction is executed that many times) |
-| `0x02` | a value into the "origin" block |
-| `0x04` | a value into the "look" block |
-| `0x08` | an object |
-| `0x10` | an object |
-| `0x20` | the "has value" flag |
-| `0x40` | a **float** (the blend time) |
-| `0x80` | a value |
+| `0x01` | the command's `+0x24` (a byte) |
+| `0x02` | vtable `+0x04` → the command's `+0x40` |
+| `0x04` | vtable `+0x04` → the **explicit state code** — the command's `+0x3C` |
 
-The **opcode** itself is not in the instruction: the interpreter pops a
-*state object* off the stack and asks it for its state code
-(`vtable+0x04`), and that code is the value of the switch.
+After the flagged pops the interpreter **always** pops two more objects:
+
+* the first one is asked for its **state code** (`vtable+0x04`) — this is
+  the value of the 341-case switch;
+* the second one is asked for its **entity** (`vtable+0x10`).
+
+The **opcode** itself is not in the instruction: the switch is on the
+state code popped off the stack.
+
+**The blend time** is resolved like this:
+
+```
+if (the 0x40 flag is set)  the blend = the popped float
+else                       the blend = 9999.9   (a "no blend" sentinel)
+                          but if the explicit state code (byte 1, bit 0x04) is 0
+                          the blend = 50.0
+```
+
+The switch's own blend float is carried separately (the command's
+`+0x34`), so a state table entry and the instruction can each name a
+blend time.
 
 **The switch is the animation state table** — 341 cases, each giving the
 triple
@@ -466,6 +498,71 @@ The state codes are 0, 1, 2, 3, 4, 5, 6 and 8; the blend floats are 5, 10,
 50, 100 and 150 ms; 336 of the 341 cases name a clip.  The table is
 extracted by **`analysis/ghoul_vm_opcodes.py`** into
 `analysis/ghoul_states.json`.
+
+#### 8.6.1 The animation command (SOLVED 2026-11-14)
+
+`FUN_50080D30` (`gamex86.dll 0x50080D30`) takes the switch's triple plus
+everything the instruction popped and builds a **0x44-byte command** on
+the stack, then hands it to the state object:
+
+```
+state->vtable[+0xB4](entity, ai_object, &command);
+ai_object->vtable[+0x48](&the origin vector);
+ai_object->vtable[+0x54](0);
+```
+
+The command layout:
+
+| offset | what |
+|---|---|
+| `+0x00` | the **clip name** (`char*`, the switch's `pcVar12`) |
+| `+0x04` | the **blend float** (the instruction's) |
+| `+0x08`..`+0x13` | the **"look"** vec3 |
+| `+0x14`..`+0x1F` | the **"origin"** vec3 |
+| `+0x20` | the **"has value"** flag |
+| `+0x24` | the byte-1 flag `0x01` |
+| `+0x28` | the **new state code** (the switch's) |
+| `+0x2C` | the **raw 4-byte instruction** |
+| `+0x30` | the script's data pointer |
+| `+0x34` | the **switch's blend float** |
+| `+0x38` | the **value** object (the `0x80` flag) |
+| `+0x3C` | the **explicit state code** (the byte-1 `0x04` flag) |
+| `+0x40` | the byte-1 `0x02` flag's value |
+
+The **state object** is the 0xE8-byte object the VM allocates
+(`operator_new(0xE8)` + `FUN_500402E0`, the vtable at `0x50128440`).
+Its animation fields are:
+
+| offset | what |
+|---|---|
+| `+0xA4` | the entity the state belongs to |
+| `+0xA8` | the current state code |
+| `+0xAC` | the **start time** (`DAT_5015CCDC`, the server time) |
+| `+0xB0`, `+0xB4`, `+0xB8` | the running animation values |
+| `+0xBC`, `+0xC0`, `+0xC4` | the two origin axes and the blend |
+| `+0xC8`, `+0xCC`, `+0xD0` | the three default clip names (`DAT_501557A0/A4/A8`) |
+| `+0xD8` | the entity the state was built for |
+| `+0xDC` | a byte flag |
+| `+0xE0` | the **command queue** (a linked list, 8-byte nodes) |
+| `+0xE4` | the command count |
+
+**The queue** is filled by the state's vtable slot `+0xB4`
+(`gamex86.dll 0x500410C0`, not a Ghidra procedure — read it in the
+disassembly):
+
+* if the queue is not empty, the new command is **appended** to it;
+* if the command's `+0x40` is non-zero it is instead handed straight to
+  `ai_object->vtable[+0x24](entity, value, blend, 1)` and the state is
+  left alone;
+* otherwise the state is **reset**: `+0xA8`/`+0xB0`/`+0xB4`/`+0xB8` are
+  cleared, `+0xAC` is set to the server time and `+0xC8`/`+0xCC`/`+0xD0`
+  are set to the three default clip names.
+
+The queue is drained by the state's update (vtable `+0x3C`,
+`gamex86.dll 0x50040410`): it reads the first command, computes the
+blend end time as `command->0x04 + state->0xAC` and compares it with the
+server time, and it asks the AI's vtable `+0x84` for a status code
+(`0x0D` and `0x0E` are tested).
 
 **Validated against the ground truth:**
 
@@ -767,12 +864,31 @@ section 2           the spawn/create list (0x2006C1AB)
 section 3           the extra list       (0x2006C22F)
 ```
 
-**the string table** — a run of `[encoded-u16 index][encoded-u16 global
-index]` pairs, terminated by an index of 0 (the error `"StringTable
+**the string table** — a run of `[encoded-u16 index][the global index]`
+pairs, terminated by an index of 0 (the error `"StringTable
 underflowed"`, `0x20156CB8`).  The strings are at most 250 bytes (`"Huge
 Ghoul String"`, `0x2015805E`).  The writer is `FUN_2006A370`; the reader is
 `FUN_2006A560`, and the table is an array of `char*` at `table+0x14` with
-its end at `table+0x18`.  `FUN_2006A240(table, index)` is the lookup.
+its end at `table+0x18`.  `FUN_2006A240(table, index)` is the lookup —
+a **direct array index**, not a hash.
+
+The **global index** has one more level than the local encoded-u16
+(`FUN_200BE060`):
+
+```
+1 bit    the string exists
+if it does:
+    1 bit    the index is non-zero
+    if it is:
+        2 bits      the class c
+        4*(c+1)     the value, LSB first
+    the string = globalStrings[value]
+```
+
+The local table is **append-only**: the reader appends the resolved
+string in the same order as the writer wrote the pairs, so the local
+index on the wire is the append position (the reader only checks that
+it is non-zero).
 
 **the payload never carries raw strings.**  The second `encoded-u16` of each
 pair is an index into a **global string table** baked into `SoF.exe`:
@@ -811,11 +927,32 @@ repeat:
         vtable[0x6C](node->0x10)          ; create the object
 ```
 
-**section 2** — the same shape, but it only calls `vtable[0x6C]` on the
-objects it finds (the BST at `manager+0x3C`).
+**section 2** (the **spawn / create list**, `SoF.exe 0x2006C1AB`) — a run
+of entity indices, nothing else:
 
-**section 3** — the same shape, but against the BST at `manager+0x124`, and
-it calls `vtable[0xD4]`.
+```
+repeat:
+    v = encoded-u16
+    if v == 0: break                     ; the terminator
+    index = -v
+    node = lookup(BST at manager+0x3C, index)
+    if node != sentinel(manager+0x40):
+        obj = node->0x10
+        obj->vtable[0x6C]()              ; the "create / (re)spawn" call
+```
+
+**section 3** (the **extra list**, `SoF.exe 0x2006C22F`) — the same shape
+but against the **second** BST, at `manager+0x124` (the sentinel at
+`manager+0x128`), and it calls the **other** slot:
+
+```
+obj->vtable[0xD4]()                      ; 0x2006C2B0
+```
+
+So the three sections are: **the states** (apply a record), **the spawn
+list** (re-create these entities) and **the extra list** (a per-entity
+hook on a second object table).  The zero terminator ends each section,
+and the sections run back to back in one bit stream.
 
 ### 9.6 The per-entity record (SOLVED 2026-11-13)
 
@@ -842,6 +979,27 @@ absolute value is an index into the global string table.
 
 The record ends by allocating a `0xE8`-byte object into `obj+0x130`
 (`FUN_20077040(obj+0x0E)`), then `FUN_200786B0`, then `vtable[0x08]`.
+
+#### What the five groups are — SOLVED 2026-11-14
+
+The manager (the thing the reader's `this` points at) holds a **model
+path list** at `+0x4C` (a `char*[]`, the end at `+0x50`) — the Ghoul's
+loaded models, e.g. `"GHOUL/ENEMY/FEMALE/FEM_ARM.GHL"`.  Every group is
+resolved against that list.
+
+| group | the record | the counter | what it holds |
+|---|---|---|---|
+| 1 | the `u16` vector at `+0x1C` and the 8-byte vector at `+0x58` | `+0x0C` | the **model path list itself** — `FUN_20087FE0` appends the path and the model index.  If the path starts with `"GHOUL/ENEMY"` or `"GHOUL\ENEMY"` (`0x2015711C` / `0x20157110`) it also sets the **"the model changed"** flag at `+0x118` |
+| 2 | the `0x18`-byte records at `+0x80` | `+0x0E` | a **name → the model indices that carry that name** map.  Each record: `u16` the name's string index, an `int` the type of the first match, and two `u16` vectors.  Two models with the same name but different types raise `"name Collision between different object types"` (`0x20157128`) |
+| 3 | the count at `+0x10` | `+0x10` | the elements go straight to `vtable[0x2C]` (a per-object virtual) |
+| 4 | the `0x14`-byte records at `+0xA0` | `+0x12` | the same name → model-index map as group 2, one vector per record |
+| 5 | the `0x14`-byte records at `+0xC0` | `+0x14` | the same again, but each record also carries the **optional value** (`u16` at `+0x00`) that the wire's 1-bit flag guards |
+
+So groups 2, 4 and 5 are three parallel **attachment tables** (the
+bolt-on models), and group 1 is the model list they are resolved
+against.  The **name → model index** resolution is
+`FUN_200A57D0`; the model index is what the Ghoul entity carries at
+`+0x28`.
 
 **The leading field — SOLVED 2026-11-14.**  It is the **entity index**,
 nothing else.  The client's section-1 loop reads it at `SoF.exe
@@ -890,7 +1048,60 @@ The fields, in the order they are read:
 | `+0xA7` | 1 bit + 1 byte | |
 | `+0xA8` | 1 bit + 1 byte | |
 | `+0xA9` | 1 bit + 1 byte | |
-| the origin block | 1 bit | a quaternion, a scale and three 11-bit angles (`value * 0.0625 - 64.0`) |
+| the origin block | 1 bit | the orientation, the scale and the position — see below |
+
+#### The origin block — SOLVED 2026-11-14
+
+The origin block is a **4×4 matrix** living at the **start of the state
+object** (`+0x00`, 16 floats) with a flag word at `+0x40` (`FUN_200A0C70`
+sets it when the matrix is the identity, `FUN_200A0660` builds the
+identity).  `ebx` in `FUN_200786B0` is the state object itself, and the
+block is a *working copy* of it: `FUN_200A0C40` copies the matrix out,
+the block is edited, and `FUN_200A0470` copies it back.
+
+```
+1 bit   the origin is present
+if present:
+    the local matrix = a copy of the state's matrix (16 floats) + its flag
+    1 bit   a packed normal is present
+      if set: 32 bits -> the packed normal -> FUN_2008FD20 builds the matrix
+    1 bit   a scale is present
+      if set: 32 bits -> the scale (a float); the default is 1.0
+    the three basis vectors (the matrix rows 0..2) are re-normalised
+      (FUN_200790D0 = the length, FUN_200C3870 = the normalise) and
+      multiplied by the scale (FUN_200A15D0 writes them back)
+    1 bit   the position is present
+      if set: for each of the three components:
+          1 bit   this component is present
+          if present:
+            1 bit   the quantised form
+            if 0: 32 bits -> a float
+            if 1: 11 bits -> the value * 0.0625 - 64.0
+    FUN_200A0C70 (the identity check) and FUN_200A0470 (the copy back)
+```
+
+**The packed normal** (`FUN_2008FD20`, `SoF.exe 0x2008FD20`) is the same
+family as the animation normals — the **256-entry palette at
+`0x20404C90`** plus a small jitter, but packed into 32 bits:
+
+| bits | what |
+|---|---|
+| 0..7 | the index into the normal palette `0x20404C90` (the base direction) |
+| 8..11 | a nibble: `value * 0.018666666 - 0.14`, added to x |
+| 12..15 | the same, added to y |
+| 16..19 | the same, added to z |
+| 20..30 | 11 bits: a **roll angle** in radians, `value * 2π / 2047` |
+| 31 | the sign: it flips the third basis vector (the handedness) |
+
+The palette normal is jittered, then `FUN_200C3980` (a cross product with
+the X axis) and `FUN_200C38A0` (the other way round) build the two
+perpendicular vectors; all three are normalised, and the roll angle is
+applied around the first one.
+
+**The position** is the matrix's fourth row (the translation).  Each
+component is either a full float or the quantised 11-bit form: the value
+is in `[-64, 64]` in steps of `1/16` (`0x20111D20` = 0.0625 and
+`0x201114C4` = 64.0).
 
 The tick counts are the **120 Hz** clock: the value is read as a sign bit
 plus a nibble count plus the nibbles, and scaled by the constant
