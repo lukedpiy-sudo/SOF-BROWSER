@@ -484,6 +484,151 @@ So the animation is **scripted server side**, not derived from the entity
 state - which is why the entity state only carries the Ghoul *model* index
 (`+0x28`, an index into the Ghoul string table).
 
+### 8.7 The mission script format (`.os`) — SOLVED 2026-11-14
+
+The Ghoul characters are driven by **compiled mission scripts** that ship
+in the paks as `ds/<level>/<name>.os`:
+
+| pak | the `.os` files |
+|---|---|
+| `pak0` | **727** |
+| `pak1`, `basicpack2015v2` | 0 |
+| `pak2` | **3** — `ds/kos3/jhendh.os`, `ds/kos3/midgame.os`, `ds/nyc3/standoff.os`, each an **updated** copy that supersedes the `pak0` one |
+
+So there are **730 distinct scripts** (727 + the 3 `pak2` revisions).
+
+**The loader chain** (all in `gamex86.dll`):
+
+| what | where |
+|---|---|
+| the script owner | `FUN_50076600` — builds the path `"ds/%s.os"` (the format string at `0x501455a8`) |
+| the compiler object | `FUN_50079D60` — 0x4B4 bytes: the name at `+0x00` (0x104 bytes), the **file data pointer at `+0x104`**, the loaded flag at `+0x108`, the **length at `+0x110`**, the **cursor at `+0x114`**, two strings at `+0x11C`/`+0x120`, the flags at `+0x124`, the symbol table `+0x188[100]` and the field table `+0x318[100]` |
+| the file load | `FUN_5007ADC0` — calls the engine's `FS_LoadFile` (import slot 93, `SoF.exe 0x20025370`), stores the data at `+0x104`, the length at `+0x110`, and **checks that the first u32 is 3** — the format version |
+| the compiler | `FUN_500818D0` — walks the byte stream from `+0x104 + +0x114` and dispatches on one opcode byte at a time (the jump table at `gamex86.dll 0x50081F74`, 0x36 entries, `cmp $0x35`) |
+
+#### The file
+
+```
+u32   version (3)
+...   the definitions, then the body
+```
+
+The **definitions** are records, each
+
+```
+u8    the tag
+char  the name, NUL terminated
+u8    the kind (the value type)
+u32   the code (the index for a symbol, the bytecode offset for a function)
+```
+
+| tag | what | the handler |
+|---|---|---|
+| `0x00` | a **symbol**, interned into the name table at `+0x188` | `FUN_500818D0` case 0 |
+| `0x01` | the same, but the kind's operand is read first | case 1 |
+| `0x02` | a **script function** | `FUN_50082050` (case 2) |
+| `0x03` | the same, with the operand read first | case 3 |
+| `0x04` | a **statement** | `FUN_50082120` (case 4) |
+| `0x05` | the same, with the operand read first | case 5 |
+| `0x06` | an **entity FIELD** — the u32 is the field's index (0..99), stored at `+0x318 + index*4` | `FUN_5007B5F0` (case 6) |
+
+The record reader is `FUN_5007B2E0`: it reads the name, then **5 bytes** —
+the kind byte and the u32 — and hands the u32 back to the caller
+(`*param_1`).  The field reader `FUN_5007B5F0` has the same shape.
+
+**The kinds** (the operand format — the record vtable's `+0x18` slot does
+the reading; the kind byte is already in the record, so for the tags
+`0x01`/`0x03`/`0x05` the operand follows the record directly):
+
+| kind | the operand | the reader |
+|---|---|---|
+| 0 | a u32 (an integer) | `FUN_50076D50` |
+| 1 | a u32 (a **float**) | `FUN_50076D50` |
+| 2 | three u32s (a **vector**) | `FUN_50077530` → `+0x4C`/`+0x50`/`+0x54` |
+| 3 | a u32 (an **entity index**, −1 = none) | `FUN_50077E30` |
+| 4 | a NUL terminated **string** | `FUN_500780D0` |
+| 5 | a u32 (a symbol index) | `FUN_500781F0` |
+| 6 | two u32s (two symbol indices) | `FUN_500783A0` |
+| 7 | a sub opcode byte (0..9) — the "computed" values; sub 5 reads one more byte | `FUN_5007B9A0` / `FUN_5007B750` |
+
+The shipped scripts use the kinds **0, 1, 2 and 3** only (7 256 / 7 322 /
+5 879 / 5 927 times); the string kind (4) appears in the *pushes*.
+
+#### The body — a stack machine
+
+| opcode | what | the bytes it consumes |
+|---|---|---|
+| `0x07` | the stack "call" | 0 |
+| `0x08`–`0x0F` | the arithmetic (+ − × ÷ and the assigning forms) | 0 |
+| `0x10` | a **jump** — a u32 target | 4 |
+| `0x11` | a **push** — the kind byte and the operand | variable |
+| `0x12` | a pop | 0 |
+| `0x13` | an **if** — a byte and a u32 target | 5 |
+| `0x14` | the **end of the script** (`movl $0x1,0x108(%esi)`) | 0 |
+| `0x15` | stop (the same exit, without the flag) | 0 |
+| `0x16` | `FUN_5007C4A0` | 0 |
+| `0x17` / `0x18` | `FUN_5007C350(this,1/0)` | 1 |
+| `0x19` | `FUN_5007D430` | 1 |
+| `0x1A` | `FUN_5007C210` | 1 |
+| `0x1B` | `FUN_5007E1F0` | 0 |
+| `0x1C` | `FUN_5007D860` | 1 |
+| `0x1D` | `FUN_5007CA10` | 1 |
+| `0x1E` | `FUN_5007CCB0` | 1 |
+| `0x1F` / `0x20` | `FUN_5007D1A0(this,1/0)` | 1 |
+| `0x21` | the **Ghoul VM** — a four byte inner instruction, read from the same stream by `FUN_5007EC40` | 4 |
+| `0x22` | `FUN_5007B2B0` (a debug print) | 0 |
+| `0x23` | `FUN_5007D290` | 0 |
+| `0x24`–`0x26` | `FUN_50080E20` / `FUN_50080F10` / `FUN_50081060` | 0 |
+| `0x27` | `FUN_5007E290` | 0 |
+| `0x28` | `FUN_5007E300` | 1 |
+| `0x29` | `FUN_5007DC90` | 1 |
+| `0x2A` | `FUN_50080B00` | 0 |
+| `0x2B` | `FUN_50080B90` | 0 |
+| `0x2C` | `FUN_5007D0A0` | 0 |
+| `0x2D` | `FUN_5007E870` | 1 |
+| `0x2E` | stop | 0 |
+| `0x2F` | `FUN_5007D3B0` | 0 |
+| `0x30` | `FUN_5007D330` | 0 |
+| `0x31` | `FUN_50080CA0` | 0 |
+| `0x32` | `FUN_5007D120` | 0 |
+| `0x33` | the **ON statement** (`FUN_5007C780`): two pushes, each preceded by the `0x11` opcode byte, then 5 raw bytes | variable |
+| `0x34` | `FUN_5007C9D0` | 0 |
+| `0x35` | `FUN_50080A50` | 0 |
+
+The compiler's loop is at `0x50081E2E`: it compares the cursor with the
+length, and the flag at `0x34(%esp)` stops it.
+
+#### The 30 entity fields
+
+in the index order: `x`, `y`, `z`, `origin`, `origin_x`, `origin_y`,
+`origin_z`, `movetype`, `start_origin`, `start_angles`, `state`,
+`distance`, `owner`, `wait`, `velocity`, `angle_velocity`, `team_chain`,
+`yaw_speed`, `modelindex`, `count`, `solid`, `angles`, `delta_angles`,
+`skinnum`, `c_mode`, `ideal_yaw`, `p_origin`, `takedamage`, `health`.
+
+Every script declares all 30 (the field table at `+0x318` is filled by
+the tag `0x06` records).
+
+#### The parser
+
+**`analysis/ghoul_os.py`** — it parses **730 of 730** scripts, each
+**exactly** (every byte consumed, not one left over).
+
+```
+python3 analysis/ghoul_os.py samples/os/ds_arm_bleep.os
+python3 analysis/ghoul_os.py --all samples/os/*
+```
+
+The corpus is extracted from the paks with
+
+```bash
+python3 tools/list_pak.py "Soldier of Fortune/Base/pak0.pak" | grep '\.os '
+node web/pakget.js "Soldier of Fortune/Base/pak0.pak" ds/arm/bleep.os samples/os/ds_arm_bleep.os
+```
+
+(the `samples/` tree is git-ignored — it is the extracted payload, not
+source).
+
 ## 9. The Ghoul network protocol
 
 `SoF.exe` has two service bytes for the Ghoul:
