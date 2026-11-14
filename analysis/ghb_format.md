@@ -499,6 +499,47 @@ The state codes are 0, 1, 2, 3, 4, 5, 6 and 8; the blend floats are 5, 10,
 extracted by **`analysis/ghoul_vm_opcodes.py`** into
 `analysis/ghoul_states.json`.
 
+#### 8.6.0 The clip descriptor table — SOLVED 2026-11-14
+
+The module does **not** store the clip names as bare strings: each name
+is the first field of a **0x58-byte clip descriptor record**, and the
+records are laid out contiguously in `.rdata` (`gamex86.dll`, from about
+`0x50135E00`).  That is why the code can read a field at
+`clipname + 0x48` and why the switch can use `clipname` directly as the
+clip's identity.
+
+```
++0x00  char name[0x38]   the lowercased clip name, NUL padded
++0x38  u32    the state code          (the switch's uVar11)
++0x3C  f32    a parameter (1.0 = "on")
++0x40  f32    a parameter (the + value, e.g. 10, 20)
++0x44  f32    a parameter (the - value, e.g. -10, -20)
++0x48  u32    the flags               (bit 22 is tested by the update)
++0x4C  u32    a second code
++0x50  u32
++0x54  u32
+```
+
+Examples (the state code and the flags):
+
+| the record | the state | the flags |
+|---|---|---|
+| `std_stoknees_2bk_n_n` | 6 | `0x6000` |
+| `std_sblown_2bk_n_n` | 6 | `0x6000` |
+| `std_jupto_n_a_a` | 3 | `0x2800` |
+| `std_fattitude_n_p_a` | 2 | `0x4000` |
+| `std_wattitude_n_pk_a` | 1 | `0x09000000` |
+| `std_xcrouch_dwn_pk_a` | 0 | `0x00400000` |
+
+The state code agrees with the switch: the switch's case 5 and `0xFC`
+give the state **6** and the clip `std_stoknees_2bk_n_n`, whose record
+says 6.  The `+0x3C`/`+0x40`/`+0x44` triple is the **turn / aim window**
+(the neutral value and the two limits — "fattitude" is ±10°, "wattitude"
+±20°), and the flags word carries the per-clip movement behaviour.
+
+The names are **lowercase** here and **uppercase** in the `.ghb`, so the
+engine matches them **case-insensitively**.
+
 #### 8.6.1 The animation command (SOLVED 2026-11-14)
 
 `FUN_50080D30` (`gamex86.dll 0x50080D30`) takes the switch's triple plus
