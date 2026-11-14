@@ -1,0 +1,129 @@
+2003c780 <.text+0x3b780>:
+2003c780: 53                    push   %ebx
+2003c781: 55                    push   %ebp
+2003c782: 8b 6c 24 0c           mov    0xc(%esp),%ebp
+2003c786: 8b d9                 mov    %ecx,%ebx
+2003c788: 56                    push   %esi
+2003c789: 57                    push   %edi
+2003c78a: 8b 75 00              mov    0x0(%ebp),%esi
+2003c78d: 8d 7b 24              lea    0x24(%ebx),%edi
+2003c790: b9 10 00 00 00        mov    $0x10,%ecx
+2003c795: 55                    push   %ebp
+2003c796: f3 a5                 rep movsl %ds:(%esi),%es:(%edi)
+2003c798: 8b 45 00              mov    0x0(%ebp),%eax
+2003c79b: 8d 4b 10              lea    0x10(%ebx),%ecx
+2003c79e: 83 c0 40              add    $0x40,%eax
+2003c7a1: 89 45 00              mov    %eax,0x0(%ebp)
+2003c7a4: e8 b7 55 00 00        call   0x20041d60
+2003c7a9: 55                    push   %ebp
+2003c7aa: 8d 4b 18              lea    0x18(%ebx),%ecx
+2003c7ad: e8 ae 55 00 00        call   0x20041d60
+2003c7b2: 8d 43 24              lea    0x24(%ebx),%eax
+2003c7b5: 50                    push   %eax
+2003c7b6: ff 15 88 0d 39 20     call   *0x20390d88
+2003c7bc: 83 c4 04              add    $0x4,%esp
+2003c7bf: 89 43 20              mov    %eax,0x20(%ebx)
+2003c7c2: 33 c0                 xor    %eax,%eax
+2003c7c4: 5f                    pop    %edi
+2003c7c5: 5e                    pop    %esi
+2003c7c6: 5d                    pop    %ebp
+2003c7c7: 5b                    pop    %ebx
+2003c7c8: c2 04 00              ret    $0x4
+2003c7cb: 90                    nop
+2003c7cc: 90                    nop
+2003c7cd: 90                    nop
+2003c7ce: 90                    nop
+2003c7cf: 90                    nop
+2003c7d0: 53                    push   %ebx
+2003c7d1: 8b 5c 24 08           mov    0x8(%esp),%ebx
+2003c7d5: 55                    push   %ebp
+2003c7d6: 8b e9                 mov    %ecx,%ebp
+2003c7d8: 56                    push   %esi
+2003c7d9: 8b 33                 mov    (%ebx),%esi
+2003c7db: 57                    push   %edi
+2003c7dc: 8d 7d 24              lea    0x24(%ebp),%edi
+2003c7df: b9 10 00 00 00        mov    $0x10,%ecx
+2003c7e4: 53                    push   %ebx
+2003c7e5: f3 a5                 rep movsl %ds:(%esi),%es:(%edi)
+2003c7e7: 8b 13                 mov    (%ebx),%edx
+2003c7e9: 8d 4d 10              lea    0x10(%ebp),%ecx
+2003c7ec: 83 c2 40              add    $0x40,%edx
+2003c7ef: 89 13                 mov    %edx,(%ebx)
+2003c7f1: e8 6a 55 00 00        call   0x20041d60
+2003c7f6: 53                    push   %ebx
+2003c7f7: 8d 4d 18              lea    0x18(%ebp),%ecx
+2003c7fa: e8 61 55 00 00        call   0x20041d60
+2003c7ff: 5f                    pop    %edi
+2003c800: 5e                    pop    %esi
+2003c801: 5d                    pop    %ebp
+2003c802: 5b                    pop    %ebx
+2003c803: c2 04 00              ret    $0x4
+2003c806: 90                    nop
+2003c807: 90                    nop
+2003c808: 90                    nop
+2003c809: 90                    nop
+2003c80a: 90                    nop
+2003c80b: 90                    nop
+2003c80c: 90                    nop
+2003c80d: 90                    nop
+2003c80e: 90                    nop
+2003c80f: 90                    nop
+2003c810: 56                    push   %esi
+2003c811: 8b f1                 mov    %ecx,%esi
+2003c813: 8d 46 24              lea    0x24(%esi),%eax
+2003c816: 50                    push   %eax
+2003c817: ff 15 88 0d 39 20     call   *0x20390d88
+2003c81d: 83 c4 04              add    $0x4,%esp
+2003c820: 89 46 20              mov    %eax,0x20(%esi)
+2003c823: 5e                    pop    %esi
+2003c824: c3                    ret
+2003c825: 90                    nop
+2003c826: 90                    nop
+2003c827: 90                    nop
+2003c828: 90                    nop
+2003c829: 90                    nop
+2003c82a: 90                    nop
+2003c82b: 90                    nop
+2003c82c: 90                    nop
+2003c82d: 90                    nop
+2003c82e: 90                    nop
+2003c82f: 90                    nop
+2003c830: 8b c1                 mov    %ecx,%eax
+2003c832: 33 c9                 xor    %ecx,%ecx
+2003c834: 89 48 08              mov    %ecx,0x8(%eax)
+2003c837: 89 48 0c              mov    %ecx,0xc(%eax)
+2003c83a: 89 48 04              mov    %ecx,0x4(%eax)
+2003c83d: 89 48 10              mov    %ecx,0x10(%eax)
+2003c840: 89 48 14              mov    %ecx,0x14(%eax)
+2003c843: 89 48 18              mov    %ecx,0x18(%eax)
+2003c846: 89 48 1c              mov    %ecx,0x1c(%eax)
+2003c849: 89 48 20              mov    %ecx,0x20(%eax)
+2003c84c: 89 48 24              mov    %ecx,0x24(%eax)
+2003c84f: 89 48 28              mov    %ecx,0x28(%eax)
+2003c852: 89 48 2c              mov    %ecx,0x2c(%eax)
+2003c855: 89 48 30              mov    %ecx,0x30(%eax)
+2003c858: 89 48 34              mov    %ecx,0x34(%eax)
+2003c85b: b9 00 00 f0 41        mov    $0x41f00000,%ecx
+2003c860: c7 00 14 1c 11 20     movl   $0x20111c14,(%eax)
+2003c866: 89 48 10              mov    %ecx,0x10(%eax)
+2003c869: 89 48 14              mov    %ecx,0x14(%eax)
+2003c86c: b9 00 00 7f 43        mov    $0x437f0000,%ecx
+2003c871: 89 48 18              mov    %ecx,0x18(%eax)
+2003c874: 89 48 1c              mov    %ecx,0x1c(%eax)
+2003c877: 89 48 20              mov    %ecx,0x20(%eax)
+2003c87a: 89 48 24              mov    %ecx,0x24(%eax)
+2003c87d: 89 48 28              mov    %ecx,0x28(%eax)
+2003c880: 89 48 2c              mov    %ecx,0x2c(%eax)
+2003c883: b9 00 00 80 3f        mov    $0x3f800000,%ecx
+2003c888: 89 48 30              mov    %ecx,0x30(%eax)
+2003c88b: 89 48 34              mov    %ecx,0x34(%eax)
+2003c88e: c3                    ret
+2003c88f: 90                    nop
+2003c890: 83 ec 0c              sub    $0xc,%esp
+2003c893: 56                    push   %esi
+2003c894: 8b f1                 mov    %ecx,%esi
+2003c896: d9 46 18              flds   0x18(%esi)
+2003c899: d8 5e 1c              fcomps 0x1c(%esi)
+2003c89c: df e0                 fnstsw %ax
+2003c89e: f6                    .byte 0xf6
+2003c89f: c4                    .byte 0xc4

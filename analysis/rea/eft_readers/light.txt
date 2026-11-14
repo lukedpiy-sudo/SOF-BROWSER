@@ -1,0 +1,53 @@
+2003c9e0 <.text+0x3b9e0>:
+2003c9e0: 56                    push   %esi
+2003c9e1: 57                    push   %edi
+2003c9e2: 8b 7c 24 0c           mov    0xc(%esp),%edi
+2003c9e6: 8b f1                 mov    %ecx,%esi
+2003c9e8: 57                    push   %edi
+2003c9e9: 8d 4e 10              lea    0x10(%esi),%ecx
+2003c9ec: e8 6f 53 00 00        call   0x20041d60
+2003c9f1: 57                    push   %edi
+2003c9f2: 8d 4e 18              lea    0x18(%esi),%ecx
+2003c9f5: e8 66 53 00 00        call   0x20041d60
+2003c9fa: 57                    push   %edi
+2003c9fb: 8d 4e 20              lea    0x20(%esi),%ecx
+2003c9fe: e8 5d 53 00 00        call   0x20041d60
+2003ca03: 57                    push   %edi
+2003ca04: 8d 4e 28              lea    0x28(%esi),%ecx
+2003ca07: e8 54 53 00 00        call   0x20041d60
+2003ca0c: 57                    push   %edi
+2003ca0d: 8d 4e 30              lea    0x30(%esi),%ecx
+2003ca10: e8 4b 53 00 00        call   0x20041d60
+2003ca15: 5f                    pop    %edi
+2003ca16: 33 c0                 xor    %eax,%eax
+2003ca18: 5e                    pop    %esi
+2003ca19: c2 04 00              ret    $0x4
+2003ca1c: 90                    nop
+2003ca1d: 90                    nop
+2003ca1e: 90                    nop
+2003ca1f: 90                    nop
+2003ca20: 8b c1                 mov    %ecx,%eax
+2003ca22: 53                    push   %ebx
+2003ca23: 56                    push   %esi
+2003ca24: 33 db                 xor    %ebx,%ebx
+2003ca26: b9 cc 21 13 20        mov    $0x201321cc,%ecx
+2003ca2b: 8d 70 24              lea    0x24(%eax),%esi
+2003ca2e: 89 58 08              mov    %ebx,0x8(%eax)
+2003ca31: 89 58 0c              mov    %ebx,0xc(%eax)
+2003ca34: 89 58 04              mov    %ebx,0x4(%eax)
+2003ca37: c7 00 3c 1c 11 20     movl   $0x20111c3c,(%eax)
+2003ca3d: 2b f1                 sub    %ecx,%esi
+2003ca3f: 8a 11                 mov    (%ecx),%dl
+2003ca41: 88 14 0e              mov    %dl,(%esi,%ecx,1)
+2003ca44: 41                    inc    %ecx
+2003ca45: 3a d3                 cmp    %bl,%dl
+2003ca47: 75 f6                 jne    0x2003ca3f
+2003ca49: b9 00 00 00 40        mov    $0x40000000,%ecx
+2003ca4e: 89 58 20              mov    %ebx,0x20(%eax)
+2003ca51: 89 58 18              mov    %ebx,0x18(%eax)
+2003ca54: 89 58 1c              mov    %ebx,0x1c(%eax)
+2003ca57: 5e                    pop    %esi
+2003ca58: 89 48 10              mov    %ecx,0x10(%eax)
+2003ca5b: 89 48 14              mov    %ecx,0x14(%eax)
+2003ca5e: 5b                    pop    %ebx
+2003ca5f: c3                    ret

@@ -1,0 +1,280 @@
+2002db00 <.text+0x2cb00>:
+2002db00: 6a ff                 push   $0xffffffff
+2002db02: 68 16 b1 10 20        push   $0x2010b116
+2002db07: 64 a1 00 00 00 00     mov    %fs:0x0,%eax
+2002db0d: 50                    push   %eax
+2002db0e: 64 89 25 00 00 00 00  mov    %esp,%fs:0x0
+2002db15: 81 ec a0 00 00 00     sub    $0xa0,%esp
+2002db1b: 53                    push   %ebx
+2002db1c: 8b 9c 24 b4 00 00 00  mov    0xb4(%esp),%ebx
+2002db23: 55                    push   %ebp
+2002db24: 56                    push   %esi
+2002db25: 57                    push   %edi
+2002db26: 8b e9                 mov    %ecx,%ebp
+2002db28: bf 44 ee 15 20        mov    $0x2015ee44,%edi
+2002db2d: 8b f3                 mov    %ebx,%esi
+2002db2f: b9 01 00 00 00        mov    $0x1,%ecx
+2002db34: 33 c0                 xor    %eax,%eax
+2002db36: f3 a6                 repz cmpsb %es:(%edi),%ds:(%esi)
+2002db38: 89 6c 24 28           mov    %ebp,0x28(%esp)
+2002db3c: 0f 84 23 03 00 00     je     0x2002de65
+2002db42: 53                    push   %ebx
+2002db43: 68 6c f3 11 20        push   $0x2011f36c
+2002db48: 8d 4c 24 38           lea    0x38(%esp),%ecx
+2002db4c: 68 80 00 00 00        push   $0x80
+2002db51: 51                    push   %ecx
+2002db52: e8 c9 79 02 00        call   0x20055520
+2002db57: 8d 54 24 24           lea    0x24(%esp),%edx
+2002db5b: 6a 00                 push   $0x0
+2002db5d: 8d 44 24 44           lea    0x44(%esp),%eax
+2002db61: 52                    push   %edx
+2002db62: 50                    push   %eax
+2002db63: e8 08 78 ff ff        call   0x20025370
+2002db68: 83 c4 1c              add    $0x1c,%esp
+2002db6b: 83 f8 ff              cmp    $0xffffffff,%eax
+2002db6e: 75 13                 jne    0x2002db83
+2002db70: 53                    push   %ebx
+2002db71: 68 48 2b 13 20        push   $0x20132b48
+2002db76: e8 65 eb fe ff        call   0x2001c6e0
+2002db7b: 83 c4 08              add    $0x8,%esp
+2002db7e: e9 e2 02 00 00        jmp    0x2002de65
+2002db83: 8b 4c 24 14           mov    0x14(%esp),%ecx
+2002db87: 8d 54 24 10           lea    0x10(%esp),%edx
+2002db8b: 52                    push   %edx
+2002db8c: 89 4c 24 14           mov    %ecx,0x14(%esp)
+2002db90: e8 2b 41 01 00        call   0x20041cc0
+2002db95: d9 54 24 28           fsts   0x28(%esp)
+2002db99: d8 1d 74 19 11 20     fcomps 0x20111974
+2002db9f: 83 c4 04              add    $0x4,%esp
+2002dba2: df e0                 fnstsw %ax
+2002dba4: 25 00 41 00 00        and    $0x4100,%eax
+2002dba9: 75 12                 jne    0x2002dbbd
+2002dbab: 8b 44 24 14           mov    0x14(%esp),%eax
+2002dbaf: 50                    push   %eax
+2002dbb0: e8 6b 78 ff ff        call   0x20025420
+2002dbb5: 83 c4 04              add    $0x4,%esp
+2002dbb8: e9 a8 02 00 00        jmp    0x2002de65
+2002dbbd: 8d 4c 24 10           lea    0x10(%esp),%ecx
+2002dbc1: 51                    push   %ecx
+2002dbc2: e8 39 41 01 00        call   0x20041d00
+2002dbc7: 83 c4 04              add    $0x4,%esp
+2002dbca: 8d 54 24 10           lea    0x10(%esp),%edx
+2002dbce: 8d 4d 04              lea    0x4(%ebp),%ecx
+2002dbd1: 89 45 00              mov    %eax,0x0(%ebp)
+2002dbd4: 52                    push   %edx
+2002dbd5: e8 86 41 01 00        call   0x20041d60
+2002dbda: 8b 45 10              mov    0x10(%ebp),%eax
+2002dbdd: 8b 30                 mov    (%eax),%esi
+2002dbdf: 3b f0                 cmp    %eax,%esi
+2002dbe1: 74 1d                 je     0x2002dc00
+2002dbe3: 8b 4e 08              mov    0x8(%esi),%ecx
+2002dbe6: 8b 01                 mov    (%ecx),%eax
+2002dbe8: ff 50 18              call   *0x18(%eax)
+2002dbeb: 8b 46 08              mov    0x8(%esi),%eax
+2002dbee: 50                    push   %eax
+2002dbef: e8 81 c3 0c 00        call   0x200f9f75
+2002dbf4: 8b 36                 mov    (%esi),%esi
+2002dbf6: 8b 45 10              mov    0x10(%ebp),%eax
+2002dbf9: 83 c4 04              add    $0x4,%esp
+2002dbfc: 3b f0                 cmp    %eax,%esi
+2002dbfe: 75 e3                 jne    0x2002dbe3
+2002dc00: 8b 45 10              mov    0x10(%ebp),%eax
+2002dc03: 8d 5d 0c              lea    0xc(%ebp),%ebx
+2002dc06: 50                    push   %eax
+2002dc07: 8b 08                 mov    (%eax),%ecx
+2002dc09: 51                    push   %ecx
+2002dc0a: 8d 4c 24 28           lea    0x28(%esp),%ecx
+2002dc0e: 51                    push   %ecx
+2002dc0f: 8b cb                 mov    %ebx,%ecx
+2002dc11: e8 1a e9 05 00        call   0x2008c530
+2002dc16: 8b 7b 04              mov    0x4(%ebx),%edi
+2002dc19: 8b 37                 mov    (%edi),%esi
+2002dc1b: 3b f7                 cmp    %edi,%esi
+2002dc1d: 74 15                 je     0x2002dc34
+2002dc1f: 8b c6                 mov    %esi,%eax
+2002dc21: 8b 36                 mov    (%esi),%esi
+2002dc23: 8d 54 24 2c           lea    0x2c(%esp),%edx
+2002dc27: 50                    push   %eax
+2002dc28: 52                    push   %edx
+2002dc29: 8b cb                 mov    %ebx,%ecx
+2002dc2b: e8 d0 c7 08 00        call   0x200ba400
+2002dc30: 3b f7                 cmp    %edi,%esi
+2002dc32: 75 eb                 jne    0x2002dc1f
+2002dc34: 8d 44 24 10           lea    0x10(%esp),%eax
+2002dc38: 50                    push   %eax
+2002dc39: e8 82 40 01 00        call   0x20041cc0
+2002dc3e: d9 5c 24 24           fstps  0x24(%esp)
+2002dc42: d9 05 84 13 11 20     flds   0x20111384
+2002dc48: d8 5c 24 24           fcomps 0x24(%esp)
+2002dc4c: 83 c4 04              add    $0x4,%esp
+2002dc4f: 33 ff                 xor    %edi,%edi
+2002dc51: 89 7c 24 1c           mov    %edi,0x1c(%esp)
+2002dc55: df e0                 fnstsw %ax
+2002dc57: f6 c4 05              test   $0x5,%ah
+2002dc5a: 0f 8a 88 01 00 00     jp     0x2002dde8
+2002dc60: 8b 6c 24 2c           mov    0x2c(%esp),%ebp
+2002dc64: 8d 4c 24 10           lea    0x10(%esp),%ecx
+2002dc68: 51                    push   %ecx
+2002dc69: e8 52 40 01 00        call   0x20041cc0
+2002dc6e: 83 c4 04              add    $0x4,%esp
+2002dc71: e8 76 c1 0c 00        call   0x200f9dec
+2002dc76: 83 f8 04              cmp    $0x4,%eax
+2002dc79: 0f 87 de 00 00 00     ja     0x2002dd5d
+2002dc7f: ff 24 85 84 de 02 20  jmp    *0x2002de84(,%eax,4)
+2002dc86: 68 4c 02 00 00        push   $0x24c
+2002dc8b: e8 c2 c6 0c 00        call   0x200fa352
+2002dc90: 83 c4 04              add    $0x4,%esp
+2002dc93: 89 44 24 18           mov    %eax,0x18(%esp)
+2002dc97: 85 c0                 test   %eax,%eax
+2002dc99: c7 84 24 b8 00 00 00  movl   $0x0,0xb8(%esp)
+2002dca0: 00 00 00 00 
+2002dca4: 0f 84 a4 00 00 00     je     0x2002dd4e
+2002dcaa: 8b c8                 mov    %eax,%ecx
+2002dcac: e8 ef 83 00 00        call   0x200360a0
+2002dcb1: e9 9a 00 00 00        jmp    0x2002dd50
+2002dcb6: 6a 64                 push   $0x64
+2002dcb8: e8 95 c6 0c 00        call   0x200fa352
+2002dcbd: 83 c4 04              add    $0x4,%esp
+2002dcc0: 89 44 24 18           mov    %eax,0x18(%esp)
+2002dcc4: 85 c0                 test   %eax,%eax
+2002dcc6: c7 84 24 b8 00 00 00  movl   $0x1,0xb8(%esp)
+2002dccd: 01 00 00 00 
+2002dcd1: 74 7b                 je     0x2002dd4e
+2002dcd3: 8b c8                 mov    %eax,%ecx
+2002dcd5: e8 86 e9 00 00        call   0x2003c660
+2002dcda: eb 74                 jmp    0x2002dd50
+2002dcdc: 6a 38                 push   $0x38
+2002dcde: e8 6f c6 0c 00        call   0x200fa352
+2002dce3: 83 c4 04              add    $0x4,%esp
+2002dce6: 89 44 24 18           mov    %eax,0x18(%esp)
+2002dcea: 85 c0                 test   %eax,%eax
+2002dcec: c7 84 24 b8 00 00 00  movl   $0x2,0xb8(%esp)
+2002dcf3: 02 00 00 00 
+2002dcf7: 74 55                 je     0x2002dd4e
+2002dcf9: 8b c8                 mov    %eax,%ecx
+2002dcfb: e8 30 eb 00 00        call   0x2003c830
+2002dd00: eb 4e                 jmp    0x2002dd50
+2002dd02: 6a 64                 push   $0x64
+2002dd04: e8 49 c6 0c 00        call   0x200fa352
+2002dd09: 83 c4 04              add    $0x4,%esp
+2002dd0c: 89 44 24 18           mov    %eax,0x18(%esp)
+2002dd10: 85 c0                 test   %eax,%eax
+2002dd12: c7 84 24 b8 00 00 00  movl   $0x3,0xb8(%esp)
+2002dd19: 03 00 00 00 
+2002dd1d: 74 2f                 je     0x2002dd4e
+2002dd1f: 8b c8                 mov    %eax,%ecx
+2002dd21: e8 fa ec 00 00        call   0x2003ca20
+2002dd26: eb 28                 jmp    0x2002dd50
+2002dd28: 6a 2c                 push   $0x2c
+2002dd2a: e8 23 c6 0c 00        call   0x200fa352
+2002dd2f: 83 c4 04              add    $0x4,%esp
+2002dd32: 89 44 24 18           mov    %eax,0x18(%esp)
+2002dd36: 85 c0                 test   %eax,%eax
+2002dd38: c7 84 24 b8 00 00 00  movl   $0x4,0xb8(%esp)
+2002dd3f: 04 00 00 00 
+2002dd43: 74 09                 je     0x2002dd4e
+2002dd45: 8b c8                 mov    %eax,%ecx
+2002dd47: e8 c4 f0 00 00        call   0x2003ce10
+2002dd4c: eb 02                 jmp    0x2002dd50
+2002dd4e: 33 c0                 xor    %eax,%eax
+2002dd50: c7 84 24 b8 00 00 00  movl   $0xffffffff,0xb8(%esp)
+2002dd57: ff ff ff ff 
+2002dd5b: 8b e8                 mov    %eax,%ebp
+2002dd5d: 8b 55 00              mov    0x0(%ebp),%edx
+2002dd60: 8d 44 24 10           lea    0x10(%esp),%eax
+2002dd64: 50                    push   %eax
+2002dd65: 8b cd                 mov    %ebp,%ecx
+2002dd67: ff 52 24              call   *0x24(%edx)
+2002dd6a: 83 f8 ff              cmp    $0xffffffff,%eax
+2002dd6d: 0f 84 38 fe ff ff     je     0x2002dbab
+2002dd73: d9 44 24 24           flds   0x24(%esp)
+2002dd77: d8 1d 00 17 11 20     fcomps 0x20111700
+2002dd7d: df e0                 fnstsw %ax
+2002dd7f: 25 00 41 00 00        and    $0x4100,%eax
+2002dd84: 75 0d                 jne    0x2002dd93
+2002dd86: 8d 4c 24 10           lea    0x10(%esp),%ecx
+2002dd8a: 51                    push   %ecx
+2002dd8b: 8d 4d 08              lea    0x8(%ebp),%ecx
+2002dd8e: e8 cd 3f 01 00        call   0x20041d60
+2002dd93: 8b 73 04              mov    0x4(%ebx),%esi
+2002dd96: 6a 0c                 push   $0xc
+2002dd98: 8b 7e 04              mov    0x4(%esi),%edi
+2002dd9b: e8 b2 c5 0c 00        call   0x200fa352
+2002dda0: 83 c4 04              add    $0x4,%esp
+2002dda3: 89 30                 mov    %esi,(%eax)
+2002dda5: 85 ff                 test   %edi,%edi
+2002dda7: 75 02                 jne    0x2002ddab
+2002dda9: 8b f8                 mov    %eax,%edi
+2002ddab: 89 78 04              mov    %edi,0x4(%eax)
+2002ddae: 89 46 04              mov    %eax,0x4(%esi)
+2002ddb1: 8b 50 04              mov    0x4(%eax),%edx
+2002ddb4: 89 02                 mov    %eax,(%edx)
+2002ddb6: 83 c0 08              add    $0x8,%eax
+2002ddb9: 85 c0                 test   %eax,%eax
+2002ddbb: 74 02                 je     0x2002ddbf
+2002ddbd: 89 28                 mov    %ebp,(%eax)
+2002ddbf: 8b 4b 08              mov    0x8(%ebx),%ecx
+2002ddc2: 8b 44 24 1c           mov    0x1c(%esp),%eax
+2002ddc6: 41                    inc    %ecx
+2002ddc7: 40                    inc    %eax
+2002ddc8: 89 44 24 1c           mov    %eax,0x1c(%esp)
+2002ddcc: 89 4b 08              mov    %ecx,0x8(%ebx)
+2002ddcf: db 44 24 1c           fildl  0x1c(%esp)
+2002ddd3: d8 5c 24 20           fcomps 0x20(%esp)
+2002ddd7: df e0                 fnstsw %ax
+2002ddd9: f6 c4 05              test   $0x5,%ah
+2002dddc: 0f 8b 82 fe ff ff     jnp    0x2002dc64
+2002dde2: 8b 6c 24 28           mov    0x28(%esp),%ebp
+2002dde6: 33 ff                 xor    %edi,%edi
+2002dde8: d9 44 24 24           flds   0x24(%esp)
+2002ddec: d8 1d 94 14 11 20     fcomps 0x20111494
+2002ddf2: df e0                 fnstsw %ax
+2002ddf4: 25 00 41 00 00        and    $0x4100,%eax
+2002ddf9: 75 35                 jne    0x2002de30
+2002ddfb: 8d 4c 24 10           lea    0x10(%esp),%ecx
+2002ddff: 8d 75 18              lea    0x18(%ebp),%esi
+2002de02: 51                    push   %ecx
+2002de03: 8b ce                 mov    %esi,%ecx
+2002de05: e8 56 3f 01 00        call   0x20041d60
+2002de0a: d9 06                 flds   (%esi)
+2002de0c: d8 5d 04              fcomps 0x4(%ebp)
+2002de0f: df e0                 fnstsw %ax
+2002de11: f6 c4 05              test   $0x5,%ah
+2002de14: 7a 05                 jp     0x2002de1b
+2002de16: 8b 16                 mov    (%esi),%edx
+2002de18: 89 55 04              mov    %edx,0x4(%ebp)
+2002de1b: d9 46 04              flds   0x4(%esi)
+2002de1e: d8 5d 08              fcomps 0x8(%ebp)
+2002de21: df e0                 fnstsw %ax
+2002de23: f6 c4 05              test   $0x5,%ah
+2002de26: 7a 14                 jp     0x2002de3c
+2002de28: 8b 46 04              mov    0x4(%esi),%eax
+2002de2b: 89 45 08              mov    %eax,0x8(%ebp)
+2002de2e: eb 0c                 jmp    0x2002de3c
+2002de30: 8d 45 04              lea    0x4(%ebp),%eax
+2002de33: 8d 4d 18              lea    0x18(%ebp),%ecx
+2002de36: 50                    push   %eax
+2002de37: e8 44 3f 01 00        call   0x20041d80
+2002de3c: 8b 4c 24 14           mov    0x14(%esp),%ecx
+2002de40: 51                    push   %ecx
+2002de41: e8 da 75 ff ff        call   0x20025420
+2002de46: 8b 84 24 c4 00 00 00  mov    0xc4(%esp),%eax
+2002de4d: 8d 55 28              lea    0x28(%ebp),%edx
+2002de50: 83 c4 04              add    $0x4,%esp
+2002de53: 2b d0                 sub    %eax,%edx
+2002de55: 8a 08                 mov    (%eax),%cl
+2002de57: 88 0c 02              mov    %cl,(%edx,%eax,1)
+2002de5a: 40                    inc    %eax
+2002de5b: 84 c9                 test   %cl,%cl
+2002de5d: 75 f6                 jne    0x2002de55
+2002de5f: 89 7d 24              mov    %edi,0x24(%ebp)
+2002de62: 89 7d 20              mov    %edi,0x20(%ebp)
+2002de65: 8b 8c 24 b0 00 00 00  mov    0xb0(%esp),%ecx
+2002de6c: 5f                    pop    %edi
+2002de6d: 5e                    pop    %esi
+2002de6e: 5d                    pop    %ebp
+2002de6f: 33 c0                 xor    %eax,%eax
+2002de71: 5b                    pop    %ebx
+2002de72: 64 89 0d 00 00 00 00  mov    %ecx,%fs:0x0
+2002de79: 81 c4 ac 00 00 00     add    $0xac,%esp
+2002de7f: c2                    .byte 0xc2

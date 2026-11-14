@@ -1,0 +1,28 @@
+2003cfe0 <.text+0x3bfe0>:
+2003cfe0: 56                    push   %esi
+2003cfe1: 57                    push   %edi
+2003cfe2: 8b 7c 24 0c           mov    0xc(%esp),%edi
+2003cfe6: 8b f1                 mov    %ecx,%esi
+2003cfe8: 57                    push   %edi
+2003cfe9: 8d 4e 10              lea    0x10(%esi),%ecx
+2003cfec: e8 6f 4d 00 00        call   0x20041d60
+2003cff1: 57                    push   %edi
+2003cff2: 8d 4e 18              lea    0x18(%esi),%ecx
+2003cff5: e8 66 4d 00 00        call   0x20041d60
+2003cffa: 57                    push   %edi
+2003cffb: 8d 4e 20              lea    0x20(%esi),%ecx
+2003cffe: e8 5d 4d 00 00        call   0x20041d60
+2003d003: 57                    push   %edi
+2003d004: e8 f7 4c 00 00        call   0x20041d00
+2003d009: 57                    push   %edi
+2003d00a: 89 46 28              mov    %eax,0x28(%esi)
+2003d00d: e8 ee 4c 00 00        call   0x20041d00
+2003d012: 83 c4 08              add    $0x8,%esp
+2003d015: 33 c0                 xor    %eax,%eax
+2003d017: 5f                    pop    %edi
+2003d018: 5e                    pop    %esi
+2003d019: c2 04 00              ret    $0x4
+2003d01c: 90                    nop
+2003d01d: 90                    nop
+2003d01e: 90                    nop
+2003d01f: 90                    nop

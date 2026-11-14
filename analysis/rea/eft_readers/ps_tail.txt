@@ -1,0 +1,78 @@
+20033424 <.text+0x32424>:
+20033424: d9 44 24 18           flds   0x18(%esp)
+20033428: d8 1d 40 17 11 20     fcomps 0x20111740
+2003342e: df e0                 fnstsw %ax
+20033430: f6 c4 05              test   $0x5,%ah
+20033433: 7a 4a                 jp     0x2003347f
+20033435: 89 b5 84 01 00 00     mov    %esi,0x184(%ebp)
+2003343b: 89 b5 88 01 00 00     mov    %esi,0x188(%ebp)
+20033441: 89 b5 8c 01 00 00     mov    %esi,0x18c(%ebp)
+20033447: 89 b5 90 01 00 00     mov    %esi,0x190(%ebp)
+2003344d: 89 b5 94 01 00 00     mov    %esi,0x194(%ebp)
+20033453: 89 b5 98 01 00 00     mov    %esi,0x198(%ebp)
+20033459: 89 b5 9c 01 00 00     mov    %esi,0x19c(%ebp)
+2003345f: 89 b5 a0 01 00 00     mov    %esi,0x1a0(%ebp)
+20033465: 89 b5 a4 01 00 00     mov    %esi,0x1a4(%ebp)
+2003346b: 89 b5 a8 01 00 00     mov    %esi,0x1a8(%ebp)
+20033471: 89 b5 ac 01 00 00     mov    %esi,0x1ac(%ebp)
+20033477: 89 b5 b0 01 00 00     mov    %esi,0x1b0(%ebp)
+2003347d: eb 48                 jmp    0x200334c7
+2003347f: 53                    push   %ebx
+20033480: 8d 8d 84 01 00 00     lea    0x184(%ebp),%ecx
+20033486: e8 d5 e8 00 00        call   0x20041d60
+2003348b: 53                    push   %ebx
+2003348c: 8d 8d 8c 01 00 00     lea    0x18c(%ebp),%ecx
+20033492: e8 c9 e8 00 00        call   0x20041d60
+20033497: 53                    push   %ebx
+20033498: 8d 8d 94 01 00 00     lea    0x194(%ebp),%ecx
+2003349e: e8 bd e8 00 00        call   0x20041d60
+200334a3: 53                    push   %ebx
+200334a4: 8d 8d 9c 01 00 00     lea    0x19c(%ebp),%ecx
+200334aa: e8 b1 e8 00 00        call   0x20041d60
+200334af: 53                    push   %ebx
+200334b0: 8d 8d a4 01 00 00     lea    0x1a4(%ebp),%ecx
+200334b6: e8 a5 e8 00 00        call   0x20041d60
+200334bb: 53                    push   %ebx
+200334bc: 8d 8d ac 01 00 00     lea    0x1ac(%ebp),%ecx
+200334c2: e8 99 e8 00 00        call   0x20041d60
+200334c7: d9 44 24 18           flds   0x18(%esp)
+200334cb: d8 1d 40 17 11 20     fcomps 0x20111740
+200334d1: df e0                 fnstsw %ax
+200334d3: f6 c4 05              test   $0x5,%ah
+200334d6: 7a 0a                 jp     0x200334e2
+200334d8: 81 a5 e0 00 00 00 ff  andl   $0x3fff,0xe0(%ebp)
+200334df: 3f 00 00 
+200334e2: d9 44 24 18           flds   0x18(%esp)
+200334e6: d8 1d 98 15 11 20     fcomps 0x20111598
+200334ec: df e0                 fnstsw %ax
+200334ee: f6 c4 05              test   $0x5,%ah
+200334f1: 7a 0a                 jp     0x200334fd
+200334f3: 81 a5 e0 00 00 00 ff  andl   $0xfffc7fff,0xe0(%ebp)
+200334fa: 7f fc ff 
+200334fd: d9 44 24 18           flds   0x18(%esp)
+20033501: d8 1d b0 15 11 20     fcomps 0x201115b0
+20033507: df e0                 fnstsw %ax
+20033509: f6 c4 05              test   $0x5,%ah
+2003350c: 7a 32                 jp     0x20033540
+2003350e: 8b 95 e0 00 00 00     mov    0xe0(%ebp),%edx
+20033514: 89 b5 b4 01 00 00     mov    %esi,0x1b4(%ebp)
+2003351a: 81 e2 ff ff f3 ff     and    $0xfff3ffff,%edx
+20033520: 8b c2                 mov    %edx,%eax
+20033522: 89 95 e0 00 00 00     mov    %edx,0xe0(%ebp)
+20033528: a8 20                 test   $0x20,%al
+2003352a: 74 08                 je     0x20033534
+2003352c: 89 b5 b8 01 00 00     mov    %esi,0x1b8(%ebp)
+20033532: eb 27                 jmp    0x2003355b
+20033534: c7 85 b8 01 00 00 01  movl   $0x1,0x1b8(%ebp)
+2003353b: 00 00 00 
+2003353e: eb 1b                 jmp    0x2003355b
+20033540: 53                    push   %ebx
+20033541: e8 ba e7 00 00        call   0x20041d00
+20033546: 53                    push   %ebx
+20033547: 89 85 b4 01 00 00     mov    %eax,0x1b4(%ebp)
+2003354d: e8 ae e7 00 00        call   0x20041d00
+20033552: 83 c4 08              add    $0x8,%esp
+20033555: 89 85 b8 01 00 00     mov    %eax,0x1b8(%ebp)
+2003355b: 8b 45 30              mov    0x30(%ebp),%eax
+2003355e: 83                    .byte 0x83
+2003355f: f8                    clc

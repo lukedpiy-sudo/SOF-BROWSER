@@ -1,0 +1,264 @@
+200330e0 <.text+0x320e0>:
+200330e0: 51                    push   %ecx
+200330e1: 53                    push   %ebx
+200330e2: 8b 5c 24 0c           mov    0xc(%esp),%ebx
+200330e6: 55                    push   %ebp
+200330e7: 53                    push   %ebx
+200330e8: 8b e9                 mov    %ecx,%ebp
+200330ea: e8 d1 eb 00 00        call   0x20041cc0
+200330ef: d9 54 24 14           fsts   0x14(%esp)
+200330f3: d8 1d b0 15 11 20     fcomps 0x201115b0
+200330f9: 83 c4 04              add    $0x4,%esp
+200330fc: df e0                 fnstsw %ax
+200330fe: 25 00 41 00 00        and    $0x4100,%eax
+20033103: 75 09                 jne    0x2003310e
+20033105: 5d                    pop    %ebp
+20033106: 83 c8 ff              or     $0xffffffff,%eax
+20033109: 5b                    pop    %ebx
+2003310a: 59                    pop    %ecx
+2003310b: c2 04 00              ret    $0x4
+2003310e: 53                    push   %ebx
+2003310f: 8b cd                 mov    %ebp,%ecx
+20033111: e8 4a ec 00 00        call   0x20041d60
+20033116: 53                    push   %ebx
+20033117: 8d 4d 08              lea    0x8(%ebp),%ecx
+2003311a: e8 41 ec 00 00        call   0x20041d60
+2003311f: 53                    push   %ebx
+20033120: 8d 4d 10              lea    0x10(%ebp),%ecx
+20033123: e8 38 ec 00 00        call   0x20041d60
+20033128: 53                    push   %ebx
+20033129: 8d 4d 18              lea    0x18(%ebp),%ecx
+2003312c: e8 2f ec 00 00        call   0x20041d60
+20033131: 53                    push   %ebx
+20033132: 8d 4d 20              lea    0x20(%ebp),%ecx
+20033135: e8 26 ec 00 00        call   0x20041d60
+2003313a: 53                    push   %ebx
+2003313b: 8d 4d 28              lea    0x28(%ebp),%ecx
+2003313e: e8 1d ec 00 00        call   0x20041d60
+20033143: 53                    push   %ebx
+20033144: e8 b7 eb 00 00        call   0x20041d00
+20033149: 83 c4 04              add    $0x4,%esp
+2003314c: 8d 4d 34              lea    0x34(%ebp),%ecx
+2003314f: 89 45 30              mov    %eax,0x30(%ebp)
+20033152: 53                    push   %ebx
+20033153: e8 08 ec 00 00        call   0x20041d60
+20033158: 53                    push   %ebx
+20033159: 8d 4d 3c              lea    0x3c(%ebp),%ecx
+2003315c: e8 ff eb 00 00        call   0x20041d60
+20033161: 53                    push   %ebx
+20033162: 8d 4d 44              lea    0x44(%ebp),%ecx
+20033165: e8 f6 eb 00 00        call   0x20041d60
+2003316a: 53                    push   %ebx
+2003316b: 8d 4d 4c              lea    0x4c(%ebp),%ecx
+2003316e: e8 ed eb 00 00        call   0x20041d60
+20033173: 53                    push   %ebx
+20033174: e8 87 eb 00 00        call   0x20041d00
+20033179: 83 c4 04              add    $0x4,%esp
+2003317c: 8d 4d 58              lea    0x58(%ebp),%ecx
+2003317f: 89 45 54              mov    %eax,0x54(%ebp)
+20033182: 53                    push   %ebx
+20033183: e8 d8 eb 00 00        call   0x20041d60
+20033188: d9 44 24 10           flds   0x10(%esp)
+2003318c: d8 1d d8 15 11 20     fcomps 0x201115d8
+20033192: df e0                 fnstsw %ax
+20033194: f6 c4 05              test   $0x5,%ah
+20033197: 7a 06                 jp     0x2003319f
+20033199: 81 03 f4 00 00 00     addl   $0xf4,(%ebx)
+2003319f: 56                    push   %esi
+200331a0: 8b 33                 mov    (%ebx),%esi
+200331a2: 8d 55 60              lea    0x60(%ebp),%edx
+200331a5: 57                    push   %edi
+200331a6: b9 10 00 00 00        mov    $0x10,%ecx
+200331ab: 8b fa                 mov    %edx,%edi
+200331ad: f3 a5                 rep movsl %ds:(%esi),%es:(%edi)
+200331af: 8b 03                 mov    (%ebx),%eax
+200331b1: 8b fa                 mov    %edx,%edi
+200331b3: 83 c0 40              add    $0x40,%eax
+200331b6: 83 c9 ff              or     $0xffffffff,%ecx
+200331b9: 89 03                 mov    %eax,(%ebx)
+200331bb: 33 c0                 xor    %eax,%eax
+200331bd: f2 ae                 repnz scas %es:(%edi),%al
+200331bf: f7 d1                 not    %ecx
+200331c1: 49                    dec    %ecx
+200331c2: bf f0 f2 11 20        mov    $0x2011f2f0,%edi
+200331c7: 8b f1                 mov    %ecx,%esi
+200331c9: 83 c9 ff              or     $0xffffffff,%ecx
+200331cc: f2 ae                 repnz scas %es:(%edi),%al
+200331ce: f7 d1                 not    %ecx
+200331d0: 49                    dec    %ecx
+200331d1: 89 54 24 10           mov    %edx,0x10(%esp)
+200331d5: 3b f1                 cmp    %ecx,%esi
+200331d7: 76 52                 jbe    0x2003322b
+200331d9: bf f0 f2 11 20        mov    $0x2011f2f0,%edi
+200331de: 83 c9 ff              or     $0xffffffff,%ecx
+200331e1: f2 ae                 repnz scas %es:(%edi),%al
+200331e3: f7 d1                 not    %ecx
+200331e5: 49                    dec    %ecx
+200331e6: 8b f5                 mov    %ebp,%esi
+200331e8: 2b f1                 sub    %ecx,%esi
+200331ea: 8b fa                 mov    %edx,%edi
+200331ec: 83 c9 ff              or     $0xffffffff,%ecx
+200331ef: 68 f0 f2 11 20        push   $0x2011f2f0
+200331f4: f2 ae                 repnz scas %es:(%edi),%al
+200331f6: f7 d1                 not    %ecx
+200331f8: 49                    dec    %ecx
+200331f9: 8d 44 0e 60           lea    0x60(%esi,%ecx,1),%eax
+200331fd: 50                    push   %eax
+200331fe: e8 3d 9c 0c 00        call   0x200fce40
+20033203: 83 c4 08              add    $0x8,%esp
+20033206: 85 c0                 test   %eax,%eax
+20033208: 75 21                 jne    0x2003322b
+2003320a: bf f0 f2 11 20        mov    $0x2011f2f0,%edi
+2003320f: 83 c9 ff              or     $0xffffffff,%ecx
+20033212: f2 ae                 repnz scas %es:(%edi),%al
+20033214: 8b 7c 24 10           mov    0x10(%esp),%edi
+20033218: 8b d5                 mov    %ebp,%edx
+2003321a: f7 d1                 not    %ecx
+2003321c: 49                    dec    %ecx
+2003321d: 2b d1                 sub    %ecx,%edx
+2003321f: 83 c9 ff              or     $0xffffffff,%ecx
+20033222: f2 ae                 repnz scas %es:(%edi),%al
+20033224: f7 d1                 not    %ecx
+20033226: 49                    dec    %ecx
+20033227: 88 44 0a 60           mov    %al,0x60(%edx,%ecx,1)
+2003322b: 53                    push   %ebx
+2003322c: 8d 8d a0 00 00 00     lea    0xa0(%ebp),%ecx
+20033232: e8 29 eb 00 00        call   0x20041d60
+20033237: 53                    push   %ebx
+20033238: 8d 8d a8 00 00 00     lea    0xa8(%ebp),%ecx
+2003323e: e8 1d eb 00 00        call   0x20041d60
+20033243: 53                    push   %ebx
+20033244: 8d 8d b0 00 00 00     lea    0xb0(%ebp),%ecx
+2003324a: e8 11 eb 00 00        call   0x20041d60
+2003324f: 53                    push   %ebx
+20033250: 8d 8d b8 00 00 00     lea    0xb8(%ebp),%ecx
+20033256: e8 05 eb 00 00        call   0x20041d60
+2003325b: 53                    push   %ebx
+2003325c: 8d 8d c0 00 00 00     lea    0xc0(%ebp),%ecx
+20033262: e8 f9 ea 00 00        call   0x20041d60
+20033267: 53                    push   %ebx
+20033268: e8 53 ea 00 00        call   0x20041cc0
+2003326d: d9 9d c8 00 00 00     fstps  0xc8(%ebp)
+20033273: 53                    push   %ebx
+20033274: e8 47 ea 00 00        call   0x20041cc0
+20033279: d9 9d cc 00 00 00     fstps  0xcc(%ebp)
+2003327f: 83 c4 08              add    $0x8,%esp
+20033282: 8d 8d d0 00 00 00     lea    0xd0(%ebp),%ecx
+20033288: 53                    push   %ebx
+20033289: e8 d2 ea 00 00        call   0x20041d60
+2003328e: 53                    push   %ebx
+2003328f: 8d 8d d8 00 00 00     lea    0xd8(%ebp),%ecx
+20033295: e8 c6 ea 00 00        call   0x20041d60
+2003329a: 53                    push   %ebx
+2003329b: e8 60 ea 00 00        call   0x20041d00
+200332a0: d9 44 24 1c           flds   0x1c(%esp)
+200332a4: d8 1d 00 17 11 20     fcomps 0x20111700
+200332aa: 89 85 e0 00 00 00     mov    %eax,0xe0(%ebp)
+200332b0: 83 c4 04              add    $0x4,%esp
+200332b3: df e0                 fnstsw %ax
+200332b5: f6 c4 05              test   $0x5,%ah
+200332b8: 7a 4c                 jp     0x20033306
+200332ba: 33 f6                 xor    %esi,%esi
+200332bc: b8 44 ee 15 20        mov    $0x2015ee44,%eax
+200332c1: 89 b5 e4 00 00 00     mov    %esi,0xe4(%ebp)
+200332c7: 89 b5 e8 00 00 00     mov    %esi,0xe8(%ebp)
+200332cd: 89 b5 ec 00 00 00     mov    %esi,0xec(%ebp)
+200332d3: 8d 95 00 01 00 00     lea    0x100(%ebp),%edx
+200332d9: 89 b5 f0 00 00 00     mov    %esi,0xf0(%ebp)
+200332df: 89 b5 f4 00 00 00     mov    %esi,0xf4(%ebp)
+200332e5: 89 b5 f8 00 00 00     mov    %esi,0xf8(%ebp)
+200332eb: c7 85 fc 00 00 00 33  movl   $0x3f333333,0xfc(%ebp)
+200332f2: 33 33 3f 
+200332f5: 2b d0                 sub    %eax,%edx
+200332f7: 8a 08                 mov    (%eax),%cl
+200332f9: 88 0c 02              mov    %cl,(%edx,%eax,1)
+200332fc: 40                    inc    %eax
+200332fd: 84 c9                 test   %cl,%cl
+200332ff: 75 f6                 jne    0x200332f7
+20033301: e9 82 00 00 00        jmp    0x20033388
+20033306: 8d 85 e4 00 00 00     lea    0xe4(%ebp),%eax
+2003330c: 50                    push   %eax
+2003330d: 53                    push   %ebx
+2003330e: e8 bd e9 00 00        call   0x20041cd0
+20033313: 8d 8d f0 00 00 00     lea    0xf0(%ebp),%ecx
+20033319: 51                    push   %ecx
+2003331a: 53                    push   %ebx
+2003331b: e8 b0 e9 00 00        call   0x20041cd0
+20033320: 53                    push   %ebx
+20033321: e8 9a e9 00 00        call   0x20041cc0
+20033326: d9 9d fc 00 00 00     fstps  0xfc(%ebp)
+2003332c: 8b 33                 mov    (%ebx),%esi
+2003332e: 8d 95 00 01 00 00     lea    0x100(%ebp),%edx
+20033334: b9 10 00 00 00        mov    $0x10,%ecx
+20033339: 8b fa                 mov    %edx,%edi
+2003333b: f3 a5                 rep movsl %ds:(%esi),%es:(%edi)
+2003333d: 8b 03                 mov    (%ebx),%eax
+2003333f: 83 c4 14              add    $0x14,%esp
+20033342: 83 c0 40              add    $0x40,%eax
+20033345: 8b fa                 mov    %edx,%edi
+20033347: 89 03                 mov    %eax,(%ebx)
+20033349: be 44 ee 15 20        mov    $0x2015ee44,%esi
+2003334e: 8a 0e                 mov    (%esi),%cl
+20033350: 8a c1                 mov    %cl,%al
+20033352: 3a 0f                 cmp    (%edi),%cl
+20033354: 75 1c                 jne    0x20033372
+20033356: 84 c0                 test   %al,%al
+20033358: 74 14                 je     0x2003336e
+2003335a: 8a 4e 01              mov    0x1(%esi),%cl
+2003335d: 8a c1                 mov    %cl,%al
+2003335f: 3a 4f 01              cmp    0x1(%edi),%cl
+20033362: 75 0e                 jne    0x20033372
+20033364: 83 c6 02              add    $0x2,%esi
+20033367: 83 c7 02              add    $0x2,%edi
+2003336a: 84 c0                 test   %al,%al
+2003336c: 75 e0                 jne    0x2003334e
+2003336e: 33 c0                 xor    %eax,%eax
+20033370: eb 05                 jmp    0x20033377
+20033372: 1b c0                 sbb    %eax,%eax
+20033374: 83 d8 ff              sbb    $0xffffffff,%eax
+20033377: 85 c0                 test   %eax,%eax
+20033379: 74 0b                 je     0x20033386
+2003337b: 52                    push   %edx
+2003337c: b9 58 1f 32 20        mov    $0x20321f58,%ecx
+20033381: e8 4a 01 01 00        call   0x200434d0
+20033386: 33 f6                 xor    %esi,%esi
+20033388: d9 44 24 18           flds   0x18(%esp)
+2003338c: d8 1d 74 19 11 20     fcomps 0x20111974
+20033392: df e0                 fnstsw %ax
+20033394: f6 c4 05              test   $0x5,%ah
+20033397: 7a 23                 jp     0x200333bc
+20033399: b8 44 ee 15 20        mov    $0x2015ee44,%eax
+2003339e: 8d 95 44 01 00 00     lea    0x144(%ebp),%edx
+200333a4: c7 85 40 01 00 00 00  movl   $0x42700000,0x140(%ebp)
+200333ab: 00 70 42 
+200333ae: 2b d0                 sub    %eax,%edx
+200333b0: 8a 08                 mov    (%eax),%cl
+200333b2: 88 0c 02              mov    %cl,(%edx,%eax,1)
+200333b5: 40                    inc    %eax
+200333b6: 84 c9                 test   %cl,%cl
+200333b8: 75 f6                 jne    0x200333b0
+200333ba: eb 68                 jmp    0x20033424
+200333bc: 53                    push   %ebx
+200333bd: e8 fe e8 00 00        call   0x20041cc0
+200333c2: d9 9d 40 01 00 00     fstps  0x140(%ebp)
+200333c8: 8b 33                 mov    (%ebx),%esi
+200333ca: 8d 95 44 01 00 00     lea    0x144(%ebp),%edx
+200333d0: b9 10 00 00 00        mov    $0x10,%ecx
+200333d5: 8b fa                 mov    %edx,%edi
+200333d7: f3 a5                 rep movsl %ds:(%esi),%es:(%edi)
+200333d9: 8b 03                 mov    (%ebx),%eax
+200333db: 83 c4 04              add    $0x4,%esp
+200333de: 83 c0 40              add    $0x40,%eax
+200333e1: 8b fa                 mov    %edx,%edi
+200333e3: 89 03                 mov    %eax,(%ebx)
+200333e5: be 44 ee 15 20        mov    $0x2015ee44,%esi
+200333ea: 8a 0e                 mov    (%esi),%cl
+200333ec: 8a c1                 mov    %cl,%al
+200333ee: 3a 0f                 cmp    (%edi),%cl
+200333f0: 75 1c                 jne    0x2003340e
+200333f2: 84 c0                 test   %al,%al
+200333f4: 74 14                 je     0x2003340a
+200333f6: 8a 4e 01              mov    0x1(%esi),%cl
+200333f9: 8a c1                 mov    %cl,%al
+200333fb: 3a 4f 01              cmp    0x1(%edi),%cl
+200333fe: 75 0e                 jne    0x2003340e
