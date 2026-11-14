@@ -344,46 +344,83 @@ piVar1 = in_ECX[9] + in_ECX[5][ *(int *)(param_1 + 8) ] * 0x38;  /* the record *
 
 ### 8.5 The sequence side-files
 
-Three plain-text side files live next to the models (all CRLF, one record
-per line):
+Four plain-text side files live next to the models (all CRLF):
 
-| extension | count in `pak0` | what |
+| extension | count in the paks | what |
 |---|---|---|
 | `.gsq` | 308 | the **sequence list**: the animation names a model supports |
 | `.gpm` | 50 | the **player model script** (`ghoul/pmodels/*.gpm`) |
-| `.gbm` | 33 | a bolt-on model |
+| `.gbm` | 33 | a **bolt-on model** (`ghoul/pmodels/boltons/*.gbm`) |
 | `.ghl` | 0 | the event/duration side file - **not shipped** |
 
-`.gsq` is simply the lowercased clip names, one per line
-(`ghoul/comskin/commoves.gsq` = the 219 moves every character shares,
-`playmoves.gsq`, `npcmoves.gsq`, `riflemoves.gsq`, ...).  The `.ghb` clips
-are stored **uppercase** (`STD_I_N_A_A`), so the engine lowercases the clip
-name when it builds the sequence list and matches it against the `.gsq`
-entries.  A model only implements the moves it needs: of `FEM_ARM`'s 23
-clips, 9 are in `commoves.gsq`; of `FEMALE`'s 153 clips, 58 are.
+#### 8.5.1 The `.gsq` — SOLVED 2026-11-14
 
-The `.gpm` player-model script is a line-oriented text format:
+The loader is `SoF.exe 0x20049190` (the engine's import slot 65).  The path
+is built as
 
 ```
-enemy/meso                 <- the model
-meso_menu1
-meso_player
-playerboss
-"Capture, Inc"             <- a quoted comment
-enemy/dth/rad_f_brian
-{
-  a a_brian 0              <- the bone/attach points
-  b b_brian 0
-  f f_brian_n 0
-  h h_brian 0
-}
-{
-  boltons/acc_brian_beret.gbm abolt_head_t to_abolt_head_t 1.0
-  boltons/acc_brian_box_hip.gbm abolt_hip_r to_abolt_hip_r 1.0
-}
+"ghoul/<dir>/<name>.gsq"        and, if that does not exist,
+"ghoul/comskin/<name>.gsq"
 ```
 
-### 8.6 The animation state machine (game module)
+The file is read **line by line** (split on `\n`, the `\r` is dropped):
+
+* a line that starts with `#` is an **INCLUDE** — the rest of the line is
+  the name of another `.gsq` in the same directory, and it is read
+  recursively;
+* any other non-empty line is a **clip name**.
+
+For every name the engine hands the path `ghoul/<dir>/<name>.ghl` to a
+callback (or `ghoul/<name>.ghl` when the directory is empty).  No `.ghl`
+ships with SoF, so the `.ghb`'s own clip data is what is actually used —
+the `.gsq` is the list of the clips a model implements.
+
+The names are **lower case** in the `.gsq` and **upper case** in the
+`.ghb` (`std_i_n_a_a` vs `STD_I_N_A_A`), so the lookup is
+case-insensitive.
+
+`ghoul/comskin/commoves.gsq` is the 219 moves every character shares;
+`playmoves.gsq`, `npcmoves.gsq`, `riflemoves.gsq`, ... are the rest.  A
+model only implements the moves it needs: of `FEM_ARM`'s 23 clips, 9 are
+in `commoves.gsq`; of `FEMALE`'s 153 clips, 58 are.
+
+#### 8.5.2 The `.gpm` and the `.gbm` — SOLVED 2026-11-13
+
+The `.gpm` player-model script and the `.gbm` bolt-on model are **the same
+format**, read by the same engine tokenizer (the vtable at
+`SoF.exe 0x20111D88`, the factory `0x200494C0` = the engine's import slot
+61).  The full write-up is in **`analysis/gpm_format.md`**; in short:
+
+* a header of **seven** tokens (the model path, the menu model, the player
+  model, the boss model, the team, the rag-doll path, the file prefix);
+  the second token is joined into the side-file override
+  `ghoul/<path>/<name>.ghl`;
+* **block 1**: three tokens a time, the animation state bindings, where a
+  third field of `0` means the field is empty;
+* **block 2**: four tokens a time, the bolt-ons, with a float scale;
+* **block 3**: two tokens a time, the extra meshes, with an `(atoi != 0)`
+  flag;
+* one trailing token.
+
+The blocks are **positional** — the kind of a block is decided by where it
+appears, not by what is in it.
+
+The `.gbm` files are tiny (90-120 bytes) and are **not** models: they are
+the same text format, with one animation binding each:
+
+```
+enemy/bolt
+acc_brian_beret
+acc_brian_beret
+acc_brian_beret
+""
+""
+""
+<blank>
+acc_brian_beret acc_brian_beret 0
+```
+
+### 8.6 The animation state machine (game module) — SOLVED 2026-11-14
 
 `gamex86.dll 0x5007EC40` is a **bytecode interpreter** over the Ghoul
 script (the cursor is at `+0x114`, the code at `+0x104`).  Its opcodes
@@ -391,6 +428,57 @@ select the sequence: the module holds the sequence names as lowercased
 strings, e.g. `s_std_jupto_n_a_a_50135e58` = `"std_jupto_n_a_a"`, and a
 giant switch maps a state code to a sequence name plus a blend time and a
 duration.
+
+**The instruction is four bytes:**
+
+| byte | meaning |
+|---|---|
+| 0 | the **flags** (all eight bits are used) |
+| 1 | the flags, bit 1 |
+| 2, 3 | the operands |
+
+The flags of byte 0 pop values off the interpreter's stack:
+
+| flag | what it pops |
+|---|---|
+| `0x01` | the repeat count (the instruction is executed that many times) |
+| `0x02` | a value into the "origin" block |
+| `0x04` | a value into the "look" block |
+| `0x08` | an object |
+| `0x10` | an object |
+| `0x20` | the "has value" flag |
+| `0x40` | a **float** (the blend time) |
+| `0x80` | a value |
+
+The **opcode** itself is not in the instruction: the interpreter pops a
+*state object* off the stack and asks it for its state code
+(`vtable+0x04`), and that code is the value of the switch.
+
+**The switch is the animation state table** — 341 cases, each giving the
+triple
+
+```
+(the state code, the blend float, the clip name)
+```
+
+which is handed to `FUN_50080D30` (the "play this animation state" call).
+The state codes are 0, 1, 2, 3, 4, 5, 6 and 8; the blend floats are 5, 10,
+50, 100 and 150 ms; 336 of the 341 cases name a clip.  The table is
+extracted by **`analysis/ghoul_vm_opcodes.py`** into
+`analysis/ghoul_states.json`.
+
+**Validated against the ground truth:**
+
+| set | the clips | in the module's table |
+|---|---|---|
+| `FEMALE.ghb` | 153 | 71 |
+| `FEM_ARM.ghb` | 23 | 17 |
+| `commoves.gsq` | 219 | 171 |
+| `npcmoves.gsq` | 21 | 18 |
+| `playmoves.gsq` | 195 | 61 |
+
+(The inview weapons and the bolt-ons have no character clips, and the
+player-only moves are not in the shared table, so they do not match.)
 
 So the animation is **scripted server side**, not derived from the entity
 state - which is why the entity state only carries the Ghoul *model* index
@@ -610,11 +698,64 @@ absolute value is an index into the global string table.
 The record ends by allocating a `0xE8`-byte object into `obj+0x130`
 (`FUN_20077040(obj+0x0E)`), then `FUN_200786B0`, then `vtable[0x08]`.
 
-The writer emits **one leading field** before the groups — the `u16` at
-`obj+0x04` — and that is the field the client's section-1 loop consumes as
-the entity index (it negates it before the BST lookup).  The leading field
-doubles as the cursor into the global string table in `FUN_2006A370`, which
-is the one detail of the record that is still not fully reconciled.
+**The leading field — SOLVED 2026-11-14.**  It is the **entity index**,
+nothing else.  The client's section-1 loop reads it at `SoF.exe
+0x2006C10A`:
+
+```
+1 bit    "the value is present"
+2 bits   n
+(n+1)*4  the value, LSB first      <- n+1 NIBBLES
+```
+
+which is exactly the **encoded-u16** primitive of §9.4, so a value of 0
+costs 1 bit and 65535 costs 19.  The index is **negated** on the wire and
+the zero terminates the section.  The earlier reading of it as "the cursor
+into the global string table" was a misattribution: the string-table
+writer `FUN_2006A370` keeps its own payload-local counter in a local
+variable, not in `obj+0x04`.
+
+#### 9.6.1 The Ghoul state group (`FUN_200786B0`) — SOLVED 2026-11-14
+
+The `0xE8`-byte object is the **per-entity animation state**, a separate
+object from the Ghoul entity (which has the vtable at `0x201121F8`).  It
+is allocated into `obj+0x130` and filled by `FUN_200786B0(state, reader,
+&flags)`.
+
+The four **counters** come from `FUN_2008BCE0`, which returns the bit
+widths of four `u16` counts on the manager (`+0x0C`, `+0x0E`, `+0x12`,
+`+0x14`); the width is the number of bits needed for the values
+`0 .. count-1`.
+
+The fields, in the order they are read:
+
+| the state object | the wire | what |
+|---|---|---|
+| `+0x92` | 1 bit | a byte flag |
+| `+0x94` | 1 bit + 4 bytes | a 32-bit field, only when the bit is set |
+| `+0xA4` | 1 bit | a byte flag |
+| `+0xA5` | 1 bit | a byte flag |
+| `+0x90` | 1 bit + a bounded value | the value is bounded by the counter 1 (the model count) |
+| `+0xAA` | 1 bit + a bounded value | the value is bounded by the counter 0 (the state count); setting it also sets the "changed" flag |
+| `+0xAC` | 1 bit + 2 bytes | only when the bit is set; also sets the "changed" flag |
+| `+0x9C` | 1 bit + a signed tick count | the **animation start time**: `ticks * (1/120) + base` |
+| `+0x98` | 1 bit + a signed tick count | the **fixed time**: `ticks * (1/120) + the start time` |
+| `+0xA0` | 1 bit | the fixed time again: either a 32-bit float or the constant `0x7149F2CA` |
+| `+0xA6` | 1 bit + 1 byte | |
+| `+0xA7` | 1 bit + 1 byte | |
+| `+0xA8` | 1 bit + 1 byte | |
+| `+0xA9` | 1 bit + 1 byte | |
+| the origin block | 1 bit | a quaternion, a scale and three 11-bit angles (`value * 0.0625 - 64.0`) |
+
+The tick counts are the **120 Hz** clock: the value is read as a sign bit
+plus a nibble count plus the nibbles, and scaled by the constant
+`0x201121D8` = `0.008333333767950535` = 1/120 s.
+
+Do not confuse this object with the Ghoul **entity**: the entity has
+`+0x98` = the playback-speed **index** (an int), `+0x9C` = the start time
+and `+0xA0` = the fixed time, while this state object has `+0x98` = the
+fixed time and `+0x9C` = the start time.  The overlap is a coincidence of
+the two layouts.
 
 ### 9.7 The module side
 

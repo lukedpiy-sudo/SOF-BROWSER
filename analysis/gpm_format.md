@@ -210,3 +210,39 @@ which reads as
 The browser parser is `parseGpm()` in `web/ghb.js`; it follows the engine
 exactly (the positional blocks, the `"0"` rule of block 1 and the
 `(atoi != 0)` rule of block 3).
+
+## 6 The `.gbm` is the SAME format
+
+The `.gbm` bolt-on models are **not** models: they are 90-120 byte text
+files in exactly this format, and the engine reads them with the same
+tokenizer (the factory `0x200494C0` is called with one argument for them
+and with five for the `.gpm`; only the first argument — the path — is
+used, and the reset/open prefixes it with `Ghoul/pmodels/`).
+
+`ghoul/pmodels/boltons/acc_brian_beret.gbm` is:
+
+```
+enemy/bolt
+acc_brian_beret
+acc_brian_beret
+acc_brian_beret
+""
+""
+""
+<blank line>
+acc_brian_beret acc_brian_beret 0
+```
+
+so the header is the seven tokens and the single record is a **block 1**
+record: the animation state `acc_brian_beret` is bound to the model file
+`acc_brian_beret`, with no override.
+
+All 19 of the `.gbm` files in `pak2` have this shape.
+
+## 7 The `.gsq` is a different thing
+
+The `.gsq` is **not** read by this tokenizer.  It has its own loader
+(`SoF.exe 0x20049190`, the engine's import slot 65) which reads it line by
+line, treats a line that starts with `#` as an include of another `.gsq`
+and turns every other line into the side file `ghoul/<dir>/<name>.ghl`.
+See `analysis/ghb_format.md` §8.5.1.

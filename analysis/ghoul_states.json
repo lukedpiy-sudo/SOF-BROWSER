@@ -1,0 +1,2389 @@
+[
+ {
+  "opcode": 1,
+  "state": 1,
+  "blend": 150.0,
+  "clip": null,
+  "clipUpper": null
+ },
+ {
+  "opcode": 2,
+  "state": 3,
+  "blend": 10.0,
+  "clip": null,
+  "clipUpper": null
+ },
+ {
+  "opcode": 5,
+  "state": 6,
+  "blend": null,
+  "clip": "std_stoknees_2bk_n_n",
+  "clipUpper": "STD_STOKNEES_2BK_N_N"
+ },
+ {
+  "opcode": 6,
+  "state": 6,
+  "blend": 150.0,
+  "clip": "std_sblown_2bk_n_n",
+  "clipUpper": "STD_SBLOWN_2BK_N_N"
+ },
+ {
+  "opcode": 7,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_pk_a",
+  "clipUpper": "STD_XCROUCH_DWN_PK_A"
+ },
+ {
+  "opcode": 8,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcrouch_mid_pk_a",
+  "clipUpper": "CCH_XCROUCH_MID_PK_A"
+ },
+ {
+  "opcode": 9,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcrouch_up_pk_a",
+  "clipUpper": "CCH_XCROUCH_UP_PK_A"
+ },
+ {
+  "opcode": 15,
+  "state": 1,
+  "blend": 10.0,
+  "clip": null,
+  "clipUpper": null
+ },
+ {
+  "opcode": 20,
+  "state": null,
+  "blend": null,
+  "clip": "std_icleangun2_n_pk_n",
+  "clipUpper": "STD_ICLEANGUN2_N_PK_N"
+ },
+ {
+  "opcode": 21,
+  "state": null,
+  "blend": null,
+  "clip": "std_ilooking_n_a_a",
+  "clipUpper": "STD_ILOOKING_N_A_A"
+ },
+ {
+  "opcode": 22,
+  "state": null,
+  "blend": null,
+  "clip": "std_imonitorup_n_a_n",
+  "clipUpper": "STD_IMONITORUP_N_A_N"
+ },
+ {
+  "opcode": 23,
+  "state": null,
+  "blend": null,
+  "clip": "std_italk_n_a_n",
+  "clipUpper": "STD_ITALK_N_A_N"
+ },
+ {
+  "opcode": 24,
+  "state": null,
+  "blend": null,
+  "clip": "std_italkgest1_n_a_n",
+  "clipUpper": "STD_ITALKGEST1_N_A_N"
+ },
+ {
+  "opcode": 25,
+  "state": null,
+  "blend": null,
+  "clip": "std_italkgest2_n_a_n",
+  "clipUpper": "STD_ITALKGEST2_N_A_N"
+ },
+ {
+  "opcode": 26,
+  "state": null,
+  "blend": null,
+  "clip": "std_italkgest3_n_a_n",
+  "clipUpper": "STD_ITALKGEST3_N_A_N"
+ },
+ {
+  "opcode": 27,
+  "state": null,
+  "blend": null,
+  "clip": "std_iwipebrow_n_a_n",
+  "clipUpper": "STD_IWIPEBROW_N_A_N"
+ },
+ {
+  "opcode": 29,
+  "state": null,
+  "blend": null,
+  "clip": "std_ilooking_n_mrs_2",
+  "clipUpper": "STD_ILOOKING_N_MRS_2"
+ },
+ {
+  "opcode": 30,
+  "state": null,
+  "blend": null,
+  "clip": "std_xalarmpush_n_a_n",
+  "clipUpper": "STD_XALARMPUSH_N_A_N"
+ },
+ {
+  "opcode": 31,
+  "state": null,
+  "blend": null,
+  "clip": "std_istand_n_mrs_2",
+  "clipUpper": "STD_ISTAND_N_MRS_2"
+ },
+ {
+  "opcode": 32,
+  "state": null,
+  "blend": null,
+  "clip": "std_italk_n_mrs_2",
+  "clipUpper": "STD_ITALK_N_MRS_2"
+ },
+ {
+  "opcode": 33,
+  "state": null,
+  "blend": null,
+  "clip": "std_iturnvalve_frm_n_n",
+  "clipUpper": "STD_ITURNVALVE_FRM_N_N"
+ },
+ {
+  "opcode": 34,
+  "state": null,
+  "blend": null,
+  "clip": "std_iturnvalve_n_n_n",
+  "clipUpper": "STD_ITURNVALVE_N_N_N"
+ },
+ {
+  "opcode": 35,
+  "state": null,
+  "blend": null,
+  "clip": "std_iturnvalve_to_n_n",
+  "clipUpper": "STD_ITURNVALVE_TO_N_N"
+ },
+ {
+  "opcode": 36,
+  "state": 4,
+  "blend": null,
+  "clip": "std_jdrop_n_a_a",
+  "clipUpper": "STD_JDROP_N_A_A"
+ },
+ {
+  "opcode": 37,
+  "state": null,
+  "blend": null,
+  "clip": "std_mkicklow_n_a_a",
+  "clipUpper": "STD_MKICKLOW_N_A_A"
+ },
+ {
+  "opcode": 38,
+  "state": null,
+  "blend": null,
+  "clip": "std_mpistolwhip_n_p_n",
+  "clipUpper": "STD_MPISTOLWHIP_N_P_N"
+ },
+ {
+  "opcode": 39,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sinback_2frnt_n_n",
+  "clipUpper": "STD_SINBACK_2FRNT_N_N"
+ },
+ {
+  "opcode": 40,
+  "state": null,
+  "blend": null,
+  "clip": "std_xyellpoint_fwd_a_n",
+  "clipUpper": "STD_XYELLPOINT_FWD_A_N"
+ },
+ {
+  "opcode": 41,
+  "state": null,
+  "blend": null,
+  "clip": "std_xyellwave_bk_a_n",
+  "clipUpper": "STD_XYELLWAVE_BK_A_N"
+ },
+ {
+  "opcode": 42,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fattitude_n_p_a",
+  "clipUpper": "STD_FATTITUDE_N_P_A"
+ },
+ {
+  "opcode": 43,
+  "state": 5,
+  "blend": null,
+  "clip": "ls_xgetkicked_n_n_n",
+  "clipUpper": "LS_XGETKICKED_N_N_N"
+ },
+ {
+  "opcode": 44,
+  "state": null,
+  "blend": null,
+  "clip": "si_xbywall_n_n_n",
+  "clipUpper": "SI_XBYWALL_N_N_N"
+ },
+ {
+  "opcode": 45,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sstumble_2bk_p_n",
+  "clipUpper": "STD_SSTUMBLE_2BK_P_N"
+ },
+ {
+  "opcode": 46,
+  "state": 1,
+  "blend": null,
+  "clip": "std_wpush_n_n_n",
+  "clipUpper": "STD_WPUSH_N_N_N"
+ },
+ {
+  "opcode": 47,
+  "state": null,
+  "blend": null,
+  "clip": "std_xafraidshake_n_n_n",
+  "clipUpper": "STD_XAFRAIDSHAKE_N_N_N"
+ },
+ {
+  "opcode": 48,
+  "state": null,
+  "blend": null,
+  "clip": "std_xkickdoor_n_a_a",
+  "clipUpper": "STD_XKICKDOOR_N_A_A"
+ },
+ {
+  "opcode": 49,
+  "state": null,
+  "blend": null,
+  "clip": "std_xyellatyou_n_a_a",
+  "clipUpper": "STD_XYELLATYOU_N_A_A"
+ },
+ {
+  "opcode": 50,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wcarry1_n_n_n",
+  "clipUpper": "STD_WCARRY1_N_N_N"
+ },
+ {
+  "opcode": 51,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wnormal_n_pk_a",
+  "clipUpper": "STD_WNORMAL_N_PK_A"
+ },
+ {
+  "opcode": 52,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wpatrol_n_mrs_2",
+  "clipUpper": "STD_WPATROL_N_MRS_2"
+ },
+ {
+  "opcode": 53,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wbcksignal_n_n_n",
+  "clipUpper": "STD_WBCKSIGNAL_N_N_N"
+ },
+ {
+  "opcode": 54,
+  "state": null,
+  "blend": null,
+  "clip": "std_ileanlook_frm_pk_n",
+  "clipUpper": "STD_ILEANLOOK_FRM_PK_N"
+ },
+ {
+  "opcode": 55,
+  "state": null,
+  "blend": null,
+  "clip": "std_ileanlook_mid_pk_n",
+  "clipUpper": "STD_ILEANLOOK_MID_PK_N"
+ },
+ {
+  "opcode": 56,
+  "state": null,
+  "blend": null,
+  "clip": "std_ileanlook_to_pk_n",
+  "clipUpper": "STD_ILEANLOOK_TO_PK_N"
+ },
+ {
+  "opcode": 57,
+  "state": 3,
+  "blend": null,
+  "clip": "std_jdown_n_a_a",
+  "clipUpper": "STD_JDOWN_N_A_A"
+ },
+ {
+  "opcode": 58,
+  "state": 2,
+  "blend": null,
+  "clip": "std_f_fwd_p_2",
+  "clipUpper": "STD_F_FWD_P_2"
+ },
+ {
+  "opcode": 59,
+  "state": 2,
+  "blend": null,
+  "clip": "std_f_fwd_s_2",
+  "clipUpper": "STD_F_FWD_S_2"
+ },
+ {
+  "opcode": 60,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_r_n_mrs_2",
+  "clipUpper": "STD_R_N_MRS_2"
+ },
+ {
+  "opcode": 61,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_r_n_pk_n",
+  "clipUpper": "STD_R_N_PK_N"
+ },
+ {
+  "opcode": 62,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rgunup_n_p_2",
+  "clipUpper": "STD_RGUNUP_N_P_2"
+ },
+ {
+  "opcode": 63,
+  "state": null,
+  "blend": null,
+  "clip": "std_xdontshoot_n_a_n",
+  "clipUpper": "STD_XDONTSHOOT_N_A_N"
+ },
+ {
+  "opcode": 64,
+  "state": null,
+  "blend": null,
+  "clip": "std_xfearwave_n_n_n",
+  "clipUpper": "STD_XFEARWAVE_N_N_N"
+ },
+ {
+  "opcode": 65,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fcornerpeak_lt_p_a",
+  "clipUpper": "STD_FCORNERPEAK_LT_P_A"
+ },
+ {
+  "opcode": 66,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fcornerpeak_rt_p_a",
+  "clipUpper": "STD_FCORNERPEAK_RT_P_A"
+ },
+ {
+  "opcode": 67,
+  "state": null,
+  "blend": null,
+  "clip": "std_ialert_n_p_n",
+  "clipUpper": "STD_IALERT_N_P_N"
+ },
+ {
+  "opcode": 68,
+  "state": null,
+  "blend": null,
+  "clip": "std_icleangun2_n_mrs_2",
+  "clipUpper": "STD_ICLEANGUN2_N_MRS_2"
+ },
+ {
+  "opcode": 69,
+  "state": null,
+  "blend": null,
+  "clip": "std_imonitorup2_n_a_n",
+  "clipUpper": "STD_IMONITORUP2_N_A_N"
+ },
+ {
+  "opcode": 70,
+  "state": 3,
+  "blend": null,
+  "clip": "std_jdive2prone_n_a_n",
+  "clipUpper": "STD_JDIVE2PRONE_N_A_N"
+ },
+ {
+  "opcode": 71,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rafraid_n_n_n",
+  "clipUpper": "STD_RAFRAID_N_N_N"
+ },
+ {
+  "opcode": 72,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sblown_2bk_n_n",
+  "clipUpper": "STD_SBLOWN_2BK_N_N"
+ },
+ {
+  "opcode": 73,
+  "state": null,
+  "blend": null,
+  "clip": "std_xboomcrouch_n_a_n",
+  "clipUpper": "STD_XBOOMCROUCH_N_A_N"
+ },
+ {
+  "opcode": 74,
+  "state": null,
+  "blend": null,
+  "clip": "std_xtumble_2frnt_n_n",
+  "clipUpper": "STD_XTUMBLE_2FRNT_N_N"
+ },
+ {
+  "opcode": 75,
+  "state": 3,
+  "blend": 150.0,
+  "clip": "std_jrun_fwd_a_a",
+  "clipUpper": "STD_JRUN_FWD_A_A"
+ },
+ {
+  "opcode": 76,
+  "state": null,
+  "blend": null,
+  "clip": "std_ismoke_frm_a_n",
+  "clipUpper": "STD_ISMOKE_FRM_A_N"
+ },
+ {
+  "opcode": 77,
+  "state": null,
+  "blend": null,
+  "clip": "std_ismoke_n_a_n",
+  "clipUpper": "STD_ISMOKE_N_A_N"
+ },
+ {
+  "opcode": 78,
+  "state": null,
+  "blend": null,
+  "clip": "std_ismoke_to_a_n",
+  "clipUpper": "STD_ISMOKE_TO_A_N"
+ },
+ {
+  "opcode": 79,
+  "state": null,
+  "blend": null,
+  "clip": "std_itouchnuts_n_a_n",
+  "clipUpper": "STD_ITOUCHNUTS_N_A_N"
+ },
+ {
+  "opcode": 80,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcrouch_up_mrs_2",
+  "clipUpper": "CCH_XCROUCH_UP_MRS_2"
+ },
+ {
+  "opcode": 81,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcrouch_up_pk_a",
+  "clipUpper": "CCH_XCROUCH_UP_PK_A"
+ },
+ {
+  "opcode": 82,
+  "state": null,
+  "blend": null,
+  "clip": "cch_a_fwd_p_2",
+  "clipUpper": "CCH_A_FWD_P_2"
+ },
+ {
+  "opcode": 83,
+  "state": null,
+  "blend": null,
+  "clip": "cch_a_fwd_r_2",
+  "clipUpper": "CCH_A_FWD_R_2"
+ },
+ {
+  "opcode": 84,
+  "state": 6,
+  "blend": null,
+  "clip": "cch_sonknees_2frnt_n_n",
+  "clipUpper": "CCH_SONKNEES_2FRNT_N_N"
+ },
+ {
+  "opcode": 85,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xonknees_n_n_n",
+  "clipUpper": "CCH_XONKNEES_N_N_N"
+ },
+ {
+  "opcode": 86,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcchcower_mid_a_a",
+  "clipUpper": "CCH_XCCHCOWER_MID_A_A"
+ },
+ {
+  "opcode": 87,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcchcower2_mid_a_a",
+  "clipUpper": "CCH_XCCHCOWER2_MID_A_A"
+ },
+ {
+  "opcode": 88,
+  "state": null,
+  "blend": null,
+  "clip": "prn_xcoverhead_n_a_a",
+  "clipUpper": "PRN_XCOVERHEAD_N_A_A"
+ },
+ {
+  "opcode": 89,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sviolent_n_n_n",
+  "clipUpper": "STD_SVIOLENT_N_N_N"
+ },
+ {
+  "opcode": 90,
+  "state": 6,
+  "blend": null,
+  "clip": "lb_pgenericdie_n_n_n",
+  "clipUpper": "LB_PGENERICDIE_N_N_N"
+ },
+ {
+  "opcode": 91,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wattitude_n_pk_a",
+  "clipUpper": "STD_WATTITUDE_N_PK_A"
+ },
+ {
+  "opcode": 92,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wjog_n_mrs_2",
+  "clipUpper": "STD_WJOG_N_MRS_2"
+ },
+ {
+  "opcode": 93,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wjoggundwn_n_p_2",
+  "clipUpper": "STD_WJOGGUNDWN_N_P_2"
+ },
+ {
+  "opcode": 94,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wjoggunup_n_p_a",
+  "clipUpper": "STD_WJOGGUNUP_N_P_A"
+ },
+ {
+  "opcode": 95,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wpushcart_n_n_n",
+  "clipUpper": "STD_WPUSHCART_N_N_N"
+ },
+ {
+  "opcode": 96,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fautosweep_n_pm_a",
+  "clipUpper": "STD_FAUTOSWEEP_N_PM_A"
+ },
+ {
+  "opcode": 97,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fgangbanger_n_m_2",
+  "clipUpper": "STD_FGANGBANGER_N_M_2"
+ },
+ {
+  "opcode": 98,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fswatstyle_fwd_m_2",
+  "clipUpper": "STD_FSWATSTYLE_FWD_M_2"
+ },
+ {
+  "opcode": 99,
+  "state": 8,
+  "blend": null,
+  "clip": null,
+  "clipUpper": null
+ },
+ {
+  "opcode": 100,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fviolent_dwn_m_2",
+  "clipUpper": "STD_FVIOLENT_DWN_M_2"
+ },
+ {
+  "opcode": 101,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fviolent_dwn_p_n",
+  "clipUpper": "STD_FVIOLENT_DWN_P_N"
+ },
+ {
+  "opcode": 102,
+  "state": 3,
+  "blend": 150.0,
+  "clip": "std_jupto_n_a_a",
+  "clipUpper": "STD_JUPTO_N_A_A"
+ },
+ {
+  "opcode": 103,
+  "state": null,
+  "blend": null,
+  "clip": "std_mninjakick_n_a_b",
+  "clipUpper": "STD_MNINJAKICK_N_A_B"
+ },
+ {
+  "opcode": 104,
+  "state": null,
+  "blend": null,
+  "clip": "std_mriflebutt_n_mrs_2",
+  "clipUpper": "STD_MRIFLEBUTT_N_MRS_2"
+ },
+ {
+  "opcode": 105,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_r_dwnst_mrs_2",
+  "clipUpper": "STD_R_DWNST_MRS_2"
+ },
+ {
+  "opcode": 106,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_raimstraf_lt_mrs_2",
+  "clipUpper": "STD_RAIMSTRAF_LT_MRS_2"
+ },
+ {
+  "opcode": 107,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_raimstraf_lt_p_cbn",
+  "clipUpper": "STD_RAIMSTRAF_LT_P_CBN"
+ },
+ {
+  "opcode": 108,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_raimstraf_rt_mrs_2",
+  "clipUpper": "STD_RAIMSTRAF_RT_MRS_2"
+ },
+ {
+  "opcode": 109,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_raimstraf_rt_p_cbn",
+  "clipUpper": "STD_RAIMSTRAF_RT_P_CBN"
+ },
+ {
+  "opcode": 110,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rbackaim_n_mrs_2",
+  "clipUpper": "STD_RBACKAIM_N_MRS_2"
+ },
+ {
+  "opcode": 111,
+  "state": 1,
+  "blend": 150.0,
+  "clip": null,
+  "clipUpper": null
+ },
+ {
+  "opcode": 112,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sfallfwd_2frnt_n_n",
+  "clipUpper": "STD_SFALLFWD_2FRNT_N_N"
+ },
+ {
+  "opcode": 113,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sstumble_2frnt_n_n",
+  "clipUpper": "STD_SSTUMBLE_2FRNT_N_N"
+ },
+ {
+  "opcode": 114,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcchcower_dwn_a_a",
+  "clipUpper": "STD_XCCHCOWER_DWN_A_A"
+ },
+ {
+  "opcode": 115,
+  "state": null,
+  "blend": null,
+  "clip": "std_xchoke_n_n_n",
+  "clipUpper": "STD_XCHOKE_N_N_N"
+ },
+ {
+  "opcode": 116,
+  "state": null,
+  "blend": null,
+  "clip": "std_xdance_n_n_n",
+  "clipUpper": "STD_XDANCE_N_N_N"
+ },
+ {
+  "opcode": 117,
+  "state": null,
+  "blend": null,
+  "clip": "std_xgoprone_n_a_a",
+  "clipUpper": "STD_XGOPRONE_N_A_A"
+ },
+ {
+  "opcode": 118,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_xladder_dwn_a_a",
+  "clipUpper": "STD_XLADDER_DWN_A_A"
+ },
+ {
+  "opcode": 119,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_xladder_up_a_a",
+  "clipUpper": "STD_XLADDER_UP_A_A"
+ },
+ {
+  "opcode": 120,
+  "state": null,
+  "blend": null,
+  "clip": "std_xroll_lt_a_a",
+  "clipUpper": "STD_XROLL_LT_A_A"
+ },
+ {
+  "opcode": 121,
+  "state": null,
+  "blend": null,
+  "clip": "std_xroll_rt_a_a",
+  "clipUpper": "STD_XROLL_RT_A_A"
+ },
+ {
+  "opcode": 122,
+  "state": null,
+  "blend": null,
+  "clip": "std_xrolltocch_fwd_a_a",
+  "clipUpper": "STD_XROLLTOCCH_FWD_A_A"
+ },
+ {
+  "opcode": 123,
+  "state": null,
+  "blend": null,
+  "clip": "std_xstartled_n_a_a",
+  "clipUpper": "STD_XSTARTLED_N_A_A"
+ },
+ {
+  "opcode": 124,
+  "state": null,
+  "blend": null,
+  "clip": "std_xstumble_n_a_a",
+  "clipUpper": "STD_XSTUMBLE_N_A_A"
+ },
+ {
+  "opcode": 125,
+  "state": null,
+  "blend": null,
+  "clip": "si_isit_n_a_a",
+  "clipUpper": "SI_ISIT_N_A_A"
+ },
+ {
+  "opcode": 126,
+  "state": null,
+  "blend": null,
+  "clip": "si_xalertstand_up_a_a",
+  "clipUpper": "SI_XALERTSTAND_UP_A_A"
+ },
+ {
+  "opcode": 127,
+  "state": null,
+  "blend": null,
+  "clip": "prn_c_n_a_2",
+  "clipUpper": "PRN_C_N_A_2"
+ },
+ {
+  "opcode": 128,
+  "state": null,
+  "blend": null,
+  "clip": "prn_xcoverhead_to_a_a",
+  "clipUpper": "PRN_XCOVERHEAD_TO_A_A"
+ },
+ {
+  "opcode": 129,
+  "state": 4,
+  "blend": null,
+  "clip": "prn_xfalling_n_n_n",
+  "clipUpper": "PRN_XFALLING_N_N_N"
+ },
+ {
+  "opcode": 130,
+  "state": 6,
+  "blend": null,
+  "clip": "prn_xfallland_n_n_n",
+  "clipUpper": "PRN_XFALLLAND_N_N_N"
+ },
+ {
+  "opcode": 131,
+  "state": null,
+  "blend": null,
+  "clip": "prn_xtostand_n_a_a",
+  "clipUpper": "PRN_XTOSTAND_N_A_A"
+ },
+ {
+  "opcode": 132,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "cch_raim_fwd_mrs_2",
+  "clipUpper": "CCH_RAIM_FWD_MRS_2"
+ },
+ {
+  "opcode": 133,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "cch_raim_fwd_p_2",
+  "clipUpper": "CCH_RAIM_FWD_P_2"
+ },
+ {
+  "opcode": 134,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcchcower2_mid_a_a",
+  "clipUpper": "CCH_XCCHCOWER2_MID_A_A"
+ },
+ {
+  "opcode": 136,
+  "state": 6,
+  "blend": null,
+  "clip": "lb_xleanupshoot_n_p_n",
+  "clipUpper": "LB_XLEANUPSHOOT_N_P_N"
+ },
+ {
+  "opcode": 137,
+  "state": null,
+  "blend": null,
+  "clip": "cch_a_fwd_ms_2",
+  "clipUpper": "CCH_A_FWD_MS_2"
+ },
+ {
+  "opcode": 138,
+  "state": 2,
+  "blend": null,
+  "clip": "cch_f_fwd_l_2",
+  "clipUpper": "CCH_F_FWD_L_2"
+ },
+ {
+  "opcode": 139,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "cch_raim_n_l_2",
+  "clipUpper": "CCH_RAIM_N_L_2"
+ },
+ {
+  "opcode": 140,
+  "state": 2,
+  "blend": null,
+  "clip": "cch_tlobgrenade_n_a_n",
+  "clipUpper": "CCH_TLOBGRENADE_N_A_N"
+ },
+ {
+  "opcode": 141,
+  "state": null,
+  "blend": null,
+  "clip": "std_echokeknees_to_n_n",
+  "clipUpper": "STD_ECHOKEKNEES_TO_N_N"
+ },
+ {
+  "opcode": 142,
+  "state": null,
+  "blend": null,
+  "clip": "cch_echokeknees_n_n_n",
+  "clipUpper": "CCH_ECHOKEKNEES_N_N_N"
+ },
+ {
+  "opcode": 143,
+  "state": null,
+  "blend": null,
+  "clip": "cch_echokedeath_n_n_n",
+  "clipUpper": "CCH_ECHOKEDEATH_N_N_N"
+ },
+ {
+  "opcode": 144,
+  "state": null,
+  "blend": null,
+  "clip": "std_selectrocute_n_n_n",
+  "clipUpper": "STD_SELECTROCUTE_N_N_N"
+ },
+ {
+  "opcode": 145,
+  "state": null,
+  "blend": null,
+  "clip": "std_eoffladder_up_a_n",
+  "clipUpper": "STD_EOFFLADDER_UP_A_N"
+ },
+ {
+  "opcode": 146,
+  "state": null,
+  "blend": null,
+  "clip": "std_epounddoor_n_a_n",
+  "clipUpper": "STD_EPOUNDDOOR_N_A_N"
+ },
+ {
+  "opcode": 147,
+  "state": 2,
+  "blend": null,
+  "clip": "std_f_fwd_r_2",
+  "clipUpper": "STD_F_FWD_R_2"
+ },
+ {
+  "opcode": 148,
+  "state": null,
+  "blend": null,
+  "clip": "std_ebustglass_n_mrs_2",
+  "clipUpper": "STD_EBUSTGLASS_N_MRS_2"
+ },
+ {
+  "opcode": 149,
+  "state": null,
+  "blend": null,
+  "clip": "std_ecomehere_n_a_n",
+  "clipUpper": "STD_ECOMEHERE_N_A_N"
+ },
+ {
+  "opcode": 150,
+  "state": null,
+  "blend": null,
+  "clip": "std_efalldeath_n_n_n",
+  "clipUpper": "STD_EFALLDEATH_N_N_N"
+ },
+ {
+  "opcode": 151,
+  "state": 6,
+  "blend": null,
+  "clip": "std_efallimpact_n_n_n",
+  "clipUpper": "STD_EFALLIMPACT_N_N_N"
+ },
+ {
+  "opcode": 152,
+  "state": null,
+  "blend": null,
+  "clip": "std_efliptable_n_a_n",
+  "clipUpper": "STD_EFLIPTABLE_N_A_N"
+ },
+ {
+  "opcode": 153,
+  "state": null,
+  "blend": null,
+  "clip": "std_epushbuttons_n_n_n",
+  "clipUpper": "STD_EPUSHBUTTONS_N_N_N"
+ },
+ {
+  "opcode": 154,
+  "state": 1,
+  "blend": null,
+  "clip": "std_epushcrate_n_a_n",
+  "clipUpper": "STD_EPUSHCRATE_N_A_N"
+ },
+ {
+  "opcode": 155,
+  "state": null,
+  "blend": null,
+  "clip": "std_esignalalarm_n_a_n",
+  "clipUpper": "STD_ESIGNALALARM_N_A_N"
+ },
+ {
+  "opcode": 156,
+  "state": null,
+  "blend": null,
+  "clip": "std_etyping_n_n_n",
+  "clipUpper": "STD_ETYPING_N_N_N"
+ },
+ {
+  "opcode": 157,
+  "state": 1,
+  "blend": null,
+  "clip": "std_ewall2walk_n_mrs_2",
+  "clipUpper": "STD_EWALL2WALK_N_MRS_2"
+ },
+ {
+  "opcode": 158,
+  "state": 1,
+  "blend": null,
+  "clip": "std_ewall2walk_n_pk_n",
+  "clipUpper": "STD_EWALL2WALK_N_PK_N"
+ },
+ {
+  "opcode": 159,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewallidle_n_mrs_2",
+  "clipUpper": "STD_EWALLIDLE_N_MRS_2"
+ },
+ {
+  "opcode": 160,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewallidle_n_pk_n",
+  "clipUpper": "STD_EWALLIDLE_N_PK_N"
+ },
+ {
+  "opcode": 161,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewalllook_lt_mrs_2",
+  "clipUpper": "STD_EWALLLOOK_LT_MRS_2"
+ },
+ {
+  "opcode": 162,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewalllook_lt_pk_n",
+  "clipUpper": "STD_EWALLLOOK_LT_PK_N"
+ },
+ {
+  "opcode": 163,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewalllook_rt_mrs_2",
+  "clipUpper": "STD_EWALLLOOK_RT_MRS_2"
+ },
+ {
+  "opcode": 164,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewalllook_rt_pk_n",
+  "clipUpper": "STD_EWALLLOOK_RT_PK_N"
+ },
+ {
+  "opcode": 165,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchh_frm_n_n",
+  "clipUpper": "STD_EWRENCHH_FRM_N_N"
+ },
+ {
+  "opcode": 166,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchh_n_n_n",
+  "clipUpper": "STD_EWRENCHH_N_N_N"
+ },
+ {
+  "opcode": 167,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchh_to_n_n",
+  "clipUpper": "STD_EWRENCHH_TO_N_N"
+ },
+ {
+  "opcode": 168,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchv_frm_n_n",
+  "clipUpper": "STD_EWRENCHV_FRM_N_N"
+ },
+ {
+  "opcode": 169,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchv_n_n_n",
+  "clipUpper": "STD_EWRENCHV_N_N_N"
+ },
+ {
+  "opcode": 170,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewrenchv_to_n_n",
+  "clipUpper": "STD_EWRENCHV_TO_N_N"
+ },
+ {
+  "opcode": 171,
+  "state": null,
+  "blend": null,
+  "clip": "std_ashuffle_n_p_2",
+  "clipUpper": "STD_ASHUFFLE_N_P_2"
+ },
+ {
+  "opcode": 172,
+  "state": null,
+  "blend": null,
+  "clip": "std_ashuffle_n_p_a",
+  "clipUpper": "STD_ASHUFFLE_N_P_A"
+ },
+ {
+  "opcode": 173,
+  "state": null,
+  "blend": null,
+  "clip": "std_ashuffle_n_ms_2",
+  "clipUpper": "STD_ASHUFFLE_N_MS_2"
+ },
+ {
+  "opcode": 174,
+  "state": null,
+  "blend": null,
+  "clip": "std_ashuffle_n_r_2",
+  "clipUpper": "STD_ASHUFFLE_N_R_2"
+ },
+ {
+  "opcode": 175,
+  "state": null,
+  "blend": null,
+  "clip": "std_ashuffle_n_l_2",
+  "clipUpper": "STD_ASHUFFLE_N_L_2"
+ },
+ {
+  "opcode": 176,
+  "state": null,
+  "blend": null,
+  "clip": "std_ipiss_n_a_a",
+  "clipUpper": "STD_IPISS_N_A_A"
+ },
+ {
+  "opcode": 177,
+  "state": null,
+  "blend": null,
+  "clip": "std_athreat_dwn_p_n",
+  "clipUpper": "STD_ATHREAT_DWN_P_N"
+ },
+ {
+  "opcode": 178,
+  "state": null,
+  "blend": null,
+  "clip": "std_athreat_fwd_p_n",
+  "clipUpper": "STD_ATHREAT_FWD_P_N"
+ },
+ {
+  "opcode": 179,
+  "state": null,
+  "blend": null,
+  "clip": "std_athreatyel_dwn_p_n",
+  "clipUpper": "STD_ATHREATYEL_DWN_P_N"
+ },
+ {
+  "opcode": 180,
+  "state": null,
+  "blend": null,
+  "clip": "std_athreatyel_fwd_p_n",
+  "clipUpper": "STD_ATHREATYEL_FWD_P_N"
+ },
+ {
+  "opcode": 181,
+  "state": null,
+  "blend": null,
+  "clip": "std_eexaminewall_n_a_n",
+  "clipUpper": "STD_EEXAMINEWALL_N_A_N"
+ },
+ {
+  "opcode": 182,
+  "state": 2,
+  "blend": null,
+  "clip": "std_erageshoot_n_p_n",
+  "clipUpper": "STD_ERAGESHOOT_N_P_N"
+ },
+ {
+  "opcode": 183,
+  "state": null,
+  "blend": null,
+  "clip": "std_esabremock_n_a_n",
+  "clipUpper": "STD_ESABREMOCK_N_A_N"
+ },
+ {
+  "opcode": 184,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rtostop_n_pk_n",
+  "clipUpper": "STD_RTOSTOP_N_PK_N"
+ },
+ {
+  "opcode": 185,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalkboth_n_a_n",
+  "clipUpper": "STD_ETALKBOTH_N_A_N"
+ },
+ {
+  "opcode": 186,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalk_n_a_n",
+  "clipUpper": "STD_ETALK_N_A_N"
+ },
+ {
+  "opcode": 187,
+  "state": null,
+  "blend": null,
+  "clip": "std_eheadnod_n_a_n",
+  "clipUpper": "STD_EHEADNOD_N_A_N"
+ },
+ {
+  "opcode": 188,
+  "state": null,
+  "blend": null,
+  "clip": "std_eheadshake_n_a_n",
+  "clipUpper": "STD_EHEADSHAKE_N_A_N"
+ },
+ {
+  "opcode": 189,
+  "state": 3,
+  "blend": null,
+  "clip": "std_ejumprail_n_a_n",
+  "clipUpper": "STD_EJUMPRAIL_N_A_N"
+ },
+ {
+  "opcode": 190,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wtostop_n_pk_a",
+  "clipUpper": "STD_WTOSTOP_N_PK_A"
+ },
+ {
+  "opcode": 191,
+  "state": null,
+  "blend": null,
+  "clip": "std_espin180_lt_a_n",
+  "clipUpper": "STD_ESPIN180_LT_A_N"
+ },
+ {
+  "opcode": 192,
+  "state": null,
+  "blend": null,
+  "clip": "std_espin180_rt_a_n",
+  "clipUpper": "STD_ESPIN180_RT_A_N"
+ },
+ {
+  "opcode": 193,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_etorun_n_p_n",
+  "clipUpper": "STD_ETORUN_N_P_N"
+ },
+ {
+  "opcode": 194,
+  "state": null,
+  "blend": null,
+  "clip": "std_ilean_n_p_n",
+  "clipUpper": "STD_ILEAN_N_P_N"
+ },
+ {
+  "opcode": 195,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wbackaim_n_ms_2",
+  "clipUpper": "STD_WBACKAIM_N_MS_2"
+ },
+ {
+  "opcode": 196,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalkright_n_a_n",
+  "clipUpper": "STD_ETALKRIGHT_N_A_N"
+ },
+ {
+  "opcode": 197,
+  "state": null,
+  "blend": null,
+  "clip": "std_eclimbledg_dwn_a_n",
+  "clipUpper": "STD_ECLIMBLEDG_DWN_A_N"
+ },
+ {
+  "opcode": 198,
+  "state": null,
+  "blend": null,
+  "clip": "std_eclimbledg_mid_a_n",
+  "clipUpper": "STD_ECLIMBLEDG_MID_A_N"
+ },
+ {
+  "opcode": 199,
+  "state": null,
+  "blend": null,
+  "clip": "std_eclimbledge_up_a_n",
+  "clipUpper": "STD_ECLIMBLEDGE_UP_A_N"
+ },
+ {
+  "opcode": 200,
+  "state": null,
+  "blend": null,
+  "clip": "std_edropgrenade_n_a_n",
+  "clipUpper": "STD_EDROPGRENADE_N_A_N"
+ },
+ {
+  "opcode": 201,
+  "state": null,
+  "blend": null,
+  "clip": "std_efrmshadow_n_mrs_2",
+  "clipUpper": "STD_EFRMSHADOW_N_MRS_2"
+ },
+ {
+  "opcode": 202,
+  "state": null,
+  "blend": null,
+  "clip": "std_efrmshadow_n_p_n",
+  "clipUpper": "STD_EFRMSHADOW_N_P_N"
+ },
+ {
+  "opcode": 203,
+  "state": null,
+  "blend": null,
+  "clip": "std_ehandtalk_frm_p_n",
+  "clipUpper": "STD_EHANDTALK_FRM_P_N"
+ },
+ {
+  "opcode": 204,
+  "state": null,
+  "blend": null,
+  "clip": "std_ehandtalk_n_p_n",
+  "clipUpper": "STD_EHANDTALK_N_P_N"
+ },
+ {
+  "opcode": 205,
+  "state": null,
+  "blend": null,
+  "clip": "std_ehandtalk_to_mrs_n",
+  "clipUpper": "STD_EHANDTALK_TO_MRS_N"
+ },
+ {
+  "opcode": 206,
+  "state": null,
+  "blend": null,
+  "clip": "std_ehandtalk_to_p_n",
+  "clipUpper": "STD_EHANDTALK_TO_P_N"
+ },
+ {
+  "opcode": 207,
+  "state": null,
+  "blend": null,
+  "clip": "std_ehandtalk_frm_mrs_n",
+  "clipUpper": "STD_EHANDTALK_FRM_MRS_N"
+ },
+ {
+  "opcode": 208,
+  "state": null,
+  "blend": null,
+  "clip": "std_eheadset_frm_p_n",
+  "clipUpper": "STD_EHEADSET_FRM_P_N"
+ },
+ {
+  "opcode": 209,
+  "state": null,
+  "blend": null,
+  "clip": "std_eheadset_mid_p_n",
+  "clipUpper": "STD_EHEADSET_MID_P_N"
+ },
+ {
+  "opcode": 210,
+  "state": null,
+  "blend": null,
+  "clip": "std_eheadset_to_p_n",
+  "clipUpper": "STD_EHEADSET_TO_P_N"
+ },
+ {
+  "opcode": 211,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_frm_mrs_n",
+  "clipUpper": "STD_ESALUTE_FRM_MRS_N"
+ },
+ {
+  "opcode": 212,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_n_mrs_n",
+  "clipUpper": "STD_ESALUTE_N_MRS_N"
+ },
+ {
+  "opcode": 213,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_to_mrs_n",
+  "clipUpper": "STD_ESALUTE_TO_MRS_N"
+ },
+ {
+  "opcode": 214,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalkleft_n_a_n",
+  "clipUpper": "STD_ETALKLEFT_N_A_N"
+ },
+ {
+  "opcode": 215,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklklt_frm_a_n",
+  "clipUpper": "STD_ETALKLKLT_FRM_A_N"
+ },
+ {
+  "opcode": 216,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklklt_mid_a_n",
+  "clipUpper": "STD_ETALKLKLT_MID_A_N"
+ },
+ {
+  "opcode": 217,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklklt_to_a_n",
+  "clipUpper": "STD_ETALKLKLT_TO_A_N"
+ },
+ {
+  "opcode": 218,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklkrt_frm_a_n",
+  "clipUpper": "STD_ETALKLKRT_FRM_A_N"
+ },
+ {
+  "opcode": 219,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklkrt_mid_a_n",
+  "clipUpper": "STD_ETALKLKRT_MID_A_N"
+ },
+ {
+  "opcode": 220,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalklkrt_to_a_n",
+  "clipUpper": "STD_ETALKLKRT_TO_A_N"
+ },
+ {
+  "opcode": 221,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_etorun_n_mrs_2",
+  "clipUpper": "STD_ETORUN_N_MRS_2"
+ },
+ {
+  "opcode": 222,
+  "state": null,
+  "blend": null,
+  "clip": "std_eturn90_lt_a_n",
+  "clipUpper": "STD_ETURN90_LT_A_N"
+ },
+ {
+  "opcode": 223,
+  "state": null,
+  "blend": null,
+  "clip": "std_eturn90_rt_a_n",
+  "clipUpper": "STD_ETURN90_RT_A_N"
+ },
+ {
+  "opcode": 224,
+  "state": null,
+  "blend": null,
+  "clip": "std_igunup_n_a_n",
+  "clipUpper": "STD_IGUNUP_N_A_N"
+ },
+ {
+  "opcode": 225,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_ronfire_n_n_n",
+  "clipUpper": "STD_RONFIRE_N_N_N"
+ },
+ {
+  "opcode": 226,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_ronfiretodth_n_n_n",
+  "clipUpper": "STD_RONFIRETODTH_N_N_N"
+ },
+ {
+  "opcode": 227,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rtostop_n_mrs_2",
+  "clipUpper": "STD_RTOSTOP_N_MRS_2"
+ },
+ {
+  "opcode": 228,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sshoulder_lt_n_n",
+  "clipUpper": "STD_SSHOULDER_LT_N_N"
+ },
+ {
+  "opcode": 229,
+  "state": null,
+  "blend": null,
+  "clip": "std_sunhurt_bk_pk_n",
+  "clipUpper": "STD_SUNHURT_BK_PK_N"
+ },
+ {
+  "opcode": 230,
+  "state": null,
+  "blend": null,
+  "clip": "std_edropcrouch_n_a_a",
+  "clipUpper": "STD_EDROPCROUCH_N_A_A"
+ },
+ {
+  "opcode": 231,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_trun_n_a_n",
+  "clipUpper": "STD_TRUN_N_A_N"
+ },
+ {
+  "opcode": 232,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_w_n_pn_n",
+  "clipUpper": "STD_W_N_PN_N"
+ },
+ {
+  "opcode": 233,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wcarry2_n_n_n",
+  "clipUpper": "STD_WCARRY2_N_N_N"
+ },
+ {
+  "opcode": 234,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wtalk_lt_mrs_2",
+  "clipUpper": "STD_WTALK_LT_MRS_2"
+ },
+ {
+  "opcode": 235,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "a4_cscramble_n_a_n",
+  "clipUpper": "A4_CSCRAMBLE_N_A_N"
+ },
+ {
+  "opcode": 236,
+  "state": null,
+  "blend": null,
+  "clip": "cch_enodleft_n_a_a",
+  "clipUpper": "CCH_ENODLEFT_N_A_A"
+ },
+ {
+  "opcode": 237,
+  "state": null,
+  "blend": null,
+  "clip": "cch_enodright_n_a_a",
+  "clipUpper": "CCH_ENODRIGHT_N_A_A"
+ },
+ {
+  "opcode": 238,
+  "state": null,
+  "blend": null,
+  "clip": "cch_escantalk_lt_a_a",
+  "clipUpper": "CCH_ESCANTALK_LT_A_A"
+ },
+ {
+  "opcode": 239,
+  "state": null,
+  "blend": null,
+  "clip": "cch_escantalk_rt_a_a",
+  "clipUpper": "CCH_ESCANTALK_RT_A_A"
+ },
+ {
+  "opcode": 240,
+  "state": null,
+  "blend": null,
+  "clip": "cch_iready_n_a_a",
+  "clipUpper": "CCH_IREADY_N_A_A"
+ },
+ {
+  "opcode": 241,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fautosweep_n_m_2",
+  "clipUpper": "STD_FAUTOSWEEP_N_M_2"
+ },
+ {
+  "opcode": 242,
+  "state": null,
+  "blend": null,
+  "clip": "std_l_n_ms_2",
+  "clipUpper": "STD_L_N_MS_2"
+ },
+ {
+  "opcode": 243,
+  "state": null,
+  "blend": null,
+  "clip": "std_istand_n_a_n",
+  "clipUpper": "STD_ISTAND_N_A_N"
+ },
+ {
+  "opcode": 244,
+  "state": 2,
+  "blend": null,
+  "clip": "std_echokeshoot_n_a_n",
+  "clipUpper": "STD_ECHOKESHOOT_N_A_N"
+ },
+ {
+  "opcode": 245,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sonfire_2bk_n_n",
+  "clipUpper": "STD_SONFIRE_2BK_N_N"
+ },
+ {
+  "opcode": 246,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalk_frm_a_n",
+  "clipUpper": "STD_ETALK_FRM_A_N"
+ },
+ {
+  "opcode": 247,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalk_to_a_n",
+  "clipUpper": "STD_ETALK_TO_A_N"
+ },
+ {
+  "opcode": 248,
+  "state": 3,
+  "blend": 150.0,
+  "clip": "std_jdrop_to_a_n",
+  "clipUpper": "STD_JDROP_TO_A_N"
+ },
+ {
+  "opcode": 249,
+  "state": 2,
+  "blend": null,
+  "clip": "std_athreatsht_dwn_p_n",
+  "clipUpper": "STD_ATHREATSHT_DWN_P_N"
+ },
+ {
+  "opcode": 250,
+  "state": 6,
+  "blend": null,
+  "clip": "lb_pholdleg_lt_n_n",
+  "clipUpper": "LB_PHOLDLEG_LT_N_N"
+ },
+ {
+  "opcode": 251,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcock_n_s_2",
+  "clipUpper": "STD_XCOCK_N_S_2"
+ },
+ {
+  "opcode": 252,
+  "state": 6,
+  "blend": null,
+  "clip": "std_stoknees_2bk_n_n",
+  "clipUpper": "STD_STOKNEES_2BK_N_N"
+ },
+ {
+  "opcode": 253,
+  "state": 6,
+  "blend": null,
+  "clip": "std_sgut_2side_n_n",
+  "clipUpper": "STD_SGUT_2SIDE_N_N"
+ },
+ {
+  "opcode": 254,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_xladderfrm_up_a_a",
+  "clipUpper": "STD_XLADDERFRM_UP_A_A"
+ },
+ {
+  "opcode": 255,
+  "state": 5,
+  "blend": null,
+  "clip": "std_sgunfromhand_n_n_n",
+  "clipUpper": "STD_SGUNFROMHAND_N_N_N"
+ },
+ {
+  "opcode": 256,
+  "state": null,
+  "blend": null,
+  "clip": "cch_etostand_n_a_n",
+  "clipUpper": "CCH_ETOSTAND_N_A_N"
+ },
+ {
+  "opcode": 257,
+  "state": null,
+  "blend": null,
+  "clip": "std_ininja_n_p_n",
+  "clipUpper": "STD_ININJA_N_P_N"
+ },
+ {
+  "opcode": 258,
+  "state": 1,
+  "blend": 100.0,
+  "clip": "std_xhandspring_fwd_a_n",
+  "clipUpper": "STD_XHANDSPRING_FWD_A_N"
+ },
+ {
+  "opcode": 259,
+  "state": null,
+  "blend": null,
+  "clip": "std_egangsalute_n_a_n",
+  "clipUpper": "STD_EGANGSALUTE_N_A_N"
+ },
+ {
+  "opcode": 260,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wbackwards_n_a_n",
+  "clipUpper": "STD_WBACKWARDS_N_A_N"
+ },
+ {
+  "opcode": 261,
+  "state": 6,
+  "blend": null,
+  "clip": "std_ssabredeath_bk_n_n",
+  "clipUpper": "STD_SSABREDEATH_BK_N_N"
+ },
+ {
+  "opcode": 262,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wstealth_n_pk_n",
+  "clipUpper": "STD_WSTEALTH_N_PK_N"
+ },
+ {
+  "opcode": 263,
+  "state": 3,
+  "blend": 150.0,
+  "clip": "std_jthrowstar_fwd_a_n",
+  "clipUpper": "STD_JTHROWSTAR_FWD_A_N"
+ },
+ {
+  "opcode": 264,
+  "state": null,
+  "blend": null,
+  "clip": "prn_a_n_a_2",
+  "clipUpper": "PRN_A_N_A_2"
+ },
+ {
+  "opcode": 265,
+  "state": null,
+  "blend": null,
+  "clip": "std_eyell_n_a_n",
+  "clipUpper": "STD_EYELL_N_A_N"
+ },
+ {
+  "opcode": 266,
+  "state": null,
+  "blend": null,
+  "clip": "std_ialertlk_rt_mrs_2",
+  "clipUpper": "STD_IALERTLK_RT_MRS_2"
+ },
+ {
+  "opcode": 267,
+  "state": null,
+  "blend": null,
+  "clip": "std_epushbuttonh_n_a_n",
+  "clipUpper": "STD_EPUSHBUTTONH_N_A_N"
+ },
+ {
+  "opcode": 268,
+  "state": null,
+  "blend": null,
+  "clip": "std_ialert_n_mrs_2",
+  "clipUpper": "STD_IALERT_N_MRS_2"
+ },
+ {
+  "opcode": 269,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_rdynamic_n_a_n",
+  "clipUpper": "STD_RDYNAMIC_N_A_N"
+ },
+ {
+  "opcode": 270,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_waim_fwd_p_2",
+  "clipUpper": "STD_WAIM_FWD_P_2"
+ },
+ {
+  "opcode": 271,
+  "state": null,
+  "blend": null,
+  "clip": "std_a_fwd_p_2",
+  "clipUpper": "STD_A_FWD_P_2"
+ },
+ {
+  "opcode": 272,
+  "state": null,
+  "blend": null,
+  "clip": "std_ietalkpose_n_a_n",
+  "clipUpper": "STD_IETALKPOSE_N_A_N"
+ },
+ {
+  "opcode": 273,
+  "state": 2,
+  "blend": null,
+  "clip": "std_frapidsweep_lt_p_2",
+  "clipUpper": "STD_FRAPIDSWEEP_LT_P_2"
+ },
+ {
+  "opcode": 274,
+  "state": null,
+  "blend": null,
+  "clip": "std_ialerttrn_lt_p_n",
+  "clipUpper": "STD_IALERTTRN_LT_P_N"
+ },
+ {
+  "opcode": 275,
+  "state": null,
+  "blend": null,
+  "clip": "std_esuprise90_lt_a_n",
+  "clipUpper": "STD_ESUPRISE90_LT_A_N"
+ },
+ {
+  "opcode": 276,
+  "state": 2,
+  "blend": null,
+  "clip": "std_fautosweep_up_m_2",
+  "clipUpper": "STD_FAUTOSWEEP_UP_M_2"
+ },
+ {
+  "opcode": 277,
+  "state": null,
+  "blend": null,
+  "clip": "std_xatkpause1_n_mrs_2",
+  "clipUpper": "STD_XATKPAUSE1_N_MRS_2"
+ },
+ {
+  "opcode": 278,
+  "state": 1,
+  "blend": 5.0,
+  "clip": "lb_pcrawl_bk_p_n",
+  "clipUpper": "LB_PCRAWL_BK_P_N"
+ },
+ {
+  "opcode": 279,
+  "state": null,
+  "blend": null,
+  "clip": "si_ewallidle_n_a_n",
+  "clipUpper": "SI_EWALLIDLE_N_A_N"
+ },
+ {
+  "opcode": 280,
+  "state": null,
+  "blend": null,
+  "clip": "si_ewalltalk_n_a_n",
+  "clipUpper": "SI_EWALLTALK_N_A_N"
+ },
+ {
+  "opcode": 281,
+  "state": null,
+  "blend": null,
+  "clip": "std_etoaim_n_p_2",
+  "clipUpper": "STD_ETOAIM_N_P_2"
+ },
+ {
+  "opcode": 282,
+  "state": null,
+  "blend": null,
+  "clip": "std_a_up_p_2",
+  "clipUpper": "STD_A_UP_P_2"
+ },
+ {
+  "opcode": 283,
+  "state": null,
+  "blend": null,
+  "clip": "si_ewallfear_n_a_n",
+  "clipUpper": "SI_EWALLFEAR_N_A_N"
+ },
+ {
+  "opcode": 284,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_to_a_n",
+  "clipUpper": "STD_ESALUTE_TO_A_N"
+ },
+ {
+  "opcode": 285,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_n_a_n",
+  "clipUpper": "STD_ESALUTE_N_A_N"
+ },
+ {
+  "opcode": 286,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalute_frm_a_n",
+  "clipUpper": "STD_ESALUTE_FRM_A_N"
+ },
+ {
+  "opcode": 287,
+  "state": null,
+  "blend": null,
+  "clip": "std_esalutations_n_a_n",
+  "clipUpper": "STD_ESALUTATIONS_N_A_N"
+ },
+ {
+  "opcode": 288,
+  "state": null,
+  "blend": null,
+  "clip": "std_eclimbshaft_n_a_n",
+  "clipUpper": "STD_ECLIMBSHAFT_N_A_N"
+ },
+ {
+  "opcode": 289,
+  "state": null,
+  "blend": null,
+  "clip": "std_xatkpause2_n_pk_n",
+  "clipUpper": "STD_XATKPAUSE2_N_PK_N"
+ },
+ {
+  "opcode": 290,
+  "state": 1,
+  "blend": 50.0,
+  "clip": "cch_w_n_a_n",
+  "clipUpper": "CCH_W_N_A_N"
+ },
+ {
+  "opcode": 291,
+  "state": null,
+  "blend": null,
+  "clip": "cch_ewalk2cch_n_a_n",
+  "clipUpper": "CCH_EWALK2CCH_N_A_N"
+ },
+ {
+  "opcode": 292,
+  "state": null,
+  "blend": null,
+  "clip": "cch_etalk_dwn_p_n",
+  "clipUpper": "CCH_ETALK_DWN_P_N"
+ },
+ {
+  "opcode": 293,
+  "state": null,
+  "blend": null,
+  "clip": "std_italkpose_up_a_n",
+  "clipUpper": "STD_ITALKPOSE_UP_A_N"
+ },
+ {
+  "opcode": 294,
+  "state": null,
+  "blend": null,
+  "clip": "cch_italkpose_dwn_a_n",
+  "clipUpper": "CCH_ITALKPOSE_DWN_A_N"
+ },
+ {
+  "opcode": 295,
+  "state": null,
+  "blend": null,
+  "clip": "std_etalk_up_a_n",
+  "clipUpper": "STD_ETALK_UP_A_N"
+ },
+ {
+  "opcode": 296,
+  "state": null,
+  "blend": null,
+  "clip": "cch_eheadnod_n_a_n",
+  "clipUpper": "CCH_EHEADNOD_N_A_N"
+ },
+ {
+  "opcode": 297,
+  "state": null,
+  "blend": null,
+  "clip": "cch_ecch2walk_n_a_n",
+  "clipUpper": "CCH_ECCH2WALK_N_A_N"
+ },
+ {
+  "opcode": 298,
+  "state": null,
+  "blend": null,
+  "clip": "std_xatkpause1_n_pk_n",
+  "clipUpper": "STD_XATKPAUSE1_N_PK_N"
+ },
+ {
+  "opcode": 299,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wfast_n_a_n",
+  "clipUpper": "STD_WFAST_N_A_N"
+ },
+ {
+  "opcode": 300,
+  "state": null,
+  "blend": null,
+  "clip": "std_erageidle_n_p_n",
+  "clipUpper": "STD_ERAGEIDLE_N_P_N"
+ },
+ {
+  "opcode": 301,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcchcower_up_a_a",
+  "clipUpper": "CCH_XCCHCOWER_UP_A_A"
+ },
+ {
+  "opcode": 302,
+  "state": null,
+  "blend": null,
+  "clip": "std_ietalkpose_rt_a_n",
+  "clipUpper": "STD_IETALKPOSE_RT_A_N"
+ },
+ {
+  "opcode": 303,
+  "state": null,
+  "blend": null,
+  "clip": "std_ebooklook_n_a_n",
+  "clipUpper": "STD_EBOOKLOOK_N_A_N"
+ },
+ {
+  "opcode": 304,
+  "state": null,
+  "blend": null,
+  "clip": "std_ebookscan_n_a_n",
+  "clipUpper": "STD_EBOOKSCAN_N_A_N"
+ },
+ {
+  "opcode": 305,
+  "state": null,
+  "blend": null,
+  "clip": "std_xopendoor_n_a_n",
+  "clipUpper": "STD_XOPENDOOR_N_A_N"
+ },
+ {
+  "opcode": 306,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_pk_a",
+  "clipUpper": "STD_XCROUCH_DWN_PK_A"
+ },
+ {
+  "opcode": 307,
+  "state": null,
+  "blend": null,
+  "clip": "cch_eheadset_frm_a_n",
+  "clipUpper": "CCH_EHEADSET_FRM_A_N"
+ },
+ {
+  "opcode": 308,
+  "state": null,
+  "blend": null,
+  "clip": "cch_eheadset_mid_a_n",
+  "clipUpper": "CCH_EHEADSET_MID_A_N"
+ },
+ {
+  "opcode": 309,
+  "state": 6,
+  "blend": null,
+  "clip": "std_shead_2frnt_n_n",
+  "clipUpper": "STD_SHEAD_2FRNT_N_N"
+ },
+ {
+  "opcode": 310,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_w_n_mrs_2",
+  "clipUpper": "STD_W_N_MRS_2"
+ },
+ {
+  "opcode": 311,
+  "state": null,
+  "blend": null,
+  "clip": "std_edkraim_n_a_n",
+  "clipUpper": "STD_EDKRAIM_N_A_N"
+ },
+ {
+  "opcode": 312,
+  "state": null,
+  "blend": null,
+  "clip": "cch_ehawkknees_n_n_n",
+  "clipUpper": "CCH_EHAWKKNEES_N_N_N"
+ },
+ {
+  "opcode": 313,
+  "state": null,
+  "blend": null,
+  "clip": "std_edkraimtalk_n_a_n",
+  "clipUpper": "STD_EDKRAIMTALK_N_A_N"
+ },
+ {
+  "opcode": 314,
+  "state": null,
+  "blend": null,
+  "clip": "std_edkrfirelk_rt_a_n",
+  "clipUpper": "STD_EDKRFIRELK_RT_A_N"
+ },
+ {
+  "opcode": 315,
+  "state": 6,
+  "blend": null,
+  "clip": "cch_ehawkdeath_n_n_n",
+  "clipUpper": "CCH_EHAWKDEATH_N_N_N"
+ },
+ {
+  "opcode": 316,
+  "state": null,
+  "blend": null,
+  "clip": "cch_ehawkkneetlk_n_n_n",
+  "clipUpper": "CCH_EHAWKKNEETLK_N_N_N"
+ },
+ {
+  "opcode": 317,
+  "state": null,
+  "blend": null,
+  "clip": "cch_echokedeath_n_n_n",
+  "clipUpper": "CCH_ECHOKEDEATH_N_N_N"
+ },
+ {
+  "opcode": 318,
+  "state": null,
+  "blend": null,
+  "clip": "cch_eheadset_to_a_n",
+  "clipUpper": "CCH_EHEADSET_TO_A_N"
+ },
+ {
+  "opcode": 319,
+  "state": null,
+  "blend": null,
+  "clip": "lb_eslide_n_pk_n",
+  "clipUpper": "LB_ESLIDE_N_PK_N"
+ },
+ {
+  "opcode": 320,
+  "state": null,
+  "blend": null,
+  "clip": "std_a_fwd_p_cb",
+  "clipUpper": "STD_A_FWD_P_CB"
+ },
+ {
+  "opcode": 321,
+  "state": null,
+  "blend": null,
+  "clip": "std_igunuplook_n_a_n",
+  "clipUpper": "STD_IGUNUPLOOK_N_A_N"
+ },
+ {
+  "opcode": 322,
+  "state": 2,
+  "blend": null,
+  "clip": "std_frapid_n_p_2",
+  "clipUpper": "STD_FRAPID_N_P_2"
+ },
+ {
+  "opcode": 323,
+  "state": null,
+  "blend": null,
+  "clip": "std_edkraimlk_fwd_a_n",
+  "clipUpper": "STD_EDKRAIMLK_FWD_A_N"
+ },
+ {
+  "opcode": 324,
+  "state": null,
+  "blend": null,
+  "clip": "std_ewhirl_rt_a_n",
+  "clipUpper": "STD_EWHIRL_RT_A_N"
+ },
+ {
+  "opcode": 325,
+  "state": 0,
+  "blend": null,
+  "clip": "std_fsweepup_frm_a_a",
+  "clipUpper": "STD_FSWEEPUP_FRM_A_A"
+ },
+ {
+  "opcode": 326,
+  "state": 0,
+  "blend": null,
+  "clip": "std_fsweepup_to_a_a",
+  "clipUpper": "STD_FSWEEPUP_TO_A_A"
+ },
+ {
+  "opcode": 327,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_xtakecover_n_a_n",
+  "clipUpper": "STD_XTAKECOVER_N_A_N"
+ },
+ {
+  "opcode": 328,
+  "state": null,
+  "blend": null,
+  "clip": "std_esabrebluff_n_a_a",
+  "clipUpper": "STD_ESABREBLUFF_N_A_A"
+ },
+ {
+  "opcode": 329,
+  "state": 2,
+  "blend": null,
+  "clip": "std_eautosweep_n_pm_a",
+  "clipUpper": "STD_EAUTOSWEEP_N_PM_A"
+ },
+ {
+  "opcode": 330,
+  "state": 2,
+  "blend": null,
+  "clip": "cch_f_fwd_s_2",
+  "clipUpper": "CCH_F_FWD_S_2"
+ },
+ {
+  "opcode": 331,
+  "state": 2,
+  "blend": null,
+  "clip": "std_f_fwd_p_cb",
+  "clipUpper": "STD_F_FWD_P_CB"
+ },
+ {
+  "opcode": 332,
+  "state": 4,
+  "blend": null,
+  "clip": "std_soutwindow_n_a_n",
+  "clipUpper": "STD_SOUTWINDOW_N_A_N"
+ },
+ {
+  "opcode": 333,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_mrs_2",
+  "clipUpper": "STD_XCROUCH_DWN_MRS_2"
+ },
+ {
+  "opcode": 334,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_p_2",
+  "clipUpper": "STD_XCROUCH_DWN_P_2"
+ },
+ {
+  "opcode": 335,
+  "state": 2,
+  "blend": null,
+  "clip": "std_tgrenade_n_a_n",
+  "clipUpper": "STD_TGRENADE_N_A_N"
+ },
+ {
+  "opcode": 336,
+  "state": 2,
+  "blend": null,
+  "clip": "std_tunder_n_a_n",
+  "clipUpper": "STD_TUNDER_N_A_N"
+ },
+ {
+  "opcode": 337,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcrouch_up_l_2",
+  "clipUpper": "CCH_XCROUCH_UP_L_2"
+ },
+ {
+  "opcode": 338,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_l_2",
+  "clipUpper": "STD_XCROUCH_DWN_L_2"
+ },
+ {
+  "opcode": 339,
+  "state": null,
+  "blend": null,
+  "clip": "std_xcrouch_dwn_p_a",
+  "clipUpper": "STD_XCROUCH_DWN_P_A"
+ },
+ {
+  "opcode": 340,
+  "state": 1,
+  "blend": 150.0,
+  "clip": "std_raim_n_mrs_2",
+  "clipUpper": "STD_RAIM_N_MRS_2"
+ },
+ {
+  "opcode": 341,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "std_wfire_fwd_ms_2",
+  "clipUpper": "STD_WFIRE_FWD_MS_2"
+ },
+ {
+  "opcode": 342,
+  "state": 1,
+  "blend": 10.0,
+  "clip": "cch_afire_fwd_ms_2",
+  "clipUpper": "CCH_AFIRE_FWD_MS_2"
+ },
+ {
+  "opcode": 343,
+  "state": 2,
+  "blend": null,
+  "clip": "std_f_fwd_m_2",
+  "clipUpper": "STD_F_FWD_M_2"
+ },
+ {
+  "opcode": 344,
+  "state": 2,
+  "blend": null,
+  "clip": "cch_f_fwd_m_2",
+  "clipUpper": "CCH_F_FWD_M_2"
+ },
+ {
+  "opcode": 345,
+  "state": null,
+  "blend": null,
+  "clip": "std_epushover_n_pk_a",
+  "clipUpper": "STD_EPUSHOVER_N_PK_A"
+ },
+ {
+  "opcode": 346,
+  "state": null,
+  "blend": null,
+  "clip": "std_emerchall_n_a_a",
+  "clipUpper": "STD_EMERCHALL_N_A_A"
+ },
+ {
+  "opcode": 347,
+  "state": null,
+  "blend": null,
+  "clip": "std_emerchone_n_a_a",
+  "clipUpper": "STD_EMERCHONE_N_A_A"
+ },
+ {
+  "opcode": 348,
+  "state": null,
+  "blend": null,
+  "clip": "std_iemerchant_n_a_a",
+  "clipUpper": "STD_IEMERCHANT_N_A_A"
+ },
+ {
+  "opcode": 349,
+  "state": null,
+  "blend": null,
+  "clip": "std_emerchwave_rt_a_a",
+  "clipUpper": "STD_EMERCHWAVE_RT_A_A"
+ },
+ {
+  "opcode": 350,
+  "state": null,
+  "blend": null,
+  "clip": "std_emerchtalk_n_a_a",
+  "clipUpper": "STD_EMERCHTALK_N_A_A"
+ },
+ {
+  "opcode": 351,
+  "state": null,
+  "blend": null,
+  "clip": "std_emerchwave_lt_a_a",
+  "clipUpper": "STD_EMERCHWAVE_LT_A_A"
+ },
+ {
+  "opcode": 352,
+  "state": null,
+  "blend": null,
+  "clip": "std_ebeg_n_a_a",
+  "clipUpper": "STD_EBEG_N_A_A"
+ },
+ {
+  "opcode": 353,
+  "state": null,
+  "blend": null,
+  "clip": "std_icleangun2_n_pk_n",
+  "clipUpper": "STD_ICLEANGUN2_N_PK_N"
+ },
+ {
+  "opcode": 354,
+  "state": null,
+  "blend": null,
+  "clip": "cch_xcchcower_n_a_n",
+  "clipUpper": "CCH_XCCHCOWER_N_A_N"
+ }
+]

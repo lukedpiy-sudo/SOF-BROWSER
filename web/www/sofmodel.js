@@ -645,6 +645,31 @@
 				return window.sofmodel.ghoulStrings;
 			}).catch(function () { return null; });
 		},
+		/* The animation state table of the Ghoul script: the opcode ->
+		 * (the state code, the blend in ms, the clip name).
+		 *
+		 * It is the switch of the game's bytecode interpreter
+		 * (gamex86.dll 0x5007EC40), extracted by
+		 * analysis/ghoul_vm_opcodes.py into web/www/ghoulstates.json.
+		 * The clip names are upper case, like the .ghb clips. */
+		ghoulStates: null,
+		loadGhoulStates: function () {
+			if (this.ghoulStates) return Promise.resolve(this.ghoulStates);
+			return fetch("ghoulstates.json").then(function (r) { return r.json(); }).then(function (j) {
+				window.sofmodel.ghoulStates = j;
+				return window.sofmodel.ghoulStates;
+			}).catch(function () { return null; });
+		},
+		/* the clip of an animation state code (or null): the table is
+		 * keyed by the opcode, and the state code is the first field */
+		ghoulClipFor: function (stateCode) {
+			const t = this.ghoulStates;
+			if (!t) return null;
+			for (const k in t) {
+				if (t[k].state === stateCode && t[k].clip) return t[k];
+			}
+			return null;
+		},
 		parseGhoul: parseGhoul,
 		parseGeometry: parseGeometry,
 		decodeTGA: decodeTGA,

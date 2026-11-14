@@ -589,6 +589,13 @@ looks the index up in the BST at `manager+0x3C` and applies the record with
 it is missing); section 2 only calls `vtable[0x6C]`; section 3 uses the BST
 at `manager+0x124` and calls `vtable[0xD4]`.
 
+The **leading field of a record** (the `u16` at `obj+0x04`) is the
+**entity index** and nothing else: the client's section-1 loop reads it at
+`SoF.exe 0x2006C10A` with the same encoded-u16 primitive, negates it and
+does the BST lookup.  It is *not* a cursor into the global string table -
+the string-table writer `FUN_2006A370` keeps its own payload-local counter
+in a local variable.
+
 The **per-entity record** (the applier `FUN_2008B4D0`, the writer
 `FUN_2008ACC0`) is a run of groups, each `[encoded-u16 count][count ×
 encoded-u16 delta]`.  The list values are delta encoded
@@ -602,6 +609,11 @@ five groups map onto the object as:
 | 3 | the count is stored at `obj+0x10`; the elements go to `vtable[0x2C]` | the count at `obj+0x10`, the elements from `obj+0xE0` |
 | 4 | the count sizes the `0x14` vector at `obj+0xA0`; the elements go to `FUN_200897F0` | the count at `obj+0x12`, the elements from `obj+0xA0` |
 | 5 | a count plus a per-element `{1-bit flag, optional encoded-u16, encoded-u16 delta}` → `FUN_20089D90` | the count at `obj+0x14`, the elements from the list at `obj+0xC0` |
+
+The record ends by allocating a **0xE8-byte animation-state object** into
+`obj+0x130` and filling it with `FUN_200786B0` (the 120 Hz clock, the
+model and state indices, the origin block - see `analysis/ghb_format.md`
+§9.6.1).
 
 See `analysis/ghb_format.md` §9.4-§9.6 for the full layout.
 

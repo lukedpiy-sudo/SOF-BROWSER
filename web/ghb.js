@@ -826,10 +826,13 @@ function normalVector(anim, n, frame) {
  * The Ghoul side files.
  *
  * .gsq - the sequence list: the animation names a model supports.  It is
- *        a plain text file, CRLF, one lowercased name per line.
+ *        a plain text file, CRLF, one lowercased name per line.  A line
+ *        that starts with '#' is an INCLUDE: the rest of the line names
+ *        another .gsq in the same directory (SoF.exe 0x20049190).
  * .gpm - the player model script.  SOLVED 2026-11-13 from the engine's
  *        own parser (SoF.exe 0x20047680 / 0x200478C0 / 0x20047F40,
  *        the tokenizer vtable at 0x20111D88); see analysis/gpm_format.md.
+ * .gbm - the bolt-on model: the SAME format as the .gpm.
  *
  * The .gpm parser is POSITIONAL: the kind of a block is decided by where
  * it appears, not by what is in it.  The header is seven tokens, then
@@ -841,13 +844,31 @@ function normalVector(anim, n, frame) {
  *
  * and then one trailing token.  A "}" ends a block.
  * ------------------------------------------------------------------ */
-function parseGsq(buf) {
+
+/* The .gsq loader of SoF.exe 0x20049190.  It reads the file line by
+ * line; a line that starts with '#' includes another .gsq of the same
+ * name (without the extension) and the lines are flattened.  The engine
+ * turns each name into the side file "ghoul/<dir>/<name>.ghl" - no .ghl
+ * ships with SoF, so the .ghb's own clip data is what is used. */
+function parseGsq(buf, include) {
 	const text = typeof buf === "string" ? buf : Buffer.from(buf).toString("latin1");
 	const names = [];
-	for (const line of text.split(/\r?\n/)) {
-		const s = line.trim();
-		if (s.length) names.push(s.toLowerCase());
+	const includes = [];
+	const seen = include || {};
+	for (const raw of text.split(/\r?\n/)) {
+		const s = raw.trim();
+		if (!s.length) continue;
+		if (s.charAt(0) === "#") {
+			/* the include: the name of another .gsq */
+			const sub = s.slice(1).trim().toLowerCase();
+			if (!sub.length || seen[sub]) continue;
+			seen[sub] = true;
+			includes.push(sub);
+			continue;
+		}
+		names.push(s.toLowerCase());
 	}
+	names.includes = includes;
 	return names;
 }
 
@@ -988,7 +1009,7 @@ function clipNames(model) {
 }
 
 const API = { parseGhoul, parseGeometry, parseAnimation, decodeAnimation, animatedNormal,
-	normalVector, normalKeyframes, parseGsq, parseGpm, clipNames,
+	normalVector, normalKeyframes, parseGsq, parseGpm, parseGbm: parseGpm, clipNames,
 	BitReader, Reader, SECTION_NAMES, GHB_MAGIC, GHB_MODEL_MAGIC,
 	NORMAL_PALETTE };
 if (typeof module !== "undefined" && module.exports) module.exports = API;
