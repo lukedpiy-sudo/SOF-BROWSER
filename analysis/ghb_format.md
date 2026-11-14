@@ -500,7 +500,6 @@ extracted by **`analysis/ghoul_vm_opcodes.py`** into
 `analysis/ghoul_states.json`.
 
 #### 8.6.0 The clip descriptor table — SOLVED 2026-11-14
-
 The module does **not** store the clip names as bare strings: each name
 is the first field of a **0x58-byte clip descriptor record**, and the
 records are laid out contiguously in `.rdata` (`gamex86.dll`, from about
@@ -539,6 +538,151 @@ says 6.  The `+0x3C`/`+0x40`/`+0x44` triple is the **turn / aim window**
 
 The names are **lowercase** here and **uppercase** in the `.ghb`, so the
 engine matches them **case-insensitively**.
+
+#### 8.6.2 The clip name → clip index lookup — SOLVED 2026-11-14
+
+This is the **last hop**: the module produces a clip *name*, and the
+engine has to turn it into a clip *index* in the model.  It does **not**
+scan the model's clip list comparing strings — it goes through the
+engine's **interned-name red-black tree**, and that tree is keyed
+**case-insensitively**.  That is exactly why the module's lowercase names
+match the `.ghb`'s uppercase ones.
+
+**Step 1 — the interning tree** (`SoF.exe`)
+
+| function | what |
+|---|---|
+| `0x20073AB0` | **intern a string**: search the tree with `__strcmpi`, and insert it if it is not there.  On insert it hands out a sequential **u16 id** |
+| `0x200750F0` | the raw red-black **insert** (0x18-byte nodes) |
+| `0x20075350` | the raw **search** — the tree walk with `__strcmpi` |
+| `0x200720F0` | "search, and return the sentinel node if it is not there" |
+| `0x2006A1C0` | the Ghoul **string-table lookup**: `FUN_20075350` and then return `(class << 16) \| id` |
+
+The interning site is `SoF.exe 0x2006A133`:
+
+```asm
+2006a133: call   0x20073ab0        ; intern the string
+2006a146: call   0x2008c5b0
+2006a14f: mov    %di,0x10(%ecx)    ; the node's +0x10 = the new u16 id
+2006a153: inc    %edi              ; the next id
+```
+
+so the name-tree node is:
+
+| offset | what |
+|---|---|
+| `+0x00` | the left child |
+| `+0x04` | the parent |
+| `+0x08` | the right child |
+| `+0x0C` | the key — the refcounted string |
+| `+0x10` | the **u16 id** |
+| `+0x14` | the red/black flag |
+
+The comparison itself is the MSVC `__strcmpi` at `SoF.exe 0x200FCE40`
+(a library function — "Visual Studio 1998"), used as:
+
+```c
+// FUN_20075350
+28: iVar1 = __strcmpi((char *)puVar3[3], (char *)*param_1);
+29: if (iVar1 == -1) { puVar4 = (undefined4 *)puVar3[2]; ... }   // go right
+34: else              { puVar4 = (undefined4 *)*puVar3; }        // go left
+```
+
+**Step 2 — the Ghoul entity's clip tree** (`SoF.exe`)
+
+The Ghoul animated entity keeps a **second** tree, keyed by the **id**
+(an integer), at the entity's `+0x110`:
+
+```c
+// FUN_2001FD60 - find the node whose +0x0C key equals the id
+if ((int)puVar2[3] < *param_2) { puVar3 = (undefined4 *)puVar2[2]; }
+else                         { puVar3 = (undefined4 *)*puVar2; puVar4 = puVar2; }
+```
+
+The Ghoul entity's layout around the animation:
+
+| offset | what |
+|---|---|
+| `+0xF0` | a list head (the "extra" entities) |
+| `+0xF8`, `+0xFC` | the current clip id / the clip tree's sentinel |
+| `+0x110` | the **clip tree**, keyed by the interned id |
+| `+0x124` | the current animation time |
+| `+0x12A` | a flag byte (ORed with the model's `+0x116`) |
+| `+0x1C4` | the **model object** |
+| `+0x1CE` | a short state/flag |
+
+**Step 3 — the model's clip vector**
+
+The **model object** holds the clips the `.ghb` declared:
+
+| offset | what |
+|---|---|
+| `+0x110` | the clip vector's **begin** |
+| `+0x114` | the clip vector's **end** |
+| `+0x120` | a `char*[]` — the per-clip event/sound strings |
+| `+0x130` | another vector |
+
+```c
+// SoF.exe 0x200A2DF0
+603: if (*(int *)(extraout_ECX + 0x110) == 0) iVar14 = 0;
+607: else iVar14 = (int)(*(int *)(extraout_ECX + 0x114) - *(int *)(extraout_ECX + 0x110)) >> 2;
+622: param_5 = *(int *)(*(int *)(extraout_ECX + 0x110) + iVar14 * 4);
+```
+
+Each clip object:
+
+| offset | what |
+|---|---|
+| `+0x00` | the clip **name** (a refcounted string) |
+| `+0x10`, `+0x1C` | two more strings (the event / the sound) |
+| `+0x24` .. `+0x28` | the **frame track** (0x28 = 40 bytes = 10 floats per frame) |
+| `+0x2C` | the track's end |
+
+**Step 4 — the runtime clip**
+
+`SoF.exe 0x200A18D0` turns each model clip into a **0x30-byte runtime
+clip** and stores the **model clip index** in it:
+
+```c
+195: puVar7 = operator_new(0x30);
+209: FUN_200a8890(*(undefined4 *)(in_ECX + 0x114),1,&local_444);
+210: FUN_20068f80(&local_468,*(int *)(*(int *)(in_ECX + 0x110) + iVar4 * 4) + 0x10);
+211: FUN_20068e30(&local_468,*(int *)(*(int *)(in_ECX + 0x110) + iVar4 * 4) + 0x1c);
+212: FUN_20068ff0(&local_468,*(undefined4 *)(*(int *)(in_ECX + 0x110) + iVar4 * 4));
+220: *(int *)(iVar1 + 0x1c) = iVar4;      // <<< the model clip index
+```
+
+**Step 5 — playing the clip**
+
+`SoF.exe 0x2007C0F0` is the playback: it takes the clip index, fetches
+the clip object and walks the frame track:
+
+```c
+311: iVar11 = *(int *)(*(int *)(local_3a0 + 0x110) + local_3a8 * 4);  // the clip
+315: for (local_3bc = *(float **)(iVar11 + 0x24);
+316:     (local_3bc != *(float **)(iVar11 + 0x28) && (*local_3bc < local_394));
+317:     local_3bc = local_3bc + 10) { }          // 10 floats = 40 bytes per frame
+```
+
+and `SoF.exe 0x2007A300` builds the animation **request** (it packs the
+clip name and the blend time into the message buffer with `FUN_200BDCA0`).
+
+### The whole hop, in one line
+
+```
+the module's lowercase clip name
+  -> the engine's interned-name red-black tree (CASE-INSENSITIVE, __strcmpi)
+  -> a u16 id
+  -> the Ghoul entity's id-keyed clip tree (FUN_2001FD60)
+  -> the clip object
+  -> the model clip index (the runtime clip's +0x1C)
+  -> the frame track (the clip's +0x24..+0x28, 40 bytes per frame)
+```
+
+**For the browser** this means the clip lookup is simply a
+**case-insensitive string match** between the module's clip name and the
+`.ghb`'s clip list — no hashing, no ordering, and the `.ghb`'s order is
+the index order.
 
 #### 8.6.1 The animation command (SOLVED 2026-11-14)
 
