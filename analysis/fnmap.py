@@ -14,6 +14,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DIRS = [
     os.path.join(ROOT, 'analysis', 'rea', 'sof_all', 'functions'),
     os.path.join(ROOT, 'analysis', 'rea', 'ghoul_all', 'functions'),
+    os.path.join(ROOT, 'analysis', 'rea', 'refgl_all', 'functions'),
+    os.path.join(ROOT, 'analysis', 'rea', 'qeffects_all', 'functions'),
 ]
 
 RANGE = re.compile(r'^// range: 0x([0-9a-f]+)-0x([0-9a-f]+) inclusive', re.M)
