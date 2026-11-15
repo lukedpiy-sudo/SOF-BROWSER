@@ -216,11 +216,11 @@ def read_decal(r):
     if e["version"] > 1:
         raise ValueError("the decal version %d is too new" % e["version"])
     e["name"] = strip_m32(r.cstr64())   # +0x24
-    e["f10"] = r.f32()                  # +0x10
-    e["f14"] = r.f32()                  # +0x14
-    e["f18"] = r.f32()                  # +0x18
-    e["f1c"] = r.f32()                  # +0x1C
-    e["flags"] = r.u32()                # +0x20
+    e["growth_accel"] = r.f32()          # +0x10
+    e["growth_duration"] = r.f32()       # +0x14
+    e["start_size"] = r.f32()            # +0x18
+    e["end_size"] = r.f32()              # +0x1C
+    e["direction"] = r.u32()             # +0x20  (0=Forward 1=Downward 2=Backward)
     return e
 
 

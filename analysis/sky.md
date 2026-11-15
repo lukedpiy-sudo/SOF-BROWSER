@@ -392,19 +392,47 @@ extents from the clipper) is unaffected — only the texture coordinate is.
 
 ## 12. `gl_skymip` and the detail texturing
 
-`gl_skymip` is registered in `ref_gl.dll 0x30010026` (the cvar pointer
-`0x3008FC5C`) and it is read in three places:
+`gl_skymip` is registered in `ref_gl.dll` (the name is pushed at
+`0x30010026`) and its **cvar pointer is `0x3008FD74`**.  It is read in
+two places, both inside the sky code:
 
 | site | what it does |
 |---|---|
-| `0x300068F1` | `gl_skymip != 0` → the texture level gets `+ entity->0x2D8` added (the **mip bias**) |
-| `0x30006D1C` | `gl_skymip != 0` → a different texture-sampling path |
-| `0x3000ED94` | `gl_skymip != 0` → the minification filter becomes `0x1000000` instead of `0x400000` (the **mipmap** filter) |
+| `0x3001945C` | `gl_skymip != 0` → the sky is not "static"; the sky rotate (`0x300A410C`) decides whether the cube is re-rendered |
+| `0x300194B4` | `gl_skymip` picks the sky texture path |
 
-So `gl_skymip` is the "use the mipmaps for the sky" switch.
+> **The cvar pointer table in `ref_gl.dll` is shifted by one.**  The
+> registration loop stores the *previous* `Cvar_Get` result:
+>
+> ```asm
+> push $name          ; the name of the cvar being created
+> mov %eax,ptr        ; the result of the PREVIOUS Cvar_Get
+> call *0x3008FE08    ; Cvar_Get(name, default, flags, 0)
+> ```
+>
+> So the pointer that sits immediately **before** the name push belongs to
+> the cvar created by the **previous** call.  Reading the table the naive
+> way swaps `gl_skymip` with `gl_pictip` and `gl_showtris` with
+> `gl_skymip`.  The corrected table is:
+>
+> | cvar | the cvar pointer | the default |
+> |---|---|---|
+> | `gl_skymip` | `0x3008FD74` | `0` |
+> | `gl_pictip` | `0x3008FC5C` | `0` |
+> | `gl_showtris` | `0x3008FC74` | `0` |
+> | `gl_picmip` | `0x3008FC90` | `0` |
+> | `gl_detailtexturing` | `0x3008FC84` | `1` |
+> | `gl_detailtexturingdistance` | `0x3008FC70` | `250` |
+
+The `gl_pictip` sites (`0x300068F1`, `0x30006D1C`, `0x3000ED94`) are the
+general texture path: `gl_pictip != 0` → the texture level gets
+`+ entity->0x2D8` added (the **mip bias**), a different texture-sampling
+path is taken, and the minification filter becomes `0x1000000` instead of
+`0x400000` (the **mipmap** filter).
 
 The detail texturing cvars are in the same table: `gl_detailtexturing`
-(`0x3002F274`) and `gl_detailtexturingdistance` (`0x3002F254`).
+(`0x3002F274`) and `gl_detailtexturingdistance` (`0x3002F254`) - see
+`analysis/render_extras.md`.
 
 ## 13. The consequence for the browser
 

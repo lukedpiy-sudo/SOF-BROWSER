@@ -25,3 +25,18 @@ logs/
 .probe
 .probe.txt
 samples/
+
+# ---- REA scratch ----
+# the REA/Ghidra session scratch: the raw evidence JSON, the logs and the
+# throw-away Ghidra project directories.  The committed corpora
+# (analysis/rea/*_all/) and the notes are NOT affected by these.
+analysis/rea/.*_work_*
+analysis/rea/.eft_work_*
+analysis/rea/.render_extras_*
+analysis/rea/.x87flags*
+analysis/rea/.apitable_*
+analysis/rea/*_work_ghidra/
+analysis/rea/ForceDecompile.java
+analysis/rea/--help.json
+analysis/rea/xrefs.json
+analysis/rea/*.log

@@ -7,12 +7,20 @@ health/ammo, hears the game, and the round ends properly.*
 The workstream table in `BROWSER_ROADMAP.md` measures *engineering tasks*.
 It is not the same thing as playability, and it was overstating the result.
 
-Updated **2026-11-09**, second revision the same day (the previous revision
-was 2026-10-25 and it was already stale: it still listed the client side
+Updated **2026-11-15**, third revision (the previous revision was
+2026-11-11/12 and it was already stale: it still listed the client side
 prediction and the `.eft` particle system as missing, and both were done on
 2026-10-22 / 2026-10-27).
 
-The big change in this revision: **the `.ghb` triangle topology is solved.**
+The change in this revision: **the renderer's half of the engine is closed.**
+The `.m32` texture container (every shipped file, 4199 of them, parses
+exactly), the detail texturing, the Decal emitter, the FX emitter plumbing
+and the **two bidirectional API tables** that bind `SoF.exe` to `ref_gl.dll`
+are all decoded and written up in `analysis/render_extras.md`.  The `.eft`
+container and all five emitter semantics are done, so the RE is at ~98%.
+
+The big change in the previous revision: **the `.ghb` triangle topology is
+solved.**
 The Elem encoding is decoded and validated on four real models with zero
 malformed face groups, the static mesh path (positions, normals, UVs) is
 verified end to end, and the Comp header is fully byte-mapped.  That was the
@@ -92,7 +100,7 @@ finished only where the RE is finished.
 | `.m32` materials | **100%** | RGBA + the RGB565 variants |
 | `.pak` | **100%** | 64 byte directory entries |
 | `.adp` / `.dms` / `.ams` / `.os` | **95%** | the formats are done; the level script events are not wired to the voice lines |
-| `.eft` effects | **85%** | the format is done; the engine side emitter semantics are not |
+| `.eft` effects | **100%** | **solved 2026-11-15**: the container is byte exact (**192/192** shipped files parse to the last byte), all **five** emitter readers are decoded (Effect / Sound / Light / Decal / Feedback), the particle system, the LOD ladder, the sprite types and the FX emitter plumbing (the list, the two per-frame passes, the vtables, the cvars) - `analysis/eft_semantics.md`, `analysis/render_extras.md`.  Left: the browser still uses a heuristic parser, not the real layout |
 | `.ghb` container + the model stream | **97%** | the clips, the events, the bones, the bolts.  Left: the per entity clip/frame selection |
 | **`.ghb` mesh (the topology + the static geometry)** | **97%** | **solved**: the Elem encoding, the 10 sections, the shared-array corner resolution, and the **per-face material binding** (the MatBlocks partition the face groups into one run per material; `matIndex` indexes the model's mesh list, the mesh's `A` is the draw order) |
 | **`.ghb` animated vertices + normals** | **92%** | **solved 2026-11-11**: the bit packed position stream (both the absolute and the delta path), the 43 byte record table and the 256 entry normal palette at `0x20404C90`.  The **clip partition** and the **runtime track layout** are now solved too, and the **material binding** (the `_DC` texture naming: the mesh name + `"_DC"` + the skin base name) is solved.  Left: the per entity clip/frame selection |
@@ -100,10 +108,10 @@ finished only where the RE is finished.
 | **the Ghoul net protocol (svc 0x1A/0x1B)** | **90%** | the framing, the **bit stream** (LSB first), the **encoded-u16** primitive, the **global string table** (3713 entries), the **three sections** (the states / the spawn list / the extra list), the **five per-entity groups** and the **origin block** (the 4×4 matrix, the packed normal, the quantised position) are all solved.  Left: the browser decoder and the runtime-added model path indices |
 | **the Ghoul side files** (`.gsq`/`.gpm`/`.gbm`) | **95%** | `.gsq` is fully decoded (the lowercased clip names, the recursive `#` includes), `.gpm` and `.gbm` are the **same format** and are fully decoded.  Left: the `.gpm` block kinds are described but not named |
 | the weapon fire internals (the module) | **60%** | the table, the delays and the heat model are known |
-| the engine side pmove import (`DAT_5015cb34`) | **85%** | **the entry is found**: it is the engine's import **slot 81** = `SoF.exe 0x20054750` (`FUN_20054750`) — it reads the `pmove_t`, converts the movement shorts (`× 0.125`), the angles and the `msec`, and dispatches on `pm_type`.  Left: the full `pmove_t` field map |
-| the player_state gate (`analysis/ps_mask.md`) | **95%** | **solved 2026-11-14**: the writer is `SoF.exe 0x2005B110` (it writes svc 0x14 + a u32 **delta mask** — a bit is set only when the field changed against the client's last ACKed frame), the reader is `0x200028B0` and it **merges** the delta over the state it holds for the delta frame (a 16-slot 0x104-byte ring at `0x201E7F68`).  The browser was zeroing the absent fields instead of merging, which is why the local player's velocity and view angles read 0.  The browser fix is a one-liner in `web/playerstate.js` (it already receives the previous state) |
-| the sky / the decals / the detail props | **55%** | the sky lump is extracted, nothing renders it |
-| **overall RE** | **~96%** | up from ~86%: the `.os` mission script format (730/730 scripts parse exactly), the `.gpm`/`.gbm`/`.gsq` side files, the Ghoul VM and its state table, the origin block, the per-face material binding, the pmove import, the player_state delta gate and the clip-name lookup closed the last big gaps.  The two biggest remaining holes are the **sky / decals / detail props** and the **`.eft` emitter semantics** |
+| the engine side pmove import (`DAT_5015cb34`) | **98%** | **the entry is found**: it is the engine's import **slot 81** = `SoF.exe 0x20054750` (`FUN_20054750`) — it reads the `pmove_t`, converts the movement shorts (`× 0.125`), the angles and the `msec`, and dispatches on `pm_type`.  The **0x100-byte `pmove_t` field map is done** (`analysis/pmove_engine.md`), including the 13 `pm_types` and the `pm_flags`.  Left: the browser's import stub |
+| the player_state gate (`analysis/ps_mask.md`) | **100%** | **solved 2026-11-14**: the writer is `SoF.exe 0x2005B110` (it writes svc 0x14 + a u32 **delta mask** — a bit is set only when the field changed against the client's last ACKed frame), the reader is `0x200028B0` and it **merges** the delta over the state it holds for the delta frame (a 16-slot 0x104-byte ring at `0x201E7F68`).  The browser was zeroing the absent fields instead of merging, which is why the local player's velocity and view angles read 0.  The browser fix is a one-liner in `web/playerstate.js` (it already receives the previous state) |
+| **the sky / the decals / the detail props** | **95%** | **solved 2026-11-15**: the **sky** (the 6-face cube, the `pics/sky/<name>.txt` layer file, the 37800-unit cube, the sky clipper, the per-face UV extents, the `cloud` stub - `analysis/sky.md`); the **`.m32` texture container** (every offset confirmed against the loader `GL_FindImage`, **4199/4199** shipped files parse exactly - `analysis/m32_parse.py`); the **detail texturing** (the cvars, the three modes, the load path, the recursion guards, the detail matrix); the **Decal emitter** (the record layout, the runtime, the FX emitter plumbing); and the **two API tables** that bind the engine and the renderer together - `analysis/render_extras.md`.  Left: the **browser port** (the sky is not rendered yet, the detail props and the decals are not drawn) |
+| **overall RE** | **~98%** | up from ~96%: the `.eft` container and all five emitter semantics, the `.m32` texture container, the detail texturing, the Decal emitter, the bidirectional renderer API, the pmove import and the player_state delta gate closed the remaining gaps.  The two holes left are the **weapon fire internals (the module side)** and the **module's entity-class/field tables** |
 
 ## 3. What the REA session changed (2026-11-09)
 

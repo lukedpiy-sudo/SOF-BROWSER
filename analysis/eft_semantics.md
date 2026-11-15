@@ -186,14 +186,29 @@ The ctor's defaults are radius 30.0, RGB 255.0 and intensity 1.0.
 ```
 +0x00   u32       the version (must be <= 1)
 +0x04   char[64]  +0x24  the image name (".m32" stripped)
-+0x44   f32       +0x10
-+0x48   f32       +0x14
-+0x4C   f32       +0x18
-+0x50   f32       +0x1C
-+0x54   u32       +0x20  the flags
++0x44   f32       +0x10  the growth acceleration   (the default 2.0)
++0x48   f32       +0x14  the growth duration       (the default 2.0)
++0x4C   f32       +0x18  the start size            (the default 0.0)
++0x50   f32       +0x1C  the end size              (the default 0.0)
++0x54   u32       +0x20  the direction             (0=Forward 1=Downward 2=Backward)
 ```
 
-The default name is `"textures/sprites/sparkpart..."` (`0x201321CC`).
+The field names come from the ctor (`0x2003CA20`, which sets +0x10 and
++0x14 to 2.0 and +0x18/+0x1C to 0.0) and from the console dump in the
+emitter's own "spawn" (`0x2003D5F0`):
+
+```
+"Start size      %7.2f          Growth Acceleration   %7.2f"   <- +0x18, +0x10
+"End size        %7.2f          Growth Duration       %7.2f"   <- +0x1C, +0x14
+```
+
+The direction strings are `"Forward"` (`0x2013389C`), `"Downward"`
+(`0x201341CC`) and `"Backward"` (`0x20133884`).
+
+The default image name is `"textures/sprites/sparkpart..."`
+(`0x201321CC`).  At the end of the reader the engine calls the
+renderer's image loader (`*0x20403598`) with the name, so the decal's
+texture is a **.m32** image - see `analysis/render_extras.md`.
 
 ### 2.5 class 4 - "Feedback" (`0x2003CFE0`)
 
