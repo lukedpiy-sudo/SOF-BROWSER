@@ -1291,7 +1291,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		let best = null, bestD = 1e9;
 		for (const it of mapItemList) {
 			if (a.cls && it.classname.indexOf(a.cls) < 0) continue;
-			const d = Math.hypot(it.origin[0] - p.x, it.origin[1] - p.y);
+			const dz = (it.origin[2] || 0) - p.z;
+			const d = Math.hypot(it.origin[0] - p.x, it.origin[1] - p.y, dz * 0.75);
 			if (d < bestD) { bestD = d; best = it; }
 		}
 		if (!best) return;
@@ -1309,7 +1310,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			a.slide = 0;
 		}
 
-		if (bestD < 40) {
+		/* if the pickup is above us, jump towards it */
+		client.setKey("Space", (best.origin[2] || 0) - p.z > 20);
+		if (bestD < 60) {
 			client.setKey("KeyW", false);
 			client.setKey("KeyA", false);
 			client.setKey("KeyD", false);
@@ -1323,7 +1326,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		client.setKey("KeyE", false);
 		client.setKey("Mouse0", false);
 
-		let yaw = Math.atan2(dy, dx) * 180 / Math.PI;
+		/* SoF's forward vector is (sin yaw, -cos yaw): yaw 0 moves -Y,
+		 * yaw 90 moves +X.  Standard atan2(dy,dx) pointed the autopilot
+		 * the wrong way, which is why it walked away from the pickup. */
+		let yaw = Math.atan2(dx, -dy) * 180 / Math.PI;
 		if (a.stuck > 12) {
 			/* the way is blocked: slide along it for a while */
 			a.slide = (a.slide || 0) + 1;
