@@ -1218,6 +1218,34 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		}
 		hctx.textAlign = "left";
 
+		/* weapon waypoint: a fresh DM spawn has no weapon, so point at the
+		 * nearest real weapon pickup until the player has one */
+		const it = h.item || "";
+		if (!/weapon|knife|pistol|rifle|shotgun|rocket|mpg|flame/i.test(it) && state.playerOrigin) {
+			let best = null, bestD = 1e9;
+			for (const m of mapItemList) {
+				if (!/item_weapon|item_ammo/i.test(m.classname || "")) continue;
+				if (!m.origin) continue;
+				const dx = m.origin[0] - state.playerOrigin.x;
+				const dy = m.origin[1] - state.playerOrigin.y;
+				const d = Math.hypot(dx, dy);
+				if (d < bestD) { bestD = d; best = m; }
+			}
+			if (best) {
+				const dx = best.origin[0] - state.playerOrigin.x;
+				const dy = best.origin[1] - state.playerOrigin.y;
+				const want = Math.atan2(dx, -dy) * 180 / Math.PI;
+				let diff = want - (client.view.yaw || 0);
+				while (diff > 180) diff -= 360;
+				while (diff < -180) diff += 360;
+				hctx.textAlign = "center";
+				hctx.font = "bold 13px monospace";
+				hctx.fillStyle = "#d9a441";
+				hctx.fillText("WEAPON " + Math.round(bestD) + "m  " + (diff < -25 ? "<" : diff > 25 ? ">" : "^"), W / 2, 26);
+				hctx.textAlign = "left";
+			}
+		}
+
 		/* the stealth meter */
 		if (h.stealth) {
 			hctx.fillStyle = "#7f9fd0";
