@@ -10,6 +10,20 @@ Symbols are stripped. The only surviving symbol is `GetGameAPI`. All naming belo
 derived from observed behaviour, string references, and export-table slot order.
 Inferences are explicitly marked.
 
+> **Authoritative corrections (2026-11-22):** later REA passes supersede several
+> early lines in this report. Read these first:
+> * `analysis/weapon_fire.md` â€” weapon table, 0x3C-byte fire context, dispatcher,
+>   damage-float semantics, shipped `player.dll` identity, ammo-per-shot and
+>   the stored fire-interval constants.
+> * `analysis/rea/ai_controller_body_map.md` â€” `edict+0x450` is an **AI
+>   controller pointer**, not a primary/alternate boolean flag.
+> * `analysis/ghoul_residuals.md` Â§C â€” all `.os` opcodes are named and
+>   `HandleSpawn` is value kind 7 / sub-opcode 5, not statement `0x1A`.
+> * `analysis/engine_imports.md` â€” all 99 engine import slots are named; the
+>   player module is present at `Soldier of Fortune/Base/player.dll`, not absent.
+> Claims below marked "unknown", "absent" or "next step" on these subjects are
+> historical and are retained only as provenance.
+
 ---
 
 ## 1. Module entry: `GetGameAPI` @ `0x500ad9b0` (368 bytes)
@@ -79,7 +93,7 @@ per-edict function pointers and engine vtables (`*DAT_5015c4d8 + N`).
 | +0x2D4 | weapon timer (reload) | |
 | +0x2EC | health / armor | |
 | +0x30C | movetype (client) | |
-| +0x450 | weapon-box / AI object | |
+| +0x450 | **AI controller/class object** (`FUN_50001A30`), not a flag | |
 | +0x458 | **is-bot** flag | |
 | +0x45C | bot-private record | |
 | +0x468 | world origin | |
@@ -248,9 +262,11 @@ typedef struct fire_ctx_s {
     struct edict_s  *ent;      // +0x00  PROVEN (0x5006579b)
     float            start[3]; // +0x04  PROVEN (0x500657b0/bb/bf)
     float            end[3];   // +0x10  PROVEN (0x500657cb/cf/d9)
-    void            *p4;       // +0x1C  PROVEN (0x500657dd); NULL-tested
+    void            *effect;   // +0x1C  PROVEN (0x500657dd); NULL-tested
     void            *weapon;   // +0x20  PROVEN (0x5006579f) - the weapon ROW
-} fire_ctx_t;                  // 0x24 bytes
+    /* +0x24..+0x34 reserved/unused in this build */
+    int              flash;    // +0x38  PROVEN: set when the flash effect spawned
+} fire_ctx_t;                  // 0x3C bytes
 
 typedef void (__cdecl *fire_handler_t)(fire_ctx_t *ctx);
 ```
@@ -271,14 +287,18 @@ Verified against the decoded table (`weapontable.txt`):
 |---|---|---|---|
 | `+0x004` | 5 | damage | 45 / 120 / 100 match known pistol/SMG/LMG damage |
 | `+0x008` | 6 | pellets per shot | 2 / 5 / 7 for pistol1 / pistol2 / machinegun |
-| `+0x118` | 8 | **spread, primary** | 0.03 pistol1, 0.2 shotgun, 0.2 rocket |
-| `+0x11C` | 9 | **spread, secondary** | machinegun 0.08 / 0.04 differ |
+| `+0x118` | 8 | **heat rate, primary** | 0.03 pistol1, 0.2 shotgun, 0.2 rocket |
+| `+0x11C` | 9 | **heat rate, alternate** | machinegun 0.08 / 0.04 differ |
 | `+0x124` | 13 | secondary float (0.25 knife, 0.5 MP/shotgun) | |
 | `+0x128` | 11 | fire handler | |
-| `+0x12C` | 14 | alt-fire handler | |
+| `+0x12C` | 14 | **the precache callback** (called once at init from `FUN_50065580`) â€” *not* an alt-fire handler | |
 | `+0x130` | 15 | range | 512 / 800 / 1024 / 1600 / 128 |
 
-`edict+0x450` selects which spread is used:
+**Superseded by `analysis/weapon_fire.md` (2026-11-18).** The row table is
+`0x50159B20`, **31 rows**, stride **0x14C** (the "12-byte-stride table" in the
+old notes was this idiom mis-read), and every field now has a named reader.
+
+`edict+0x450` is an AI controller pointer; a non-null value selects the NPC/alternate heat rate:
 
 ```
 0x50065813: MOV EAX, dword ptr [ESI + 0x450]   ; selector
@@ -287,15 +307,24 @@ Verified against the decoded table (`weapontable.txt`):
 0x5006582e: CALL 0x500ee7f0                    ; consumes that float
 ```
 
-Note this call site is **primary-fire only** â€” `+0x12C` (alt-fire) is never
-touched here, so the alt-fire path uses a different dispatcher.
+Note this call site is **primary-fire only** â€” `+0x12C` is never touched here.
 
-Correction to an earlier reading: `FUN_500ee7f0` was guessed to be a
-"set next fire time" scheduler. The values say otherwise â€” `+0x118`/`+0x11C`
-match the spreads previously labelled as such, so it is far more likely
-"set current spread/accuracy". **Fire RATE is therefore not in the weapon row**;
-the earlier `300.0`/`2000.0` "fire-delay" figures are still unlocated and must
-live elsewhere (weapon item record or player weapon logic).
+**Solved (2026-11-18, `analysis/weapon_fire.md`).** `FUN_500EE7F0` is the
+**heat accumulator**, not a scheduler and not a spread setter:
+
+    _DAT_5015cda4 = fVar1 * param_1 * 0.7 + _DAT_5015cda4;   /* clamp 1.0 */
+    FUN_500ee8b0  â†’  heat -= (heat*0.015 + 0.003) * 0.7;     /* the cooling */
+
+so `+0x118` / `+0x11C` are the **heat rates per shot** (primary when
+`entity+0x450 == 0`, NPC/alternate when it is non-null). The heat raises the spread and locks the weapon
+until `_DAT_5015D1BC` expires; `misc/padd_warning.wav` and `misc/padd_max.wav`
+are the cues.
+
+The player's **fire interval** is *not* in the module: the client weapon object
+is created by the engine (`SoF.exe 0x20066100` â†’ the player client DLL) and the
+module only receives the two fire callbacks (`0x50106640` primary,
+`0x50106890` alternate), which are handed over in the client weapon interface
+structure built by `FUN_500B9EC5`.
 
 ### Hit-scan / trace
 Engine trace = `(*DAT_5015cac0)(start, mins, maxs, end, passEnt, mask, &tr)`.
@@ -428,15 +457,19 @@ AI debug cvars: `ai_freeze`, `ai_goretest`, `ai_pathtest`, `ai_dumb`, `ai_nonode
 
 ---
 
-## 10. Known gaps
+## 10. Known gaps â€” historical status
 
-1. `Pmove` / `PM_BoxTrace` / clipmove live in **SoF.exe** (engine) â€” not yet analyzed.
-2. Network protocol / `gi` import-table slot names unresolved (99 dwords copied
-   wholesale from the engine; not recovered statically).
-3. Objective-completion logic not located â€” only the mission-message global was found.
-4. Bot per-frame think + target selection not reached by string search (they reference
-   no strings); likely inside the QuakeC VM at `0x5007EC40`.
-5. Function boundaries for ~1800 addresses referenced only as data by the export table.
+1. ~~`Pmove` / `PM_BoxTrace` / clipmove live in SoF.exe and were unanalyzed.~~
+   Closed in `analysis/pmove_engine.md` (engine import slot 81, `0x20054750`).
+2. ~~Network protocol / `gi` import-table slot names unresolved.~~ Closed in
+   `analysis/engine_imports.md` (all 99 slots) and `PROTOCOL.md`.
+3. Objective completion is map-authored (`target_*`/`trigger_*` graph), not a
+   module-side counter; see Â§15.
+4. Bot per-frame think is reached through the embedded state machine at
+   `0x5007EC40`; the AI controller/body map is in
+   `analysis/rea/ai_controller_body_map.md`.
+5. Function boundaries for data-only addresses are resolved with
+   `inspect-with-objdump` / raw vtable scans where needed.
 
 ## Artifacts
 | File | Contents |
@@ -451,7 +484,9 @@ AI debug cvars: `ai_freeze`, `ai_goretest`, `ai_pathtest`, `ai_dumb`, `ai_nonode
 | `analysis\sof_net.txt`, `sof_sys.txt` | SoF.exe network protocol + connection setup |
 | `analysis\sof_move.txt`, `sof_move2.txt`, `sof_move3.txt` | SoF.exe client input/usercmd sweeps |
 | `analysis\sof_pmove.txt`, `sof_mvcfg.txt`, `sof_sv.txt`, `sof_const.txt` | negative-result probes (see Â§11) |
-| `analysis\player_all.txt` | all 326 `player.dll` functions decompiled |
+| `analysis\player_all.txt` | all 326 `player.dll` functions decompiled (candidate identity proven in `analysis/weapon_fire.md` Â§11) |
+| `analysis/rea/player_fire_constants.md` | REA-derived ammo-per-shot and fire-interval constants |
+| `analysis/rea/ai_controller_body_map.md` | full AI class-code â†’ controller â†’ body map |
 | `analysis\refgl_const.txt` | `ref_gl.dll` constant probe (renderer) |
 
 ---
@@ -560,6 +595,16 @@ client input path. **Remaining unknown.**
 - `FUN_40001D40` (750 B) = player entity constructor (`operator_new(0x29C)`);
   `FUN_40001770` (151 B) = holdable-item countdown; `FUN_40001A20` (597 B) =
   holster/carry-slot machine.
+- **Shipped identity is proven**: the `Base/gamex86.dll` beside it is byte-identical
+  to the analyzed target and that module loads `<gamedir>/player.dll` as a
+  fallback; API version 1 matches the module's check. See `analysis/weapon_fire.md` Â§11.
+- **Ammo per shot** is exact from the weapon vtable `+0x40` handlers: 1 for the
+  pistol/rifle/shotgun/rocket class, 2 for autoshotgun, 10 for machinegun/MPG,
+  6 for flamethrower, 0 for knife/hands. The `defA+8`/`+0xC` floats that were
+  first read as fire intervals are **spread angles** (`gamex86 0x50100680`);
+  the actual fire gate is the engine-supplied cooldown pair at
+  `client+0x48C`/`+0x490`. Full evidence: `analysis/rea/player_fire_constants.md`
+  (with the 2026-11-22 correction) and `analysis/weapon_fire.md` Â§13.
 
 ## 13. Tooling built for this analysis
 All under `%TEMP%\opencode\ghidra-scripts`, driven by `analyzeHeadless`:
@@ -686,12 +731,12 @@ roster's entry point.
 | Renderer / HUD / particles / audio | ~10% |
 | Movement physics | **0% â€” not present in any binary** |
 | Mission objective data | **0% â€” lives in `.map` files and `.pak` data** |
-### 4.4 Fire chain — dispatcher and its sole caller (PROVEN)
+### 4.4 Fire chain ï¿½ dispatcher and its sole caller (PROVEN)
 
 `0x500659C0` is the ONLY caller of the dispatcher `0x500656E0`.
 
 ```c
-// 0x500659C0  — __thiscall, RET 0x18 (6 stack args), 369 bytes
+// 0x500659C0  ï¿½ __thiscall, RET 0x18 (6 stack args), 369 bytes
 void __thiscall FireWrapper(weapon_row_table_t **tbl /*ECX*/,
                             int selector, edict_t *ent, vec3 *start,
                             vec3 *end, void *effect_src, void *p6);
@@ -712,12 +757,14 @@ Key mechanics, all PROVEN:
   cache**, not per-player fire state: `[EDI+0x138]`, `[EDI+0x13C]`, gated on
   `(*row+0x138)==0`, using model path strings at `row+0x54` (primary) and
   `row+0x94` (secondary).
-* `"flash"` (0x50133D48) is the ONLY string referenced — muzzle-flash effect spawn
+* `"flash"` (0x50133D48) is the ONLY string referenced ï¿½ muzzle-flash effect spawn
   via `FUN_50085470`.
 
-**Fire rate, ammo consumption, and reload are ALL provably absent** from both
-`0x500659C0` and `0x500656E0` (no time global, no float compare, no DEC/SUB of
-memory, no reload state). Neither is the literal `1` pushed at `0x50065ACF` —
+**Fire rate, ammo consumption, and reload are absent from these two functions**
+(no time global, no float compare, no DEC/SUB of memory, no reload state). They
+are not absent from the shipped game: the stored intervals and ammo handlers
+live in `Soldier of Fortune/Base/player.dll` and are reached through the player
+API object at `0x5015D9B8`. See `analysis/weapon_fire.md` Â§11-Â§13. Neither is the literal `1` pushed at `0x50065ACF` ï¿½
 that is a bool arg to the flash spawn.
 
 ### 4.5 Where fire rate must live
@@ -726,10 +773,10 @@ that is a bool arg to the flash spawn.
 
 | Call sites | Caller | Note |
 |---|---|---|
-| `0x5009C12E,0x5009C1E2,0x5009C296,0x5009C34A` | `FUN_5009BD40` | 4 sites, early return — best single candidate for a per-weapon fire-rate table |
+| `0x5009C12E,0x5009C1E2,0x5009C296,0x5009C34A` | `FUN_5009BD40` | 4 sites, early return ï¿½ best single candidate for a per-weapon fire-rate table |
 | `0x5009B901,0x5009B9B5,0x5009BA69,0x5009BB1D` | `FUN_5009B530` | dense cluster, 4 sites |
 | `0x5009ABE0,0x5009ABFE` | `FUN_5009A6B0` | |
-| `0x5002ED3D` | `FUN_5002E620` | 1866 B, different code region — likely player/QC-side |
+| `0x5002ED3D` | `FUN_5002E620` | 1866 B, different code region ï¿½ likely player/QC-side |
 | `0x500D099F,0x500D2E14` | `FUN_500D2C00` | |
 | `0x500E9A8A,0x500E9AD5` | `FUN_500E97D0` | |
 | `0x500EC247` | `FUN_500EC040` | |
@@ -750,7 +797,7 @@ Worth recording because it reveals the **canonical SoF fire-rate pattern**:
 
 SoF expresses fire rate as a **per-entity "next fire time" float at edict+0x2B4**,
 stamped as `level.time + interval`. Here `+0x2B4` is written twice and read
-zero times in this body — the **comparison lives in the caller at `0x5009C5C6`**
+zero times in this body ï¿½ the **comparison lives in the caller at `0x5009C5C6`**
 (unresolved call, Ghidra lost the containing function).
 
 Key findings:
@@ -762,7 +809,7 @@ Key findings:
 * Gates: `dot(view,fireDir) > 0.95f` (~18.2 deg half-angle) at `0x5009c066`;
   `gi.trace` mask `0x60000B9`; hit must have `+0x74 != 0` (i.e. must be a player).
 * **No ammo decrement, no reload** (zero INT_SUB/DEC in 2113 pcode ops).
-* 0.1 s is a **hardcoded immediate in .rodata**, not table-driven — so per-weapon
+* 0.1 s is a **hardcoded immediate in .rodata**, not table-driven ï¿½ so per-weapon
   intervals must come from elsewhere, i.e. from the weapon row or player state.
 * Ghidra's prototype is wrong: returns `bool`, param is `edict_t*` not `int*`,
   and `param_1[0xad] = (int)(...)` is a mis-typed FLOAT store.
@@ -778,7 +825,7 @@ Key findings:
 ### 4.8 Next fire-rate targets (revised)
 
 `0x5009BD40` is ruled out. Remaining callers of the fire wrapper:
-`0x5009C5C6` (turret rate gate — useful as the pattern template),
+`0x5009C5C6` (turret rate gate ï¿½ useful as the pattern template),
 `FUN_5002E620` (1866 B, different code region, likely player/QC-side),
 `FUN_5009B530`, `FUN_5009A6B0`, `FUN_500D2C00`, `FUN_500E97D0`, `FUN_500EC040`.
 The player weapon path is the priority: look for `edict+0x2B4`-style stamps or a
@@ -791,9 +838,9 @@ Not player weapons. Virtual method inherited by 5 AI vtables (0x50126850,
 Uses `wbolt_*`/`sbolt_*`/`gbolt_*` model body-zone tags on the victim.
 
 Two globals now CONFIRMED:
-* `0x5015CCDC` = **`level.time`** (f32) — read via `FLD float` for elapsed
+* `0x5015CCDC` = **`level.time`** (f32) ï¿½ read via `FLD float` for elapsed
   arithmetic, and as a dword when stamping. Confirmed.
-* `0x50159B18` = **weapon row table base** — `MOV ECX,0x50159B18` immediately
+* `0x50159B18` = **weapon row table base** ï¿½ `MOV ECX,0x50159B18` immediately
   before `CALL 0x500659C0` at `0x5002ED38`.
 
 SoF cooldown idiom (elapsed-based, differs from the turret stamp form):
@@ -808,11 +855,11 @@ if (elapsed < delay) return;                         // still cooling down
 ...
 this->0x180 = level.time;                            // 0x5002ED56/0x5002ED5B
 ```
-`this->0x1C4` is DEC'd then INC'd on cancel — an **attack-charge counter**, NOT
+`this->0x1C4` is DEC'd then INC'd on cancel ï¿½ an **attack-charge counter**, NOT
 ammo (no item record touched, no stride, hardcoded +/-1).
 
 `FUN_50012240(attackType, n)` is the **per-attack-type interval function** and
-returns a **float in ST(0)** (Ghidra types it int — wrong; proven by `FSTP ST0` at
+returns a **float in ST(0)** (Ghidra types it int ï¿½ wrong; proven by `FSTP ST0` at
 0x5002E66F). Switch on attackType: 1 -> Q_random(1.35,1.65); 6 -> Q_random(0.10,0.50);
 0xC -> Q_random(0.50,1.00); 9 -> n/3; others pass through. `DAT_5015CB20` is
 therefore `Q_random_float(min,max)`.
@@ -840,7 +887,18 @@ Note: every caller found so far is a DEPLOYED ENTITY or AI. The player weapon pa
 likely reaches the fire wrapper through the `0x50106xxx` callback thunk rather than
 a `0x5009xxxx` entity think.
 
-### 4.11 *** HIGH VALUE — the PLAYER fire path: `0x5010666C` ***
+### 4.11 *** HIGH VALUE ï¿½ the PLAYER fire path: `0x5010666C` ***
+
+> **RETRACTED / corrected 2026-11-19 â€” see `analysis/weapon_fire.md` Â§10.**
+> * the "**12-byte-stride table**" in this section (and in Â§4.12) is **wrong**:
+>   the `lea edx,[ebx+ecx*2]` / `lea ecx,[eax+edx*4]` idiom is the **same**
+>   `index*0x14C` stride as the weapon rows (it was mis-read as `3*n`);
+> * the real 12-byte table is a **separate weapon-class callback table** at
+>   `0x50128728` (3 pointers per class, the default `0x500151E0` = empty);
+> * the whole player fire path is now mapped end to end in
+>   `analysis/weapon_fire.md` (the dispatcher `0x500656E0`, the fire wrapper
+>   `0x500659C0`, the player callbacks `0x50106640` / `0x50106890`, the heat
+>   model and the damage path).
 
 Ghidra reports `not_in_procedure` at the call sites `0x5010685E` / `0x50106AAE`
 (it never created a function there), but the bytes ARE code and the enclosing
@@ -866,19 +924,22 @@ Both fire-wrapper call sites verified by hand:
 0x106AB3: 8B 0D D0 D9 15 50 MOV ECX,[0x5015D9D0]
 ```
 
-TWO DIFFERENT TABLE SOURCES — this is why the AI/turret callers all looked wrong:
+TWO DIFFERENT TABLE SOURCES ï¿½ this is why the AI/turret callers all looked wrong:
 * AI melee + autogun turret: `ECX = 0x50159B18` (immediate)
 * **This path: `ECX = *(0x5015D9D0)` (indirect, via global)**
 
 The `LEA [EAX+EDX*4]` with `EDX=3*n` indexes a **12-byte-stride** table off the
-same `0x50159B18` base — a SECOND table, not the 0x14C weapon rows. Likely the
+same `0x50159B18` base ï¿½ a SECOND table, not the 0x14C weapon rows. Likely the
 per-weapon-type descriptor/anim table. Needs mapping.
 
 **NEXT ACTION (highest value remaining):** `rea_analyze_function` on
 `0x5010666C`. Expect fire rate + ammo decrement here. Report
-`analysis\gamex86_all.txt` may already cover it — grep for 5010666c first.
+`analysis\gamex86_all.txt` may already cover it ï¿½ grep for 5010666c first.
 
 ### 4.12 `0x5010666C` region disassembled (Ghidra has no function object here)
+
+> **The "12-byte-stride table" line below is retracted â€” see Â§4.11 and
+> `analysis/weapon_fire.md` Â§10.**  It is the `0x14C` stride, mis-read.
 
 Ghidra will NOT create a procedure at `0x5010666C`, and
 `procedure file-offset:0x10666C` also fails ("no procedure starts at or contains").
@@ -894,7 +955,7 @@ The actual sequence is:
 0x5010685E: E8 5D F1 F5 FF   call 500659C0
 0x50106863: 8B 0D D0 D9 15 50 mov  ecx,dword ptr [5015D9D0h]  ; AFTER the call
 ```
-`0x5015D9D0` is loaded *after* the call — it is unrelated to the table arg. So
+`0x5015D9D0` is loaded *after* the call ï¿½ it is unrelated to the table arg. So
 this path uses the same immediate table base as the AI/turret. My "two different
 table sources" claim was wrong; disregard it.
 
@@ -917,7 +978,7 @@ with `push 50133D48h` ("flash") -> `call [5015CAC0h]` (gi.trace) -> `call
 rate gate and ammo decrement are in its caller.
 
 UNRESOLVED: nothing in the file references `0x5010666C` (searched all `call
-5010666C` in the dump, and searched the raw bytes for the VA `6C 66 10 50` —
+5010666C` in the dump, and searched the raw bytes for the VA `6C 66 10 50` ï¿½
 zero hits). So it is reached by neither a direct call nor a vtable/jump-table
 entry. Most likely the preceding `C3` is an immediate byte and dumpbin's LINEAR
 disassembly is desynchronised here, meaning `0x5010666C` is a branch target
@@ -929,7 +990,7 @@ on `0x5010685E`, or search the dump for jumps whose target is `5010666C`.
 
 ### 4.13 *** BREAKTHROUGH: player weapon fire callbacks, object layout ***
 
-Found the registration site at `0x500BA02D`-`0x500BA09B` — an init routine building
+Found the registration site at `0x500BA02D`-`0x500BA09B` ï¿½ an init routine building
 a weapon-class object on the stack:
 
 ```
@@ -961,12 +1022,12 @@ a weapon-class object on the stack:
 These are **indirect** (no direct `call 50106640` anywhere in the binary), so the
 fire path runs as `call dword ptr [weapon + 0x08]` / `[weapon + 0x0C]`.
 
-Function entries confirmed (the earlier `C3` at 0x5010666B was an immediate byte —
+Function entries confirmed (the earlier `C3` at 0x5010666B was an immediate byte ï¿½
 dumpbin linear disasm desync; **the C3 heuristic for finding entry points is
 unreliable**):
 ```
 50106640: sub esp,90h                  ; PRIMARY fire  - real entry
-50106646: mov ecx,[5015D9B8h]          ; weapon registry
+50106646: mov ecx,[5015D9B8h]          ; player server API object
 50106655: mov edx,[ecx+10h]            ; weapon TABLE (pointer array)
 50106659: mov eax,[ebp+2Ch]            ; weapon index arg
 5010665D: mov edi,[edx+eax*4]           ; edi = weapon OBJECT
@@ -974,13 +1035,15 @@ unreliable**):
 50106666: lea eax,[ebx+ebx*4]          ; 5n
 50106669: lea ecx,[ebx+eax*8]          ; 41n
 ```
-So weapons live in a **pointer array** at `*(0x5015D9B8)+0x10`, indexed by the
-arg at `[ebp+0x2C]`.
+`0x5015D9B8` is the player API object; `client+0x34C` is the player object
+created by its `+0x24` factory. The row index comes from that object's
+`+0xB8`/`+0xBC` and indexes the row array at `0x50159B18`.
 
-`0x50106890` is a SEPARATE entry (alt fire), not a continuation — the
+
+`0x50106890` is a SEPARATE entry (alt fire), not a continuation ï¿½ the
 registration stores it separately and it has its own `sub esp,90h`-style body.
 
-Each fire fn (~0x220 B) does: table base `0x50159B18` -> 12-byte-stride lookup ->
+Each fire fn (~0x220 B) does: table base `0x50159B18` -> 12-byte-stride lookup [RETRACTED: this is the `0x14C` stride, mis-read - see Â§4.11] ->
 `call 50065900` -> muzzle = origin + `player->+0x28..0x38` -> `call 50100680` ->
 vtable `[edx+70h]` gate (`je` skips) -> `call 500C3BB0` (`"flash"` 0x50133D48) ->
 `call [5015CAC0h]` gi.trace -> `call 500FE050` normalize -> **fire wrapper
@@ -993,15 +1056,13 @@ is NO reference to `0x5015CCDC` (level.time) and NO `dec`/memory-`sub`.**
 So neither the fire-rate gate nor the ammo decrement is in them. The weapon object
 merely *holds a pointer to* level.time at `+0x04`.
 
-**NEXT STEP (now precise):** the rate gate and ammo decrement are in whatever
-invokes `call [weapon+0x08]` / `call [weapon+0x0C]`. Find it by locating code that
-loads the weapon registry `0x5015D9B8`, reads the table at `+0x10`, indexes it,
-then makes an indirect call through `[reg+8]` or `[reg+0C]`. Grep the dumpbin
-dump for `5015D9B8` and for `call dword ptr [e??+8]` / `[e??+0Ch]` within those
-functions. That caller is the player weapon Think/Cmd_ routine and is the last
-unknown before implementation.
+**RESOLVED:** `0x5015D9B8` is the **player server API object** returned by
+`GetPlayerServerAPI`, not a weapon registry. `client+0x34C` is the player object
+created by API `+0x24` (`player.dll 0x40005220`). The ammo decrements and the
+fire-gate predicates are in `player.dll`; the floats first read as intervals are
+spread angles. See `analysis/weapon_fire.md` Â§11-Â§13 for exact addresses.
 
-### 4.14 Callback dispatch found — `0x50073C90`
+### 4.14 Callback dispatch found ï¿½ `0x50073C90`
 
 The fire callbacks are reached through the **weapon object's vtable**:
 
@@ -1024,7 +1085,7 @@ The fire callbacks are reached through the **weapon object's vtable**:
 ```
 
 So **weapon vtable `+0x08` = primary fire (`0x50106640`), `+0x0C` = alt fire
-(`0x50106890`)** — they are vtable slots, not struct fields. The struct built at
+(`0x50106890`)** ï¿½ they are vtable slots, not struct fields. The struct built at
 `0x500BA02D` is the weapon-class **vtable image** (the `mov [esp+4],5015CCDC` entry
 is then NOT a vtable slot; the vtable base must be `[esp+8]` or later).
 
@@ -1032,7 +1093,7 @@ is then NOT a vtable slot; the vtable base must be `[esp+8]` or later).
 weapon fields `+0x44` (values 1 and 2 tested) and `+0x54` (tested against `0x24`).
 Same `call [edx+70h]` precondition seen inside the fire functions.
 
-**Still no `level.time` and no ammo decrement** at this layer either — this
+**Still no `level.time` and no ammo decrement** at this layer either ï¿½ this
 dispatcher only chooses *which* callback. Therefore the rate gate and ammo
 consumption live in the routine that decides whether to call `0x50073C90` at all.
 
@@ -1105,7 +1166,7 @@ finally: esi+0x1A0 |= 8;  esi+0x2E0 = 0;
 Constants: `0x50125038`=12.0, `0x50125FE0`=9.0, `0x50125054`=1.0,
 `0x50125050`=8.0, `0x50125028`=0.0.
 `0x5008BB10` is called with 12 args incl. `0x5018BF0C` (a blank/space string),
-`g_entities` (`0x5015CCA0`), `0x4002`, `0x14`/`0x15`, and `esi+4` — a
+`g_entities` (`0x5015CCA0`), `0x4002`, `0x14`/`0x15`, and `esi+4` ï¿½ a
 sound/event dispatch, **not** the fire path.
 
 **Item-record vtables (full dumps):**
@@ -1124,8 +1185,9 @@ ammo-consumption virtual.
 **NEXT STEP:** the fire gate is in whatever calls controller vtable slot `+0x10`
 (`0x50073C90`). Find it by locating `call dword ptr [reg+10h]` where `reg` is a
 controller object (vtable `0x50128DA8`). Cross-reference the 110 gate sites in
-`gate_sites.txt` against functions that reference `0x5015D9B8` (weapon registry)
-- the intersection is the fire gate.
+`gate_sites.txt` against functions that reference `0x5015D9B8` (player API object)
+- the intersection is no longer the fire gate; the gate is in `player.dll`
+  (`FUN_4000A040`) and the interval constants in its weapon definition records.
 
 ### 4.16 Ammo-vtable slots inspected
 
@@ -1152,12 +1214,12 @@ item methods. Neither is the ammo decrement.
   `+0x2EC` counter, `+0x388` flags, `+0x38C` state.
 * Item-record and weapon-row layouts; 39 items; 31 weapon rows.
 * `level.time` = `0x5015CCDC`; weapon table base `0x50159B18`; weapon
-  registry `0x5015D9B8` (pointer array at `+0x10`).
+  player API object `0x5015D9B8` (weapon object array at `+0x10`).
 
-**Still unknown:**
-* The exact fire-rate gate for the player weapon (the `0x500B1670` function is a
-  sound/event path, not fire).
-* The ammo decrement site.
+**Resolved in later passes:** the ammo decrement is the weapon vtable `+0x40`
+handler in `player.dll` (1/2/10/6/0 rounds); the fire gate is the cooldown pair
+`client+0x48C`/`+0x490` read by game callbacks `0x500F6360`/`0x500F6390` and
+tested in `player.dll FUN_4000A040`. The `0x500B1670` lead was a sound/event path.
 
 **Recommended next moves, in order:**
 1. Widen the gate-site/registry intersection window (700 lines was too small; the
@@ -1219,9 +1281,10 @@ Do not treat finding it as evidence of the weapon path.
 **Established:** complete fire chain with both vtables; gate idiom + 110 sites;
 weapon-state field map; item/weapon layouts; all key globals.
 
-**Still unknown:** the player fire-rate gate and the ammo decrement.
+**Resolved:** the player fire gate and ammo decrement are in the shipped
+`player.dll`; see `analysis/weapon_fire.md` Â§13.
 
-**Best remaining lead:** the two tight gate+call pairs found by intersecting
+**Historical lead (superseded):** the two tight gate+call pairs found by intersecting
 `call [reg+18h]` sites with gate sites:
 * `0x50039EC6` (call) / `0x50039F41` (gate) - 0x7B bytes apart
 * `0x50071493` (call) / `0x5007150A` (gate) - 0x77 bytes apart
@@ -1312,13 +1375,13 @@ player Think/Cmd_
   -> dispatcher 0x500656E0  (row = base 0x50159B18 + idx*0x14C)
   -> fire handler [row+0x128]   (void __cdecl fn(fire_ctx_t*))
 ```
-Key globals: `level.time`=0x5015CCDC, weapon table=0x50159B18, weapon registry
-=0x5015D9B8 (ptr array at +0x10), g_entities=0x5015CCA0.
+Key globals: `level.time`=0x5015CCDC, weapon table=0x50159B18, player API object
+=0x5015D9B8 (weapon array at +0x10), g_entities=0x5015CCA0.
 
 ### 4.25 *** 8 FINAL fire-gate candidates ***
 
 Filtered the 73 dispatcher-call functions containing a 3-operand `fcomp` down to
-those that **also reference the weapon registry `0x5015D9B8` or table `0x50159B18`**:
+those that **also reference the player API object `0x5015D9B8` or table `0x50159B18`**:
 
 | Call site | Region |
 |---|---|
@@ -1509,6 +1572,18 @@ damage lands on the target until it is killed.
 
 ## 4.30 The SoF fire-rate gate and weapon "heat" (2026-10-20)
 
+> **RETRACTED / corrected 2026-11-18 â€” see `analysis/weapon_fire.md` Â§10.**
+> * "Gate A" (`0x50104803`) is **not** the player's next-action timer: that
+>   address is inside the **phos-burn damage function** (`0x50104700`), where
+>   `entity+0x370` is a **burn tick timer** re-armed with +2.0 s / +0.5 s.
+> * `+0x118` / `+0x11C` are **not** the fire delays â€” they are the **heat
+>   rates** (the dispatcher passes them to `FUN_500EE7F0`).
+> * "Gate B" (`0x50105411`) is inside **row 16's own fire handler**
+>   (`0x501051B0`, the microwave pulse beam); it is one weapon's own
+>   "next allowed time" (re-armed +0.4 / +0.2 s), not the general fire gate.
+> * the constant 0.99 at `0x50128318` is the **trace-fraction** threshold
+>   ("the trace hit nothing"), not a heat threshold.
+
 Two `fcomp [level.time]` gates in the player-weapon region of `gamex86.dll`
 resolve the remaining question of how SoF limits the rate of fire.
 
@@ -1516,7 +1591,7 @@ resolve the remaining question of how SoF limits the rate of fire.
 
     501047AB  mov edi,[esp+eax*4+64h]   ; the player edict
     501047AF  mov eax,[edi+74h]          ; edict+0x74 = the client
-    501047B6  mov eax,[edi+450h]         ; edict+0x450 = variant selector
+    501047B6  mov eax,[edi+450h]         ; edict+0x450 = AI controller pointer (null for a player)
     501047C8  lea esi,[edi+4]            ; edict+0x04 = the weapon record
     501047E5  fld  dword ptr [esp+4Ch]   ; the weapon's current heat
     501047E9  fcomp qword ptr [50128318h]; compared against 0.99
@@ -1558,7 +1633,7 @@ SoF's **weapon heat** mechanic: firing heats the weapon, the heat raises
 the spread, and the gun must cool back below 99% of its range before it
 can fire again. 150.0 is the heat/spread scale.
 
-`edict+0x450` selects the spread variant (primary/alternate) and
+`edict+0x450` is the AI controller pointer, which selects the primary/alternate heat variant; and
 `edict+0x164` is the "sound/feedback" pointer used when the shot is
 refused.
 
@@ -1572,6 +1647,18 @@ refused.
   recovered delay values, but nothing consumes them yet.
 
 ## 4.31 Completing the SoF firing timers + the class accessor system
+
+> **Corrected 2026-11-18 â€” `analysis/weapon_fire.md` Â§10.** The two timers
+> below are **not** the general player fire gates:
+> * `weapon_object+0x37C` (the code at `0x50105411`) lives inside **row 16's
+>   fire handler** (`0x501051B0`, the microwave pulse beam) â€” it is that one
+>   weapon's own "next allowed time" (re-armed +0.4 / +0.2 s).
+> * `edict+0x370` (the code at `0x50104803`) is the **phos-burn tick timer**
+>   in the burn damage function `0x50104700` (re-armed +2.0 s / +0.5 s).
+>
+> The player's real fire intervals are **not in the module** â€” they are stored in
+> the shipped `player.dll` (`Soldier of Fortune/Base/player.dll`) and recovered
+> in `analysis/weapon_fire.md` Â§13. The two timers below are not that gate.
 
 ### The two SoF timers on the player's weapon
 
@@ -1608,7 +1695,7 @@ with the format string at `0x5018BF0C`. This is SoF's **weapon heat**:
 firing heats the weapon, heat raises the spread, and the gun has to cool
 back below 99% of its range before it may fire again.
 
-`edict+0x450` selects the spread variant (primary/alternate) and
+`edict+0x450` is the AI controller pointer, which selects the primary/alternate heat variant; and
 `edict+0x164` is the feedback pointer used when a shot is refused.
 
 ### SoF's class system uses accessor functions

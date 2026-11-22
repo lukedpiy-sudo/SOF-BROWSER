@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """Dump SoF.exe's global Ghoul string table.
 
-The Ghoul net payload never transmits raw strings: every string is sent as
-an index into this global table.
+The Ghoul net payload never transmits a raw string: every string is either
+an index into this global table or an inline Huffman-compressed blob.
 
     count   u32   at 0x2013ADF0   (3713 in the shipped SoF.exe)
     table   char*[] at 0x2013ADF8  (the count entries)
 
-`FUN_200BDE30` (the writer) adds a string to the table if it is not already
-there and writes its index with the encoded-u16 primitive; `FUN_200BE060`
-(the reader) looks the index up and copies the bytes out.
+The table is **read-only at runtime**: the only accesses to it in SoF.exe
+are four reads (`0x200BDE60`, `0x200BDE7D`, `0x200BDEC2`, `0x200BE0E1`).
+`FUN_200BDE30` (the writer) binary-searches it - when the string is there it
+writes the index with the encoded-u16 primitive, and when it is **not** there
+it writes the string **inline, Huffman-compressed** instead.  `FUN_200BE060`
+(the reader) has the two matching branches: the global-table lookup and the
+inline Huffman decode.
+
+The inline branch's code table is extracted by `analysis/ghoul_huffman.py`
+(the Huffman tree is built at run time from the static frequency table at
+`SoF.exe 0x20157C60`).
 
     python3 analysis/ghb_global_strings.py sof_target/SoF.exe web/www/ghoulstrings.json
 """
@@ -76,11 +84,15 @@ def main():
     print(f"the file:             {dst}   ({os.path.getsize(dst)} bytes)")
     print(f"the first 12:         {names[:12]}")
     print(f"the last 5:           {names[-5:]}")
-    # a quick sanity check: the Ghoul model and event names must be in there
-    probes = ['ghoul/pmodels/teamicons/noteam', 'thud', 'inair', 'jump', 'sound', 'fire']
+    # a quick sanity check: the Ghoul model and event names must be in there.
+    # The table is UPPER CASE (the Ghoul strings are), and the engine's
+    # binary search is case SENSITIVE, so the probes are upper case too.
+    probes = ['GHOUL/ENEMY/BOLT/ACC_AMU_HEAD.GHL',
+              'THUD', 'INAIR', 'JUMP', 'SOUND', 'FIRE']
     for probe in probes:
-        print(f"  {probe!r}: {'yes' if probe in names else 'NO'}  "
-              f"(index {names.index(probe) if probe in names else -1})")
+        ok = probe in names
+        print(f"  {probe!r}: {'yes' if ok else 'NO'}  "
+              f"(index {names.index(probe) if ok else -1})")
 
 
 if __name__ == '__main__':

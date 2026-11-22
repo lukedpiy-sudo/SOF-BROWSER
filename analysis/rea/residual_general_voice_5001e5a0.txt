@@ -1,0 +1,33 @@
+
+void __thiscall FUN_5001e5a0(void *this,undefined4 param_1,int param_2)
+
+{
+  char cVar1;
+  int iVar2;
+  char unaff_DI;
+  undefined1 local_200 [248];
+  undefined1 auStack_108 [260];
+  char *pcStack_4;
+  
+  (**(code **)(*(int *)this + 0x174))(local_200,*(undefined4 *)((int)this + 0x1dc));
+  cVar1 = (**(code **)(*(int *)this + 0x1e8))();
+  if ((cVar1 == '\0') && (iVar2 = __strcmpi(pcStack_4,s_choke_50133584), iVar2 != 0)) {
+    return;
+  }
+  if ((*(int *)((int)this + 0x1b8) == 0) && (unaff_DI != '\0')) {
+    (*DAT_5015cb24)(1,param_1);
+    FUN_500fe2b0();
+    if (*(float *)(DAT_5015cc9c + 0x18) != 0.0) {
+      (*DAT_5015ca24)(s_general_voice_sound___s_5013355c,auStack_108);
+    }
+    iVar2 = (*DAT_5015c9f4)(auStack_108);
+    if (iVar2 != 0) {
+      FUN_500ee7f0(0.05);
+      *(int *)((int)this + 0x68) = iVar2;
+      *(int *)((int)this + 0x6c) = param_2;
+      *(undefined4 *)((int)this + 0x70) = 0x40000000;
+    }
+  }
+  return;
+}
+

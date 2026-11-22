@@ -1,0 +1,24 @@
+
+int * FUN_40005220(void)
+
+{
+  int *piVar1;
+  void *local_c;
+  undefined1 *puStack_8;
+  undefined4 local_4;
+  
+  local_4 = 0xffffffff;
+  puStack_8 = &LAB_4001238b;
+  local_c = ExceptionList;
+  ExceptionList = &local_c;
+  piVar1 = operator_new(0x29c);
+  local_4 = 0;
+  if (piVar1 != (int *)0x0) {
+    piVar1 = FUN_40001d40(piVar1);
+    ExceptionList = local_c;
+    return piVar1;
+  }
+  ExceptionList = local_c;
+  return (int *)0x0;
+}
+

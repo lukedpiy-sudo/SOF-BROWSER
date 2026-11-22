@@ -1,0 +1,20 @@
+
+char * __thiscall FUN_50024c70(void *this,int param_1)
+
+{
+  int iVar1;
+  char *pcVar2;
+  
+  if (*(char **)((int)this + 4) != s_std_xtumble_2frnt_n_n_50136f30) {
+    FUN_5001e5a0(this,s_Scream_50133650,param_1);
+  }
+  *(undefined4 *)((int)this + 0x1b4) = 1;
+  *(undefined4 *)((int)this + 0x1b8) = 1;
+  iVar1 = (**(code **)(*(int *)this + 0x4c))(param_1,s_std_xtumble_2frnt_n_n_50136f30);
+  pcVar2 = s_std_xtumble_2frnt_n_n_50136f30;
+  if (iVar1 == 0) {
+    pcVar2 = (char *)0x0;
+  }
+  return pcVar2;
+}
+

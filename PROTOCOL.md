@@ -574,13 +574,19 @@ count   u32    at 0x2013ADF0    (3713 in the shipped SoF.exe)
 table   char*[] at 0x2013ADF8
 ```
 
-`FUN_200BDE30` appends a string to that table if it is not there and writes
-its index; `FUN_200BE060` looks the index up.  The static table holds the
-`GHOUL/.../*.GHL` paths, the plain bolt-on model names and the animation
-event names in upper case (`FIRE`, `INAIR`, `JUMP`, `SOUND`, `THUD`).  The
-`.ghb` model paths are appended at runtime, so their indices depend on the
+The table is **read-only at runtime** (the only accesses to it in `SoF.exe`
+are four reads, `0x200BDE60`, `0x200BDE7D`, `0x200BDEC2`, `0x200BE0E1`).
+`FUN_200BDE30` binary-searches it: when the string is there it writes the
+index; when it is **not** there it writes the string **inline,
+Huffman-compressed** instead.  `FUN_200BE060` has the two matching reader
+branches (the global lookup and the inline Huffman decode).  The static
+table holds the `GHOUL/.../*.GHL` paths, the plain bolt-on model names and
+the animation event names in upper case (`FIRE`, `INAIR`, `JUMP`, `SOUND`,
+`THUD`).  The `.ghb` model paths are **not** in it - they are inline, so
+they have **no index** and their encoding does **not** depend on the
 server's load order.  The table is dumped to `web/www/ghoulstrings.json` by
-`analysis/ghb_global_strings.py`.
+`analysis/ghb_global_strings.py`; the inline Huffman code table is
+extracted by `analysis/ghoul_huffman.py` (`analysis/ghoul_residuals.md` §A).
 
 Each of the three sections is a run of encoded-u16 values; **0 ends the
 section** and every other value is the *negated* entity index.  Section 1

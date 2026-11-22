@@ -1,0 +1,172 @@
+
+sof_target/SoF.exe:     file format pei-i386
+
+
+Disassembly of section .text:
+
+2000df40 <.text+0xcf40>:
+2000df40:	a1 54 50 22 20       	mov    eax,ds:0x20225054
+2000df45:	85 c0                	test   eax,eax
+2000df47:	74 17                	je     0x2000df60
+2000df49:	ff 50 0c             	call   DWORD PTR [eax+0xc]
+2000df4c:	6a ff                	push   0xffffffff
+2000df4e:	e8 3d 81 05 00       	call   0x20066090
+2000df53:	83 c4 04             	add    esp,0x4
+2000df56:	c7 05 54 50 22 20 00 	mov    DWORD PTR ds:0x20225054,0x0
+2000df5d:	00 00 00 
+2000df60:	c3                   	ret
+2000df61:	90                   	nop
+2000df62:	90                   	nop
+2000df63:	90                   	nop
+2000df64:	90                   	nop
+2000df65:	90                   	nop
+2000df66:	90                   	nop
+2000df67:	90                   	nop
+2000df68:	90                   	nop
+2000df69:	90                   	nop
+2000df6a:	90                   	nop
+2000df6b:	90                   	nop
+2000df6c:	90                   	nop
+2000df6d:	90                   	nop
+2000df6e:	90                   	nop
+2000df6f:	90                   	nop
+2000df70:	a1 54 50 22 20       	mov    eax,ds:0x20225054
+2000df75:	81 ec 9c 00 00 00    	sub    esp,0x9c
+2000df7b:	85 c0                	test   eax,eax
+2000df7d:	74 17                	je     0x2000df96
+2000df7f:	ff 50 0c             	call   DWORD PTR [eax+0xc]
+2000df82:	6a ff                	push   0xffffffff
+2000df84:	e8 07 81 05 00       	call   0x20066090
+2000df89:	83 c4 04             	add    esp,0x4
+2000df8c:	c7 05 54 50 22 20 00 	mov    DWORD PTR ds:0x20225054,0x0
+2000df93:	00 00 00 
+2000df96:	a1 ac 50 22 20       	mov    eax,ds:0x202250ac
+2000df9b:	6a ff                	push   0xffffffff
+2000df9d:	8d 4c 24 50          	lea    ecx,[esp+0x50]
+2000dfa1:	6a 00                	push   0x0
+2000dfa3:	8d 54 24 08          	lea    edx,[esp+0x8]
+2000dfa7:	51                   	push   ecx
+2000dfa8:	52                   	push   edx
+2000dfa9:	c7 44 24 10 e0 1a 02 	mov    DWORD PTR [esp+0x10],0x20021ae0
+2000dfb0:	20 
+2000dfb1:	c7 44 24 14 90 21 02 	mov    DWORD PTR [esp+0x14],0x20022190
+2000dfb8:	20 
+2000dfb9:	c7 44 24 18 50 23 02 	mov    DWORD PTR [esp+0x18],0x20022350
+2000dfc0:	20 
+2000dfc1:	c7 44 24 1c 20 8d 01 	mov    DWORD PTR [esp+0x1c],0x20018d20
+2000dfc8:	20 
+2000dfc9:	c7 44 24 20 30 8d 01 	mov    DWORD PTR [esp+0x20],0x20018d30
+2000dfd0:	20 
+2000dfd1:	c7 44 24 24 50 8d 01 	mov    DWORD PTR [esp+0x24],0x20018d50
+2000dfd8:	20 
+2000dfd9:	c7 44 24 28 e0 c6 01 	mov    DWORD PTR [esp+0x28],0x2001c6e0
+2000dfe0:	20 
+2000dfe1:	c7 44 24 2c 20 55 05 	mov    DWORD PTR [esp+0x2c],0x20055520
+2000dfe8:	20 
+2000dfe9:	c7 44 24 30 e0 c8 01 	mov    DWORD PTR [esp+0x30],0x2001c8e0
+2000dff0:	20 
+2000dff1:	c7 44 24 34 70 53 02 	mov    DWORD PTR [esp+0x34],0x20025370
+2000dff8:	20 
+2000dff9:	c7 44 24 38 20 54 02 	mov    DWORD PTR [esp+0x38],0x20025420
+2000e000:	20 
+2000e001:	c7 44 24 3c 50 f3 01 	mov    DWORD PTR [esp+0x3c],0x2001f350
+2000e008:	20 
+2000e009:	89 44 24 40          	mov    DWORD PTR [esp+0x40],eax
+2000e00d:	c7 44 24 44 c0 94 04 	mov    DWORD PTR [esp+0x44],0x200494c0
+2000e014:	20 
+2000e015:	c7 44 24 48 10 8e 04 	mov    DWORD PTR [esp+0x48],0x20048e10
+2000e01c:	20 
+2000e01d:	c7 44 24 4c a0 90 04 	mov    DWORD PTR [esp+0x4c],0x200490a0
+2000e024:	20 
+2000e025:	c7 44 24 50 00 91 04 	mov    DWORD PTR [esp+0x50],0x20049100
+2000e02c:	20 
+2000e02d:	c7 44 24 54 90 91 04 	mov    DWORD PTR [esp+0x54],0x20049190
+2000e034:	20 
+2000e035:	c7 44 24 58 90 93 04 	mov    DWORD PTR [esp+0x58],0x20049390
+2000e03c:	20 
+2000e03d:	c7 44 24 5c 50 ea 08 	mov    DWORD PTR [esp+0x5c],0x2008ea50
+2000e044:	20 
+2000e045:	c7 44 24 60 c8 8f 1e 	mov    DWORD PTR [esp+0x60],0x201e8fc8
+2000e04c:	20 
+2000e04d:	c7 44 24 64 e0 26 01 	mov    DWORD PTR [esp+0x64],0x200126e0
+2000e054:	20 
+2000e055:	c7 44 24 68 00 27 01 	mov    DWORD PTR [esp+0x68],0x20012700
+2000e05c:	20 
+2000e05d:	c7 44 24 6c 30 27 01 	mov    DWORD PTR [esp+0x6c],0x20012730
+2000e064:	20 
+2000e065:	c7 44 24 70 40 27 01 	mov    DWORD PTR [esp+0x70],0x20012740
+2000e06c:	20 
+2000e06d:	c7 44 24 74 60 27 01 	mov    DWORD PTR [esp+0x74],0x20012760
+2000e074:	20 
+2000e075:	c7 44 24 78 50 e1 00 	mov    DWORD PTR [esp+0x78],0x2000e150
+2000e07c:	20 
+2000e07d:	c7 44 24 7c 60 e1 00 	mov    DWORD PTR [esp+0x7c],0x2000e160
+2000e084:	20 
+2000e085:	c7 84 24 80 00 00 00 	mov    DWORD PTR [esp+0x80],0x2000e170
+2000e08c:	70 e1 00 20 
+2000e090:	c7 84 24 84 00 00 00 	mov    DWORD PTR [esp+0x84],0x2001e260
+2000e097:	60 e2 01 20 
+2000e09b:	c7 84 24 88 00 00 00 	mov    DWORD PTR [esp+0x88],0x2001e290
+2000e0a2:	90 e2 01 20 
+2000e0a6:	c7 84 24 8c 00 00 00 	mov    DWORD PTR [esp+0x8c],0x2001e310
+2000e0ad:	10 e3 01 20 
+2000e0b1:	c7 84 24 90 00 00 00 	mov    DWORD PTR [esp+0x90],0x2001e650
+2000e0b8:	50 e6 01 20 
+2000e0bc:	c7 84 24 94 00 00 00 	mov    DWORD PTR [esp+0x94],0x2001cb00
+2000e0c3:	00 cb 01 20 
+2000e0c7:	c7 84 24 98 00 00 00 	mov    DWORD PTR [esp+0x98],0x2001cb70
+2000e0ce:	70 cb 01 20 
+2000e0d2:	c7 84 24 9c 00 00 00 	mov    DWORD PTR [esp+0x9c],0x2001cbf0
+2000e0d9:	f0 cb 01 20 
+2000e0dd:	c7 84 24 a0 00 00 00 	mov    DWORD PTR [esp+0xa0],0x2001e700
+2000e0e4:	00 e7 01 20 
+2000e0e8:	c7 84 24 a4 00 00 00 	mov    DWORD PTR [esp+0xa4],0x2001e730
+2000e0ef:	30 e7 01 20 
+2000e0f3:	c7 84 24 a8 00 00 00 	mov    DWORD PTR [esp+0xa8],0x2001e7b0
+2000e0fa:	b0 e7 01 20 
+2000e0fe:	e8 fd 7f 05 00       	call   0x20066100
+2000e103:	83 c4 10             	add    esp,0x10
+2000e106:	a3 54 50 22 20       	mov    ds:0x20225054,eax
+2000e10b:	85 c0                	test   eax,eax
+2000e10d:	75 14                	jne    0x2000e123
+2000e10f:	68 7c e7 11 20       	push   0x2011e77c
+2000e114:	6a 01                	push   0x1
+2000e116:	e8 85 e8 00 00       	call   0x2001c9a0
+2000e11b:	a1 54 50 22 20       	mov    eax,ds:0x20225054
+2000e120:	83 c4 08             	add    esp,0x8
+2000e123:	8b 08                	mov    ecx,DWORD PTR [eax]
+2000e125:	83 f9 01             	cmp    ecx,0x1
+2000e128:	74 17                	je     0x2000e141
+2000e12a:	6a 01                	push   0x1
+2000e12c:	51                   	push   ecx
+2000e12d:	68 5c e7 11 20       	push   0x2011e75c
+2000e132:	6a 01                	push   0x1
+2000e134:	e8 67 e8 00 00       	call   0x2001c9a0
+2000e139:	a1 54 50 22 20       	mov    eax,ds:0x20225054
+2000e13e:	83 c4 10             	add    esp,0x10
+2000e141:	81 c4 9c 00 00 00    	add    esp,0x9c
+2000e147:	ff 60 08             	jmp    DWORD PTR [eax+0x8]
+2000e14a:	90                   	nop
+2000e14b:	90                   	nop
+2000e14c:	90                   	nop
+2000e14d:	90                   	nop
+2000e14e:	90                   	nop
+2000e14f:	90                   	nop
+2000e150:	68 bc 7e 36 20       	push   0x20367ebc
+2000e155:	e8 06 01 01 00       	call   0x2001e260
+2000e15a:	83 c4 04             	add    esp,0x4
+2000e15d:	c3                   	ret
+2000e15e:	90                   	nop
+2000e15f:	90                   	nop
+2000e160:	68 bc 7e 36 20       	push   0x20367ebc
+2000e165:	e8 26 01 01 00       	call   0x2001e290
+2000e16a:	83 c4 04             	add    esp,0x4
+2000e16d:	c3                   	ret
+2000e16e:	90                   	nop
+2000e16f:	90                   	nop
+2000e170:	68 bc 7e 36 20       	push   0x20367ebc
+2000e175:	e8 96 01 01 00       	call   0x2001e310
+2000e17a:	83 c4 04             	add    esp,0x4
+2000e17d:	c3                   	ret
+2000e17e:	90                   	nop
+2000e17f:	90                   	nop

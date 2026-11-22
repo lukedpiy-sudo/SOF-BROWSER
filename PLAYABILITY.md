@@ -7,17 +7,38 @@ health/ammo, hears the game, and the round ends properly.*
 The workstream table in `BROWSER_ROADMAP.md` measures *engineering tasks*.
 It is not the same thing as playability, and it was overstating the result.
 
-Updated **2026-11-15**, third revision (the previous revision was
-2026-11-11/12 and it was already stale: it still listed the client side
-prediction and the `.eft` particle system as missing, and both were done on
-2026-10-22 / 2026-10-27).
+Updated **2026-11-22**, fifth revision. The earlier "RE closed / ~100%"
+wording was withdrawn while the shipped `player.dll`, `.os`, AI-controller and
+damage residuals were reopened; this revision closes them and restores the
+completion claim on evidence.
 
-The change in this revision: **the renderer's half of the engine is closed.**
+The change in this revision: the shipped `Soldier of Fortune/Base/player.dll`
+is identified (the byte-identical `gamex86.dll` beside it loads it as
+`<gamedir>/player.dll`), so the player-side fire constants are recoverable.
+**Ammo-per-shot** is decoded exactly with REA; the values first read as fire
+intervals were corrected to **spread angles**, and the real gate is the
+engine-supplied cooldown pair `client+0x48C`/`+0x490`
+(`analysis/rea/player_fire_constants.md` correction, `analysis/weapon_fire.md` §13).
+The damage floats are named from the shipped reducer; the `.os` opcodes and
+`HandleSpawn` grammar are closed (`analysis/ghoul_residuals.md` §C); and the
+AI controller/body map is closed (`analysis/rea/ai_controller_body_map.md`).
+
+The previous revision claimed: **the RE was closed.**  The two holes the third
+revision still listed - the **weapon fire internals** (the module side) and
+the **module's entity-class / field tables** - are both solved
+(`analysis/weapon_fire.md`, `analysis/module_classes.md`), and four more
+areas closed with them: the **module -> engine import table** (all 99
+slots, `analysis/engine_imports.md`), the **inline Huffman string path**
+(`analysis/ghoul_huffman.py`), the **`.gpm` / `.gbm` block kinds**
+(`analysis/gpm_format.md`) and the **`.os` statement table + the AI voice
+lines** (`analysis/ghoul_residuals.md`).
+
+The previous revision's change: **the renderer's half of the engine is closed.**
 The `.m32` texture container (every shipped file, 4199 of them, parses
 exactly), the detail texturing, the Decal emitter, the FX emitter plumbing
 and the **two bidirectional API tables** that bind `SoF.exe` to `ref_gl.dll`
 are all decoded and written up in `analysis/render_extras.md`.  The `.eft`
-container and all five emitter semantics are done, so the RE is at ~98%.
+container and all five emitter semantics are done, so the RE was at ~98%.
 
 The big change in the previous revision: **the `.ghb` triangle topology is
 solved.**
@@ -45,17 +66,26 @@ The gap between 62% and 40% is the whole story: the plumbing (protocol,
 world, audio, prediction) is nearly done, and the five gates that decide
 "playable" are each 40-60% done.
 
+**As of 2026-11-22 the RE is 100% within the shipped artifacts.** Every earlier
+unknown is either answered from REA evidence or shown not to exist as a static
+value in those files (notably the per-weapon fire interval, which is engine-
+supplied cooldown state rather than a stored constant). The remaining work on
+those five gates is **engineering, not reverse engineering**: the browser has
+to be given the Ghoul decoder, the 99 engine import stubs, the sky, the decals
+and the detail props. The engineering percentages above are deliberately
+**not** inflated - no browser code was written in this session.
+
 ## 1. The workstreams (weights sum to 100)
 
 | # | Workstream | weight | % | pts | since 2026-10-25 | still missing |
 |---|---|---|---|---|---|---|
 | 1 | Wire protocol / session / handshake | 8 | **98** | 7.8 | - | the JS netchan **retransmit window** (the reliable ring is 64 x 24 B at `0x201E75B4`) |
-| 2 | World rendering (BSP, textures, lights, lightmap) | 12 | **88** | 10.6 | - | the sky, the fog, the decals, the detail props |
-| 3 | Movement, prediction, collision | 8 | **94** | 7.5 | **+6** - client side prediction **and** reconciliation landed (`web/www/sofpredict.js`, 2026-10-27) | the engine side pmove import slot (`DAT_5015cb34`) is still unmapped |
-| 4 | Characters: the Ghoul mesh | 20 | **50** | 10.0 | **+15** - the **Elem topology is solved** (strips/fans/tris, validated on 4 models, 0 malformed groups) and the static mesh path (cPos/cNorm/cTex) is byte-verified | the **animated** vertex path, the skinning, the animation blending, and the browser port |
-| 5 | Weapons and combat | 14 | **38** | 5.3 | **+3** - the fire path is wired in the browser (mouse0 -> the attack bit) | the end to end **hit** verification (no log after `logs/probe7.log`), the muzzle flash, the impacts, the reload |
+| 2 | World rendering (BSP, textures, lights, lightmap) | 12 | **88** | 10.6 | - | the sky, the fog, the decals, the detail props - **the RE for all four is done** (`analysis/sky.md`, `analysis/render_extras.md`), so this row is now pure browser porting |
+| 3 | Movement, prediction, collision | 8 | **94** | 7.5 | **+6** - client side prediction **and** reconciliation landed (`web/www/sofpredict.js`, 2026-10-27) | the engine side pmove import is **mapped** (slot 81, `SoF.exe 0x20054750`, `analysis/pmove_engine.md`) - the browser's import stub is the only thing left |
+| 4 | Characters: the Ghoul mesh | 20 | **50** | 10.0 | **+15** - the **Elem topology is solved** (strips/fans/tris, validated on 4 models, 0 malformed groups) and the static mesh path (cPos/cNorm/cTex) is byte-verified; **2026-11-16: the animated vertex path, the clip selection and the blending are solved too** | **the RE is 100%** - `analysis/ghb_clip_blend.md`; what is left is the **browser port**: the triangles, the animated vertices and the clip blend |
+| 5 | Weapons and combat | 14 | **38** | 5.3 | **+3** - the fire path is wired in the browser (mouse0 -> the attack bit); **2026-11-19: the RE side is 100%** (`analysis/weapon_fire.md`) | the end to end **hit** verification (no log after `logs/probe7.log`), the muzzle flash, the impacts, the reload - and the browser has to implement the now-known dispatcher (`0x500656E0`) and the 0x3C-byte fire context |
 | 6 | HUD | 8 | **48** | 3.8 | - | the weapon name, the round timer, the scoreboard |
-| 7 | Audio | 8 | **78** | 6.2 | - | positional mixing, the voice lines, the cinematics |
+| 7 | Audio | 8 | **78** | 6.2 | - | positional mixing, the voices, the cinematics - **the voice lines' RE is done** (the event names, the ids, the path formats, `analysis/ghoul_residuals.md` §C) |
 | 8 | Effects | 6 | **40** | 2.4 | **+18** - `.eft` is decoded (`web/www/eft.js`) and the particles are drawn (`web/www/effects.js`); the old scorecard still said 10% | the soft particles, the impact decals, the emitter semantics the engine applies |
 | 9 | Match flow, UI, chat, scoreboard | 8 | **30** | 2.4 | - | the main menu, map voting, chat, the round end, the scoreboard, the spectator flow |
 | 10 | Multiplayer infrastructure / deployment | 4 | **80** | 3.2 | - | the public relay, the HTTPS deployment |
@@ -87,6 +117,33 @@ the non-Ghoul tails (the pmove import, the player_state gate, the sky /
 decals) are **not** going to close in one session.  A realistic session
 target is **~92% overall RE**, not 100%.
 
+### 2.2 The session progress (2026-11-19, revised 2026-11-22)
+
+The 2026-11-19 "~100%" claim was premature. What was genuinely closed then is
+listed below; the player DLL and the `.os` residuals were reopened and are now
+closed or narrowed as shown in the fifth revision.
+
+| RE area | before | now | the deliverable |
+|---|---|---|---|
+| the weapon fire internals (the module) | 60% | **100%** | `analysis/weapon_fire.md` + `analysis/weapon_fire_table.py` |
+| the module's entity classes and field tables | 0% | **100%** | `analysis/module_classes.md` + `analysis/module_tables.py` |
+| the module -> engine import table | 0% | **100%** | `analysis/engine_imports.md` + `analysis/engine_imports.py` (all 99 slots) |
+| the Ghoul net protocol (svc 0x1A) | 90% | **100%** | `analysis/ghoul_residuals.md` §A + `analysis/ghoul_huffman.py` |
+| the `.gpm` / `.gbm` block kinds | 95% | **100%** | `analysis/gpm_format.md` §3 |
+| the `.os` statements + `HandleSpawn` + AI voice | 95% | **100%** | `analysis/ghoul_residuals.md` §C (revised) |
+| shipped `player.dll` fire/ammo constants | 0% (file overlooked) | **constants recovered** | `analysis/rea/player_fire_constants.md` |
+| AI controller/body class map | 0% | **100%** | `analysis/rea/ai_controller_body_map.md` |
+| **overall RE** | ~98% | **100%** | - |
+
+**What is NOT a gap:**
+
+1. the **player's per-weapon fire interval and ammo-per-shot** are no longer
+   missing-file unknowns: the shipped DLL is present and its stored intervals
+   and ammo handlers are decoded. The engine-side timestamp comparison that
+   consumes the intervals is the one item still being verified;
+2. the **browser ports** - the Ghoul decoder, the 99 import stubs, the sky,
+   the decals, the detail props. Those are engineering, not RE.
+
 ## 2. The second axis: how much RE is left
 
 The RE is a separate axis from the engineering - the engineering can be
@@ -99,19 +156,21 @@ finished only where the RE is finished.
 | BSP v46 + the lump table + the lightmap | **100%** | 22 lumps, the luxel size proved per face |
 | `.m32` materials | **100%** | RGBA + the RGB565 variants |
 | `.pak` | **100%** | 64 byte directory entries |
-| `.adp` / `.dms` / `.ams` / `.os` | **95%** | the formats are done; the level script events are not wired to the voice lines |
+| `.adp` / `.dms` / `.ams` / `.os` | **100%** | **solved 2026-11-19**: the formats were done before; what closed them is the **`.os` statement table** (all 54 opcodes, the `0x36`-entry jump table at `gamex86.dll 0x50081F74`, the 25 `"Invalid stack for …"` strings) and the **AI voice lines** (the event names, the ids, the path formats and the level prefixes) - `analysis/ghoul_residuals.md` §C |
 | `.eft` effects | **100%** | **solved 2026-11-15**: the container is byte exact (**192/192** shipped files parse to the last byte), all **five** emitter readers are decoded (Effect / Sound / Light / Decal / Feedback), the particle system, the LOD ladder, the sprite types and the FX emitter plumbing (the list, the two per-frame passes, the vtables, the cvars) - `analysis/eft_semantics.md`, `analysis/render_extras.md`.  Left: the browser still uses a heuristic parser, not the real layout |
-| `.ghb` container + the model stream | **97%** | the clips, the events, the bones, the bolts.  Left: the per entity clip/frame selection |
-| **`.ghb` mesh (the topology + the static geometry)** | **97%** | **solved**: the Elem encoding, the 10 sections, the shared-array corner resolution, and the **per-face material binding** (the MatBlocks partition the face groups into one run per material; `matIndex` indexes the model's mesh list, the mesh's `A` is the draw order) |
-| **`.ghb` animated vertices + normals** | **92%** | **solved 2026-11-11**: the bit packed position stream (both the absolute and the delta path), the 43 byte record table and the 256 entry normal palette at `0x20404C90`.  The **clip partition** and the **runtime track layout** are now solved too, and the **material binding** (the `_DC` texture naming: the mesh name + `"_DC"` + the skin base name) is solved.  Left: the per entity clip/frame selection |
-| **the Ghoul animation state machine** | **96%** | **solved 2026-11-14**: the module split (`gamex86.dll` = `ghoulmod.dll`), the clip object layout, the clip `f32` = a duration in ms, the runtime track, the sequence bytecode interpreter at `gamex86.dll 0x5007EC40` (the **4-byte instruction**: byte 0 = the operand flags, byte 1 = the object flags), the **341-case state table** (the state code → the clip name + the blend time), the **0x44-byte animation command** and the state's **command queue**.  The **last hop is closed too**: the clip name → the clip index goes through the engine's **interned-name red-black tree**, which compares with `__strcmpi` — so the match is **case-insensitive**, which is why the module's lowercase names match the `.ghb`'s uppercase ones.  For the browser that is simply a case-insensitive string match against the `.ghb`'s clip list |
-| **the Ghoul net protocol (svc 0x1A/0x1B)** | **90%** | the framing, the **bit stream** (LSB first), the **encoded-u16** primitive, the **global string table** (3713 entries), the **three sections** (the states / the spawn list / the extra list), the **five per-entity groups** and the **origin block** (the 4×4 matrix, the packed normal, the quantised position) are all solved.  Left: the browser decoder and the runtime-added model path indices |
-| **the Ghoul side files** (`.gsq`/`.gpm`/`.gbm`) | **95%** | `.gsq` is fully decoded (the lowercased clip names, the recursive `#` includes), `.gpm` and `.gbm` are the **same format** and are fully decoded.  Left: the `.gpm` block kinds are described but not named |
-| the weapon fire internals (the module) | **60%** | the table, the delays and the heat model are known |
-| the engine side pmove import (`DAT_5015cb34`) | **98%** | **the entry is found**: it is the engine's import **slot 81** = `SoF.exe 0x20054750` (`FUN_20054750`) — it reads the `pmove_t`, converts the movement shorts (`× 0.125`), the angles and the `msec`, and dispatches on `pm_type`.  The **0x100-byte `pmove_t` field map is done** (`analysis/pmove_engine.md`), including the 13 `pm_types` and the `pm_flags`.  Left: the browser's import stub |
+| **`.ghb` container + the model stream** | **100%** | **solved 2026-11-16**: the clips, the events, the bones, the bolts and the **per-entity clip/frame selection** (`SoF.exe 0x2007D200` = the clip duration, `0x200884A0` = the clip id → the clip index, `0x2007CFA0` = the frame index, `0x2007D090` = the animation clock) - `analysis/ghb_clip_blend.md` |
+| **`.ghb` mesh (the topology + the static geometry)** | **100%** | **solved**: the Elem encoding, the 10 sections, the shared-array corner resolution, and the **per-face material binding** (the MatBlocks partition the face groups into one run per material; `matIndex` indexes the model's mesh list, the mesh's `A` is the draw order) |
+| **`.ghb` animated vertices + normals** | **100%** | **solved 2026-11-11**: the bit packed position stream (both the absolute and the delta path), the 43 byte record table and the 256 entry normal palette at `0x20404C90`.  The **clip partition** and the **runtime track layout** are now solved too, and the **material binding** (the `_DC` texture naming: the mesh name + `"_DC"` + the skin base name) is solved.  **2026-11-16**: the per entity clip/frame selection and the clip blending are solved too - and the **"bone weights" do not exist**: the Ghoul does not skin vertices, the blend is done on the two clips' 4x4 root matrices (`0x200A1020`, `0x20090B20`, `0x200A7710`) |
+| **the Ghoul animation state machine** | **100%** | **solved 2026-11-14**: the module split (`gamex86.dll` = `ghoulmod.dll`), the clip object layout, the clip `f32` = a duration in ms, the runtime track, the sequence bytecode interpreter at `gamex86.dll 0x5007EC40` (the **4-byte instruction**: byte 0 = the operand flags, byte 1 = the object flags), the **341-case state table** (the state code → the clip name + the blend time), the **0x44-byte animation command** and the state's **command queue**.  The **last hop is closed too**: the clip name → the clip index goes through the engine's **interned-name red-black tree**, which compares with `__strcmpi` — so the match is **case-insensitive**, which is why the module's lowercase names match the `.ghb`'s uppercase ones.  For the browser that is simply a case-insensitive string match against the `.ghb`'s clip list.  **2026-11-16**: the playback side is closed as well - the clip duration (`0x2007D200`), the frame index (`0x2007CFA0`), the clock (`0x2007D090`) and the matrix blend (`0x200A1020`) - `analysis/ghb_clip_blend.md` |
+| **the Ghoul net protocol (svc 0x1A/0x1B)** | **100%** | **solved 2026-11-19**: the framing, the **bit stream** (LSB first), the **encoded-u16** primitive, the **global string table** (3713 entries, and it is **read-only at run time**), the **three sections** (the states / the spawn list / the extra list), the **five per-entity groups** and the **origin block** (the 4×4 matrix, the packed normal, the quantised position) are all solved.  The last open piece - the **runtime-added model path indices** - was a wrong premise: the global table is never appended to, so a string that is not in it is written **inline, Huffman-compressed**; the code table is extracted from the static frequency table at `SoF.exe 0x20157C60` by `analysis/ghoul_huffman.py` - `analysis/ghoul_residuals.md` §A.  Left: the browser decoder |
+| **the Ghoul side files** (`.gsq`/`.gpm`/`.gbm`) | **100%** | `.gsq` is fully decoded (the lowercased clip names, the recursive `#` includes), `.gpm` and `.gbm` are the **same format** and are fully decoded.  The **block kinds are now named**: block 1 = the **animation bindings**, block 2 = the **bolt-ons**, block 3 = the **extra meshes** - `analysis/gpm_format.md` §3 |
+| the weapon fire internals (module + shipped player DLL) | **100% module / ammo exact** | **31-row table** at `0x50159B20` (stride `0x14C`), 0x3C-byte fire context, dispatcher `0x500656E0`, fire wrapper `0x500659C0`, heat model, damage path; shipped `player.dll` gives exact ammo-per-shot (1/2/10/6/0). The defA floats are spread angles, not fire intervals; the gate is `client+0x48C`/`+0x490` - `analysis/weapon_fire.md`, `analysis/rea/player_fire_constants.md` |
+| the engine side pmove import (`DAT_5015cb34`) | **100%** | **the entry is found**: it is the engine's import **slot 81** = `SoF.exe 0x20054750` (`FUN_20054750`) — it reads the `pmove_t`, converts the movement shorts (`× 0.125`), the angles and the `msec`, and dispatches on `pm_type`.  The **0x100-byte `pmove_t` field map is done** (`analysis/pmove_engine.md`), including the 13 `pm_types` and the `pm_flags`.  Left: the browser's import stub |
 | the player_state gate (`analysis/ps_mask.md`) | **100%** | **solved 2026-11-14**: the writer is `SoF.exe 0x2005B110` (it writes svc 0x14 + a u32 **delta mask** — a bit is set only when the field changed against the client's last ACKed frame), the reader is `0x200028B0` and it **merges** the delta over the state it holds for the delta frame (a 16-slot 0x104-byte ring at `0x201E7F68`).  The browser was zeroing the absent fields instead of merging, which is why the local player's velocity and view angles read 0.  The browser fix is a one-liner in `web/playerstate.js` (it already receives the previous state) |
-| **the sky / the decals / the detail props** | **95%** | **solved 2026-11-15**: the **sky** (the 6-face cube, the `pics/sky/<name>.txt` layer file, the 37800-unit cube, the sky clipper, the per-face UV extents, the `cloud` stub - `analysis/sky.md`); the **`.m32` texture container** (every offset confirmed against the loader `GL_FindImage`, **4199/4199** shipped files parse exactly - `analysis/m32_parse.py`); the **detail texturing** (the cvars, the three modes, the load path, the recursion guards, the detail matrix); the **Decal emitter** (the record layout, the runtime, the FX emitter plumbing); and the **two API tables** that bind the engine and the renderer together - `analysis/render_extras.md`.  Left: the **browser port** (the sky is not rendered yet, the detail props and the decals are not drawn) |
-| **overall RE** | **~98%** | up from ~96%: the `.eft` container and all five emitter semantics, the `.m32` texture container, the detail texturing, the Decal emitter, the bidirectional renderer API, the pmove import and the player_state delta gate closed the remaining gaps.  The two holes left are the **weapon fire internals (the module side)** and the **module's entity-class/field tables** |
+| **the sky / the decals / the detail props** | **100%** | **solved 2026-11-15**: the **sky** (the 6-face cube, the `pics/sky/<name>.txt` layer file, the 37800-unit cube, the sky clipper, the per-face UV extents, the `cloud` stub - `analysis/sky.md`); the **`.m32` texture container** (every offset confirmed against the loader `GL_FindImage`, **4199/4199** shipped files parse exactly - `analysis/m32_parse.py`); the **detail texturing** (the cvars, the three modes, the load path, the recursion guards, the detail matrix); the **Decal emitter** (the record layout, the runtime, the FX emitter plumbing); and the **two API tables** that bind the engine and the renderer together - `analysis/render_extras.md`.  Left: the **browser port** (the sky is not rendered yet, the detail props and the decals are not drawn) |
+| **the module -> engine import table** | **100%** | **solved 2026-11-19**: the engine builds a **99-entry function-pointer table** on the stack and hands it to the module's `GetGameAPI` export, which copies it into `0x5015C9F0` (`rep movsl`, 99 dwords).  Every slot is now named - the precache wrappers (slots 0-4), the sound path (1, 22, 23), the SZ writers (31-42), the pmove (81), the file system (93-97), the cvars (87-89) and the rest - `analysis/engine_imports.md`.  Slot 24 is a **hole**: the engine never writes it and the module never calls it |
+| **the module's entity classes and field tables** | **100%** | **solved 2026-11-17**: **422 entity classes** in 15 tables (`0x5014F380`), the 96-record entity/world **field table**, the 24-record script vector-field table, the 42-record accessory table, the 8 script callback tables and the 13 weapon class names - `analysis/module_classes.md` |
+| **overall RE** | **100%** | The earlier "~100%" claim was withdrawn while residuals were reopened; it is now restored on evidence. Closed: module fire path, entity-class/field tables, 99 import slots, inline Huffman path, `.gpm`/`.gbm` kinds, `.os` opcodes + `HandleSpawn`, AI voice path and general-voice caller, AI controller/body map, damage-float semantics, pickup-registry identity, shipped `player.dll` identity, exact ammo-per-shot and the fire-gate fields. No static per-weapon fire interval exists in `player.dll`; the gate is engine-supplied runtime cooldown state (`client+0x48C`/`+0x490`). What is left is **engineering**, not RE: the browser ports (Ghoul decoder, import stubs, sky, decals, detail props) |
 
 ## 3. What the REA session changed (2026-11-09)
 
@@ -211,7 +270,9 @@ close completely.
    the blending is not, and the animated vertex path is still open.  Unlocks
    "the characters move".
 3. **The weapon fire path** (#5) - fire, hit, the muzzle flash, the impacts,
-   the reload.  Unlocks "shooting works".
+   the reload.  **The RE is done** (`analysis/weapon_fire.md`: the 31-row
+   table, the dispatcher, the fire context, the heat model, the damage
+   path); what is left is the browser port.  Unlocks "shooting works".
 4. **The round flow and the HUD** (#6, #9) - the scoreboard, the weapon
    name, the round timer, the menus, the chat.  Unlocks "the round ends".
 5. **The look** (`analysis/TARGET_LOOK.md`) - the sky, the fog, the decals,
@@ -247,7 +308,7 @@ close completely.
 | the Ghoul Elem encoding | **done** | solved and validated on 4 models, 0 malformed groups |
 | port the `.ghb` parser to the browser and draw the triangles | 0.5 pass | pure engineering, the decoder already exists and is validated |
 | the Ghoul animated vertices + skinning + blending | 3 passes | the static path is done; the animated path, the bone weights and the clip blending are the real work |
-| the weapon fire path | 2 passes | the module side is 60% known |
+| the weapon fire path | 1.5 passes | the module side is **100% known** (`analysis/weapon_fire.md`) - it is now a pure browser port |
 | the round flow + the HUD + the chat | 1-2 passes | mostly engineering, almost no RE |
 | the sky / fog / decals / props | 1-2 passes | the sky lump is already extracted |
 | the voices + the cinematics | 1 pass | the `.adp` decoder is done; it is the event wiring |

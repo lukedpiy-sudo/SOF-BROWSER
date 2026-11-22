@@ -1,0 +1,2510 @@
+player.dll client class callback audit (boundary-aware)
+player.dll sha256: 8a4d9d99ff58b09fff35023cb01b8fa825c1130ff05d1645fd0d93bacf0283b5
+image base: 0x40000000
+disassembly: analysis/rea/player_disasm.txt
+vtable map: analysis/rea/player_vtables.txt
+Ghidra inventory: Soldier of Fortune/analysis/player_funcs.txt
+text bounds: 0x40001000..0x4000a80f; string bounds: 0x40015000..0x40018fff
+boundary policy: exact Ghidra range; otherwise next independently proven Ghidra/direct-call/vtable start, tightened by RET+NOP padding
+field policy: ECX and original stack arguments are tracked as candidate bases; semantic object types are not asserted; calls invalidate EAX/ECX/EDX
+coverage: instructions=26489, ghidra_ranges=326, direct_call_targets=70, vtable_targets=147, padding_boundaries=326
+confidence labels describe range attribution, not the semantic meaning of an access or call.
+
+Base         +0x00 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x04 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x08 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x0c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x10 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x14 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x18 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x1c -> 0x40005980
+  range: 0x40005980..0x40005985 (raw through 0x4000598f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x2c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Base         +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Base         +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x50 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Base         +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x6c -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Base         +0x78 -> 0x40009f20
+  range: 0x40009f20..0x40009f4c (raw through 0x40009f4c); Ghidra exact function range; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ECX:
+      +0xb8: 0x40009f23=read
+      +0xbc: 0x40009f37=read
+
+Base         +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x00 -> 0x40005bf0
+  range: 0x40005bf0..0x40005c0d (raw through 0x40005c0f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x40015618='fire1_2a'; 0x4001560c='fire1_1a'
+  calls: 0x40009950
+  candidate-base fields: (none proven in range)
+
+Knife        +0x04 -> 0x40005ca0
+  range: 0x40005ca0..0x40005ca7 (raw through 0x40005caf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015658='fire2_1'
+  candidate-base fields: (none proven in range)
+
+Knife        +0x08 -> 0x40005c10
+  range: 0x40005c10..0x40005c9b (raw through 0x40005c9f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015648='idlefinger_1'; 0x40015638='idlefinger_2'; 0x4001562c='idleclean'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005c20=read
+
+Knife        +0x0c -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Knife        +0x14 -> 0x40005cb0
+  range: 0x40005cb0..0x40005cd1 (raw through 0x40005cdf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005cb4=read
+
+Knife        +0x18 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x1c -> 0x40008880
+  range: 0x40008880..0x40008885 (raw through 0x4000888f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a8c='Knife'
+  candidate-base fields: (none proven in range)
+
+Knife        +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x2c -> 0x40005ce0
+  range: 0x40005ce0..0x40005def (raw through 0x40005def); Ghidra exact function range; confidence=high
+  strings: 0x4001560c='fire1_1a'; 0x4001568c='fire1_1b'; 0x40015658='fire2_1'; 0x40015418='knife'; 0x40015684='fire2_2'; 0x40015618='fire1_2a'; 0x400155fc='fire1_2sr_to_sl'; 0x400155ec='fire1_2dr_to_ul'; 0x400155dc='fire1_2ur_to_dl'; 0x40015670='fire1_2l_to_idle'
+  calls: 0x40009730, 0x40009150, 0x40009950, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005ce7=read
+
+Knife        +0x30 -> 0x40005df0
+  range: 0x40005df0..0x40005eba (raw through 0x40005ebf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001568c='fire1_1b'; 0x400155fc='fire1_2sr_to_sl'; 0x400155cc='fire1_2sl_to_sr'; 0x400155bc='fire1_2dl_to_ur'; 0x400155ac='fire1_2ul_to_dr'; 0x400155ec='fire1_2dr_to_ul'; 0x400155dc='fire1_2ur_to_dl'
+  calls: 0x40009730, 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005df7=read
+    ECX:
+      +0x00: 0x40005e18=read
+
+Knife        +0x34 -> 0x40005ec0
+  range: 0x40005ec0..0x40005ef3 (raw through 0x40005ef3); Ghidra exact function range; confidence=high
+  calls: 0x40009730, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005ec5=read
+    ECX:
+      +0x00: 0x40005ed1=read
+
+Knife        +0x38 -> 0x40005f00
+  range: 0x40005f00..0x40005f2f (raw through 0x40005f2f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x40015418='knife'
+  calls: 0x40009150
+  candidate-base fields (semantic object type not asserted):
+    ARG2:
+      +0x00: 0x40005f04=read
+
+Knife        +0x3c -> 0x40008890
+  range: 0x40008890..0x40008897 (raw through 0x4000889f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x40 -> 0x40008450
+  range: 0x40008450..0x400084a8 (raw through 0x400084a8); Ghidra exact function range; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008455=read, 0x40008463=read
+
+Knife        +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x48 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x4c -> 0x40005bd0
+  range: 0x40005bd0..0x40005be9 (raw through 0x40005bef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400155a0='knifeblood'; 0x40015418='knife'
+  calls: 0x40009150
+  candidate-base fields: (none proven in range)
+
+Knife        +0x50 -> 0x40007fc0
+  range: 0x40007fc0..0x40008070 (raw through 0x4000807f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015648='idlefinger_1'; 0x4001562c='idleclean'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007fc7=read
+      +0x10: 0x40007fd7=read
+
+Knife        +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x64 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x6c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x78 -> 0x40005bc0
+  range: 0x40005bc0..0x40005bc4 (raw through 0x40005bcf); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  candidate-base fields: (none proven in range)
+
+Knife        +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x00 -> 0x40005f70
+  range: 0x40005f70..0x40005f98 (raw through 0x40005f9f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156bc='fire1_c'; 0x400156b4='fire1_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005f74=read, 0x40005f80=read
+
+Pistol2      +0x04 -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x08 -> 0x40005fd0
+  range: 0x40005fd0..0x400061e4 (raw through 0x400061e4); Ghidra exact function range; confidence=high
+  strings: 0x40015758='idle_a_to_idle_c'; 0x40015744='idle_c_to_idle_a'; 0x4001573c='idle_c'; 0x4001572c='idlefinger_c'; 0x40015724='idle_d'; 0x40015710='idle_d_to_idle_a'; 0x40015708='idle_a'; 0x400156f4='idle_a_to_idle_d'; 0x400156e4='idlefinger_a'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005fee=read, 0x40006002=read, 0x4000600a=read, 0x40006012=read, 0x4000602a=read, 0x4000603e=read, 0x40006046=read, 0x4000604f=read
+
+Pistol2      +0x0c -> 0x400061f0
+  range: 0x400061f0..0x40006218 (raw through 0x4000621f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015778='reload_c'; 0x4001576c='reload_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400061f4=read, 0x40006200=read
+
+Pistol2      +0x10 -> 0x40006220
+  range: 0x40006220..0x4000623d (raw through 0x4000623f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x40015784='ready_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006226=read, 0x4000622e=read
+
+Pistol2      +0x14 -> 0x40006240
+  range: 0x40006240..0x4000625c (raw through 0x4000625f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015794='done_c'; 0x4001578c='done_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006244=read
+
+Pistol2      +0x18 -> 0x40005fa0
+  range: 0x40005fa0..0x40005fc8 (raw through 0x40005fcf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156d4='dryfire_lhand'; 0x400156c4='dryfire_rhand'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40005fa4=read, 0x40005fb0=read
+
+Pistol2      +0x1c -> 0x400088a0
+  range: 0x400088a0..0x400088a5 (raw through 0x400088af); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a94='Desert Eagle'
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x2c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Pistol2      +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Pistol2      +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x50 -> 0x40007ef0
+  range: 0x40007ef0..0x40007fb2 (raw through 0x40007fbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015758='idle_a_to_idle_c'; 0x40015744='idle_c_to_idle_a'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007ef7=read
+
+Pistol2      +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Pistol2      +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x6c -> 0x400088b0
+  range: 0x400088b0..0x400088b5 (raw through 0x400088bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x78 -> 0x40005f50
+  range: 0x40005f50..0x40005f61 (raw through 0x40005f6f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015698='weapons/playermz/pistol2'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Pistol2      +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x00 -> 0x400062a0
+  range: 0x400062a0..0x400062c9 (raw through 0x400062cf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156b4='fire1_a'; 0x400157b8='fire1_b'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400062a4=read, 0x400062b0=read
+
+Pistol1      +0x04 -> 0x400062d0
+  range: 0x400062d0..0x400062d7 (raw through 0x400062df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156b4='fire1_a'
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x08 -> 0x40006310
+  range: 0x40006310..0x400065ca (raw through 0x400065ca); Ghidra exact function range; confidence=high
+  strings: 0x40015834='idle_a_to_idle_b'; 0x4001573c='idle_c'; 0x40015820='idle_c_to_idle_b'; 0x4001572c='idlefinger_c'; 0x40015708='idle_a'; 0x400156e4='idlefinger_a'; 0x40015818='idle_b'; 0x40015804='idle_b_to_idle_c'; 0x400157f0='idle_b_to_idle_a'; 0x400157e0='idlefinger_b'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006336=read, 0x40006353=read, 0x4000635b=read, 0x40006363=read, 0x4000637c=read, 0x40006390=read, 0x400063ac=read
+      +0x18: 0x4000632f=read
+
+Pistol1      +0x0c -> 0x400065d0
+  range: 0x400065d0..0x400065ed (raw through 0x400065ef); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x4001576c='reload_a'; 0x40015848='reload_b'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400065d4=read
+
+Pistol1      +0x10 -> 0x400065f0
+  range: 0x400065f0..0x40006613 (raw through 0x4000661f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015784='ready_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400065f4=read, 0x40006600=read
+
+Pistol1      +0x14 -> 0x40006640
+  range: 0x40006640..0x4000665d (raw through 0x4000665f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x4001578c='done_a'; 0x40015854='done_b'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006644=read
+
+Pistol1      +0x18 -> 0x400062e0
+  range: 0x400062e0..0x40006309 (raw through 0x4000630f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400157d0='dryfire_1hand'; 0x400157c0='dryfire_2hands'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400062e4=read, 0x400062f0=read
+
+Pistol1      +0x1c -> 0x400088c0
+  range: 0x400088c0..0x400088c5 (raw through 0x400088cf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015aa4='Glock 9mm'
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x2c -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x34 -> 0x40006620
+  range: 0x40006620..0x40006639 (raw through 0x4000663f); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x40002f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006624=read, 0x40006630=read
+
+Pistol1      +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Pistol1      +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Pistol1      +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x50 -> 0x400080c0
+  range: 0x400080c0..0x400081c1 (raw through 0x400081c1); Ghidra exact function range; confidence=high
+  strings: 0x4001585c='fire2_b'; 0x40015834='idle_a_to_idle_b'; 0x400157f0='idle_b_to_idle_a'
+  calls: 0x400035e0, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400080c6=read, 0x400080f7=read
+      +0x0c: 0x400080e9=read
+
+Pistol1      +0x54 -> 0x40006660
+  range: 0x40006660..0x400066cf (raw through 0x400066cf); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x4001585c='fire2_b'
+  calls: 0x400051b0, 0x40009f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006667=read, 0x400066a9=read, 0x400066bc=read
+
+Pistol1      +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Pistol1      +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x6c -> 0x400088d0
+  range: 0x400088d0..0x400088d5 (raw through 0x400088df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x78 -> 0x40006280
+  range: 0x40006280..0x40006291 (raw through 0x4000629f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001579c='weapons/playermz/pistol1'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Pistol1      +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x00 -> 0x40005ca0
+  range: 0x40005ca0..0x40005ca7 (raw through 0x40005caf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015658='fire2_1'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x04 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x08 -> 0x40006710
+  range: 0x40006710..0x40006785 (raw through 0x40006785); Ghidra exact function range; confidence=high
+  strings: 0x40015624='idle'; 0x400156e4='idlefinger_a'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006715=read
+
+MPistol      +0x0c -> 0x40007920
+  range: 0x40007920..0x40007927 (raw through 0x4000792f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400154d4='reload'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x1c -> 0x400088e0
+  range: 0x400088e0..0x400088e5 (raw through 0x400088ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015ab0='Ingram m11'
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x2c -> 0x40006790
+  range: 0x40006790..0x400067d4 (raw through 0x400067df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015658='fire2_1'; 0x40015684='fire2_2'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000679b=read
+      +0x08: 0x400067b0=read
+
+MPistol      +0x30 -> 0x400067f0
+  range: 0x400067f0..0x40006802 (raw through 0x4000680f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400067f4=read
+
+MPistol      +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+MPistol      +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+MPistol      +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x50 -> 0x40006890
+  range: 0x40006890..0x400068b2 (raw through 0x400068bf); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006894=read
+      +0x08: 0x4000689f=read
+
+MPistol      +0x54 -> 0x40006810
+  range: 0x40006810..0x4000688d (raw through 0x4000688f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  calls: 0x400051b0, 0x40009f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000682e=read, 0x4000684c=read, 0x4000686a=read, 0x4000687d=read
+
+MPistol      +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+MPistol      +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x6c -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x78 -> 0x400066f0
+  range: 0x400066f0..0x40006701 (raw through 0x4000670f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015864='weapons/playermz/machinepistol'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+MPistol      +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x00 -> 0x40006900
+  range: 0x40006900..0x40006928 (raw through 0x4000692f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400157b8='fire1_b'; 0x400156b4='fire1_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006904=read, 0x40006910=read
+
+Assaultrifle +0x04 -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x08 -> 0x40006930
+  range: 0x40006930..0x40006af1 (raw through 0x40006aff); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400157f0='idle_b_to_idle_a'; 0x40015818='idle_b'; 0x400157e0='idlefinger_b'; 0x40015708='idle_a'; 0x40015834='idle_a_to_idle_b'; 0x400156e4='idlefinger_a'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006948=read, 0x4000695c=read, 0x40006969=read
+
+Assaultrifle +0x0c -> 0x40006b00
+  range: 0x40006b00..0x40006b1c (raw through 0x40006b1f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015848='reload_b'; 0x4001576c='reload_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006b04=read
+
+Assaultrifle +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x14 -> 0x40006b20
+  range: 0x40006b20..0x40006b3c (raw through 0x40006b3f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015854='done_b'; 0x4001578c='done_a'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006b24=read
+
+Assaultrifle +0x18 -> 0x40006b40
+  range: 0x40006b40..0x40006b5c (raw through 0x40006b5f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400158c0='dryfire_side'; 0x400158b4='dryfire_up'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006b44=read
+
+Assaultrifle +0x1c -> 0x400088f0
+  range: 0x400088f0..0x400088f5 (raw through 0x400088ff); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015abc='HK53'
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x2c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x38 -> 0x40006d30
+  range: 0x40006d30..0x40006dcf (raw through 0x40006dcf); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x400158d0='%d'
+  calls: 0x4000b188
+  candidate-base fields (semantic object type not asserted):
+    ARG2:
+      +0x00: 0x40006d4f=read, 0x40006d6b=read, 0x40006d79=read
+      +0x04: 0x40006d44=read
+
+Assaultrifle +0x3c -> 0x40008610
+  range: 0x40008610..0x4000864c (raw through 0x4000864c); Ghidra exact function range; confidence=high
+  calls: 0x40009de0, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008621=read, 0x40008631=read
+    ECX:
+      +0x00: 0x4000863a=read
+
+Assaultrifle +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Assaultrifle +0x44 -> 0x40006c40
+  range: 0x40006c40..0x40006d20 (raw through 0x40006d2f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400158d0='%d'
+  calls: 0x4000b188
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006c5d=read
+      +0x04: 0x40006c52=read
+
+Assaultrifle +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x50 -> 0x40006b60
+  range: 0x40006b60..0x40006c39 (raw through 0x40006c39); Ghidra exact function range; confidence=high
+  strings: 0x40015834='idle_a_to_idle_b'; 0x400157f0='idle_b_to_idle_a'
+  calls: 0x400035e0, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006b65=read
+      +0x08: 0x40006b70=read
+
+Assaultrifle +0x54 -> 0x40006810
+  range: 0x40006810..0x4000688d (raw through 0x4000688f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  calls: 0x400051b0, 0x40009f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000682e=read, 0x4000684c=read, 0x4000686a=read, 0x4000687d=read
+
+Assaultrifle +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Assaultrifle +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x6c -> 0x40008900
+  range: 0x40008900..0x40008905 (raw through 0x4000890f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x78 -> 0x400068e0
+  range: 0x400068e0..0x400068f1 (raw through 0x400068ff); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015894='weapons/playermz/assaultrifle'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Assaultrifle +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x00 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x04 -> 0x40006e70
+  range: 0x40006e70..0x40006ef8 (raw through 0x40006ef8); Ghidra exact function range; confidence=high
+  strings: 0x40015900='scopeout'; 0x400158f8='scopein'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006e75=read
+
+SniperRifle  +0x08 -> 0x40006e10
+  range: 0x40006e10..0x40006e6d (raw through 0x40006e6f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x400158ec='idlefinger'; 0x40015708='idle_a'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006e20=read
+
+SniperRifle  +0x0c -> 0x40006f00
+  range: 0x40006f00..0x40006f8e (raw through 0x40006f8e); Ghidra exact function range; confidence=high
+  strings: 0x40015624='idle'; 0x400154d4='reload'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006f05=read
+
+SniperRifle  +0x10 -> 0x40006f90
+  range: 0x40006f90..0x40006fbc (raw through 0x40006fbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006f99=read, 0x40006fa1=read, 0x40006fa9=read
+
+SniperRifle  +0x14 -> 0x40007130
+  range: 0x40007130..0x4000714c (raw through 0x4000714f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001578c='done_a'; 0x40015854='done_b'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007134=read
+
+SniperRifle  +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x1c -> 0x40008910
+  range: 0x40008910..0x40008915 (raw through 0x4000891f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015ac4='Sig2000G'
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x24 -> 0x40008080
+  range: 0x40008080..0x400080b0 (raw through 0x400080bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008096=read, 0x4000809e=read, 0x400080a6=read
+      +0x04: 0x40008084=read
+
+SniperRifle  +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x2c -> 0x40006fc0
+  range: 0x40006fc0..0x400070f7 (raw through 0x400070f7); Ghidra exact function range; confidence=high
+  strings: 0x400158f8='scopein'; 0x40015900='scopeout'; 0x400154d4='reload'
+  calls: 0x4000aaec, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006fc7=read, 0x40006ff7=read, 0x40006fff=read, 0x40007018=read, 0x40007034=read, 0x40007047=read
+      +0x04: 0x40006fe2=read, 0x40007007=read, 0x40007029=read
+
+SniperRifle  +0x30 -> 0x40007100
+  range: 0x40007100..0x4000711b (raw through 0x4000711f); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ECX:
+      +0x00: 0x40007100=read
+
+SniperRifle  +0x34 -> 0x40007120
+  range: 0x40007120..0x4000712d (raw through 0x4000712f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  calls: 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007124=read
+
+SniperRifle  +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+SniperRifle  +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+SniperRifle  +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x50 -> 0x400081d0
+  range: 0x400081d0..0x40008360 (raw through 0x4000836f); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x4000aaec
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000820f=read, 0x40008232=read, 0x4000823e=read
+      +0x04: 0x400081e2=read, 0x40008222=read
+      +0x24: 0x400081db=read
+
+SniperRifle  +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+SniperRifle  +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x6c -> 0x40008920
+  range: 0x40008920..0x40008925 (raw through 0x4000892f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x78 -> 0x40006df0
+  range: 0x40006df0..0x40006e01 (raw through 0x40006e0f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400158d4='weapons/playermz/sniper'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+SniperRifle  +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x00 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x04 -> 0x400074d0
+  range: 0x400074d0..0x400074d7 (raw through 0x400074df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015938='fire2'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x08 -> 0x40007190
+  range: 0x40007190..0x4000722b (raw through 0x4000722f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'; 0x4001592c='ready_idle'; 0x400156e4='idlefinger_a'; 0x400157e0='idlefinger_b'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400071ad=read
+
+Autoshotgun  +0x0c -> 0x40007920
+  range: 0x40007920..0x40007927 (raw through 0x4000792f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400154d4='reload'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x1c -> 0x40008930
+  range: 0x40008930..0x40008935 (raw through 0x4000893f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015ad0='Jackhammer'
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x2c -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Autoshotgun  +0x40 -> 0x400084b0
+  range: 0x400084b0..0x40008516 (raw through 0x40008516); Ghidra exact function range; confidence=high
+  calls: 0x400032a0, 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400084b5=read, 0x400084c3=read, 0x400084cf=read, 0x400084d9=read
+
+Autoshotgun  +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x50 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Autoshotgun  +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x6c -> 0x40008940
+  range: 0x40008940..0x40008945 (raw through 0x4000894f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x70 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x78 -> 0x40007170
+  range: 0x40007170..0x40007181 (raw through 0x4000718f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001590c='weapons/playermz/autoshotgun'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Autoshotgun  +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x00 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x04 -> 0x400074d0
+  range: 0x400074d0..0x400074d7 (raw through 0x400074df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015938='fire2'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x08 -> 0x40007270
+  range: 0x40007270..0x400072c3 (raw through 0x400072cf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156e4='idlefinger_a'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007280=read
+
+Shotgun      +0x0c -> 0x400072d0
+  range: 0x400072d0..0x400072d7 (raw through 0x400072df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001595c='reload_1'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x1c -> 0x40008950
+  range: 0x40008950..0x40008955 (raw through 0x4000895f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015adc='Spas15'
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x2c -> 0x400072e0
+  range: 0x400072e0..0x4000738d (raw through 0x4000738d); Ghidra exact function range; confidence=high
+  strings: 0x40015974='reload_loop'; 0x40015968='reload_2'; 0x4001595c='reload_1'
+  calls: 0x40002a60, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400072e7=read, 0x40007321=read
+
+Shotgun      +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x3c -> 0x40007390
+  range: 0x40007390..0x400073f3 (raw through 0x400073f3); Ghidra exact function range; confidence=high
+  calls: 0x400032a0, 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007395=read, 0x400073a3=read, 0x400073ae=read, 0x400073b8=read
+
+Shotgun      +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Shotgun      +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x50 -> 0x40008370
+  range: 0x40008370..0x4000841e (raw through 0x4000841f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x400157e0='idlefinger_b'; 0x4001572c='idlefinger_c'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008377=read
+      +0x10: 0x40008387=read
+
+Shotgun      +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x58 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Shotgun      +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x6c -> 0x40008960
+  range: 0x40008960..0x40008965 (raw through 0x4000896f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x78 -> 0x40007250
+  range: 0x40007250..0x40007261 (raw through 0x4000726f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015940='weapons/playermz/shotgun'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Shotgun      +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x00 -> 0x40007440
+  range: 0x40007440..0x40007457 (raw through 0x4000745f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001599c='fire1_1'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007444=read
+
+Machinegun   +0x04 -> 0x400074d0
+  range: 0x400074d0..0x400074d7 (raw through 0x400074df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015938='fire2'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x08 -> 0x40007460
+  range: 0x40007460..0x400074ca (raw through 0x400074cf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156e4='idlefinger_a'; 0x400157e0='idlefinger_b'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007470=read
+
+Machinegun   +0x0c -> 0x40007920
+  range: 0x40007920..0x40007927 (raw through 0x4000792f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400154d4='reload'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x1c -> 0x40008980
+  range: 0x40008980..0x40008985 (raw through 0x4000898f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015ae4='Minimi'
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x2c -> 0x400074e0
+  range: 0x400074e0..0x40007551 (raw through 0x4000755f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001599c='fire1_1'; 0x400159a4='fire1_2'
+  calls: 0x40009730, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400074e7=read
+      +0x08: 0x4000750c=read
+
+Machinegun   +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x38 -> 0x40007560
+  range: 0x40007560..0x40007608 (raw through 0x4000760f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400159ac='BULLET%d'
+  calls: 0x4000b188
+  candidate-base fields (semantic object type not asserted):
+    ARG2:
+      +0x00: 0x40007585=read, 0x400075a1=read, 0x400075af=read
+      +0x04: 0x4000757a=read
+
+Machinegun   +0x3c -> 0x40008610
+  range: 0x40008610..0x4000864c (raw through 0x4000864c); Ghidra exact function range; confidence=high
+  calls: 0x40009de0, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008621=read, 0x40008631=read
+    ECX:
+      +0x00: 0x4000863a=read
+
+Machinegun   +0x40 -> 0x400079b0
+  range: 0x400079b0..0x40007a16 (raw through 0x40007a16); Ghidra exact function range; confidence=high
+  calls: 0x400032a0, 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400079b5=read, 0x400079c3=read, 0x400079cf=read, 0x400079d9=read
+
+Machinegun   +0x44 -> 0x40008520
+  range: 0x40008520..0x40008604 (raw through 0x4000860f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400159ac='BULLET%d'
+  calls: 0x4000b188
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000853d=read
+      +0x04: 0x40008532=read
+
+Machinegun   +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x50 -> 0x40006890
+  range: 0x40006890..0x400068b2 (raw through 0x400068bf); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40006894=read
+      +0x08: 0x4000689f=read
+
+Machinegun   +0x54 -> 0x40007610
+  range: 0x40007610..0x4000769e (raw through 0x4000769f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  calls: 0x400051b0, 0x40009f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000762e=read, 0x40007654=read, 0x40007673=read, 0x40007686=read
+
+Machinegun   +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x5c -> 0x40008650
+  range: 0x40008650..0x40008674 (raw through 0x4000867f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a6c='land'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40008654=read
+
+Machinegun   +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Machinegun   +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x6c -> 0x400089a0
+  range: 0x400089a0..0x400089a5 (raw through 0x400089af); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x78 -> 0x40007420
+  range: 0x40007420..0x40007431 (raw through 0x4000743f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015980='weapons/playermz/machinegun'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Machinegun   +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x00 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x04 -> 0x40007760
+  range: 0x40007760..0x40007777 (raw through 0x4000777f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015938='fire2'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007764=read
+
+Rocket       +0x08 -> 0x400076f0
+  range: 0x400076f0..0x4000775a (raw through 0x4000775f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156e4='idlefinger_a'; 0x400157e0='idlefinger_b'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007700=read
+
+Rocket       +0x0c -> 0x40007920
+  range: 0x40007920..0x40007927 (raw through 0x4000792f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400154d4='reload'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x1c -> 0x400089b0
+  range: 0x400089b0..0x400089b5 (raw through 0x400089bf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015aec='M202A2'
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x2c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x30 -> 0x400067f0
+  range: 0x400067f0..0x40006802 (raw through 0x4000680f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400067f4=read
+
+Rocket       +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Rocket       +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Rocket       +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x50 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x54 -> 0x40007790
+  range: 0x40007790..0x40007816 (raw through 0x4000781f); inferred RET + alignment-NOP boundary; confidence=high
+  calls: 0x400051b0, 0x40009f80
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400077ae=read, 0x400077cc=read, 0x400077eb=read, 0x400077fe=read
+
+Rocket       +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Rocket       +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x6c -> 0x400089c0
+  range: 0x400089c0..0x400089c5 (raw through 0x400089cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x70 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x78 -> 0x400076c0
+  range: 0x400076c0..0x400076de (raw through 0x400076df); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x400159d4='weapons/playermz/rocket'; 0x400159b8='weapons/playermz/rocket_alt'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+Rocket       +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x00 -> 0x40007860
+  range: 0x40007860..0x400078a9 (raw through 0x400078af); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015938='fire2'; 0x40015a04='fire2_loop'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000786b=read
+
+MPG          +0x04 -> 0x400076e0
+  range: 0x400076e0..0x400076e7 (raw through 0x400076ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015884='fire1'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x08 -> 0x400078b0
+  range: 0x400078b0..0x4000791a (raw through 0x4000791f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400156e4='idlefinger_a'; 0x400157e0='idlefinger_b'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400078c0=read
+
+MPG          +0x0c -> 0x40007920
+  range: 0x40007920..0x40007927 (raw through 0x4000792f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400154d4='reload'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x14 -> 0x400067e0
+  range: 0x400067e0..0x400067e7 (raw through 0x400067ef); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015668='done'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x1c -> 0x400089d0
+  range: 0x400089d0..0x400089d5 (raw through 0x400089df); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015af4='Microwave Pulse'
+  candidate-base fields: (none proven in range)
+
+MPG          +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x2c -> 0x40007930
+  range: 0x40007930..0x4000796d (raw through 0x4000796f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x40015884='fire1'; 0x40015a10='charge'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000793b=read
+
+MPG          +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+MPG          +0x40 -> 0x400079b0
+  range: 0x400079b0..0x40007a16 (raw through 0x40007a16); Ghidra exact function range; confidence=high
+  calls: 0x400032a0, 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400079b5=read, 0x400079c3=read, 0x400079cf=read, 0x400079d9=read
+
+MPG          +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x50 -> 0x40007970
+  range: 0x40007970..0x400079a6 (raw through 0x400079a6); Ghidra exact function range; confidence=high
+  strings: 0x40015a18='fire2_end'
+  calls: 0x400035e0, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007975=read
+      +0x08: 0x40007980=read
+
+MPG          +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+MPG          +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x6c -> 0x400089e0
+  range: 0x400089e0..0x400089e5 (raw through 0x400089ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x70 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x74 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+MPG          +0x78 -> 0x40007840
+  range: 0x40007840..0x40007851 (raw through 0x4000785f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x400159ec='weapons/playermz/mpg'
+  calls: 0x40009f20
+  candidate-base fields: (none proven in range)
+
+MPG          +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x00 -> 0x40007a40
+  range: 0x40007a40..0x40007ab9 (raw through 0x40007ab9); Ghidra exact function range; confidence=high
+  strings: 0x4001599c='fire1_1'; 0x40015a40='fire1_idle'; 0x40015a24='weapons/flamegun/fire.wav'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007a47=read
+
+Flamegun     +0x04 -> 0x40005ca0
+  range: 0x40005ca0..0x40005ca7 (raw through 0x40005caf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015658='fire2_1'
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x08 -> 0x40007ac0
+  range: 0x40007ac0..0x40007b93 (raw through 0x40007b93); Ghidra exact function range; confidence=high
+  strings: 0x40015a4c='player/flaglp.wav'; 0x400156e4='idlefinger_a'; 0x400157e0='idlefinger_b'; 0x4001572c='idlefinger_c'; 0x40015624='idle'
+  calls: 0x40009950
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007b1c=read
+      +0x04: 0x40007adf=read, 0x40007afb=read, 0x40007b04=read, 0x40007b10=read, 0x40007b16=read
+
+Flamegun     +0x0c -> 0x40007ba0
+  range: 0x40007ba0..0x40007ba7 (raw through 0x40007baf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001576c='reload_a'
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x10 -> 0x40007bb0
+  range: 0x40007bb0..0x40007bb7 (raw through 0x40007bbf); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015660='ready'
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x14 -> 0x40007bc0
+  range: 0x40007bc0..0x40007c22 (raw through 0x40007c2f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a4c='player/flaglp.wav'; 0x40015668='done'
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x04: 0x40007bce=read, 0x40007bea=read, 0x40007bf3=read
+
+Flamegun     +0x18 -> 0x40007780
+  range: 0x40007780..0x40007787 (raw through 0x4000778f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x4001588c='dryfire'
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x1c -> 0x400089f0
+  range: 0x400089f0..0x400089f5 (raw through 0x400089ff); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015b04='Flamethrower'
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x24 -> 0x40008420
+  range: 0x40008420..0x4000843d (raw through 0x4000843f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x04: 0x4000842f=read, 0x40008435=read
+
+Flamegun     +0x28 -> 0x40008440
+  range: 0x40008440..0x40008442 (raw through 0x4000844f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x2c -> 0x40007c30
+  range: 0x40007c30..0x40007caf (raw through 0x40007caf); Ghidra exact function range; confidence=high
+  strings: 0x40015684='fire2_2'; 0x40015658='fire2_1'; 0x40015a60='fire2_idle'
+  calls: 0x400035e0, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007c37=read
+
+Flamegun     +0x30 -> 0x40008440
+  range: 0x40008440..0x40008442 (raw through 0x4000844f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x34 -> 0x40007cb0
+  range: 0x40007cb0..0x40007d0f (raw through 0x40007d0f); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  strings: 0x40015658='fire2_1'; 0x40015684='fire2_2'
+  calls: 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007cb7=read
+
+Flamegun     +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x3c -> 0x40007d10
+  range: 0x40007d10..0x40007dc8 (raw through 0x40007dc8); Ghidra exact function range; confidence=high
+  strings: 0x40015a4c='player/flaglp.wav'; 0x40015444='weaponbestsafe'
+  calls: 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007d16=read, 0x40007d28=read, 0x40007d7b=read, 0x40007d85=read
+      +0x04: 0x40007d3e=read, 0x40007d5a=read, 0x40007d63=read, 0x40007d6f=read, 0x40007d75=read
+
+Flamegun     +0x40 -> 0x40007dd0
+  range: 0x40007dd0..0x40007e4d (raw through 0x40007e4d); Ghidra exact function range; confidence=high
+  strings: 0x40015444='weaponbestsafe'
+  calls: 0x40003630, 0x400051b0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007dd5=read, 0x40007de3=read, 0x40007def=read, 0x40007dfd=read, 0x40007e11=read, 0x40007e1f=read
+
+Flamegun     +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x50 -> 0x40007e50
+  range: 0x40007e50..0x40007ee3 (raw through 0x40007ee3); Ghidra exact function range; confidence=high
+  strings: 0x400159a4='fire1_2'; 0x40015a4c='player/flaglp.wav'
+  calls: 0x400035e0, 0x40009730
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40007e55=read, 0x40007e6d=read
+      +0x04: 0x40007e8f=read, 0x40007eab=read, 0x40007eb4=read
+      +0x08: 0x40007e60=read
+    ECX:
+      +0x00: 0x40007e67=read
+
+Flamegun     +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x64 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x68 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x6c -> 0x40008a00
+  range: 0x40008a00..0x40008a05 (raw through 0x40008a0f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x70 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x74 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x78 -> 0x40005bc0
+  range: 0x40005bc0..0x40005bc4 (raw through 0x40005bcf); inferred direct-call/vtable/Ghidra start boundary; confidence=medium-high
+  candidate-base fields: (none proven in range)
+
+Flamegun     +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x00 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x04 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x08 -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x0c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x10 -> 0x40008740
+  range: 0x40008740..0x40008747 (raw through 0x4000874f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a74='hurthand'
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x14 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x18 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x1c -> 0x40008a10
+  range: 0x40008a10..0x40008a15 (raw through 0x40008a1f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015b14='Hurthand'
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x2c -> 0x400086a0
+  range: 0x400086a0..0x4000873e (raw through 0x4000873e); Ghidra exact function range; confidence=high
+  strings: 0x40015a74='hurthand'; 0x400154bc='weapnext'
+  calls: 0x40009730, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x400086a7=read, 0x400086e6=read, 0x40008711=read
+    ECX:
+      +0x00: 0x400086fd=read
+
+Hurthand     +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Hurthand     +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Hurthand     +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x50 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Hurthand     +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x6c -> 0x40008a20
+  range: 0x40008a20..0x40008a25 (raw through 0x40008a2f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Hurthand     +0x78 -> 0x40009f20
+  range: 0x40009f20..0x40009f4c (raw through 0x40009f4c); Ghidra exact function range; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ECX:
+      +0xb8: 0x40009f23=read
+      +0xbc: 0x40009f37=read
+
+Hurthand     +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x00 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x04 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x08 -> 0x40008840
+  range: 0x40008840..0x40008844 (raw through 0x4000884f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x0c -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x10 -> 0x40008850
+  range: 0x40008850..0x40008857 (raw through 0x4000885f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a80='throwhand'
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x14 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x18 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x1c -> 0x40008a30
+  range: 0x40008a30..0x40008a35 (raw through 0x40008a3f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015b20='Throwhand'
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x20 -> 0x40008990
+  range: 0x40008990..0x40008995 (raw through 0x4000899f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x24 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x28 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x2c -> 0x40008770
+  range: 0x40008770..0x40008834 (raw through 0x4000883f); inferred RET + alignment-NOP boundary; confidence=high
+  strings: 0x40015a80='throwhand'; 0x400154bc='weapnext'
+  calls: 0x40009730, 0x400035e0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x4000877a=read, 0x400087d9=read, 0x40008806=read
+    ECX:
+      +0x00: 0x400087f3=read
+
+Throwhand    +0x30 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x34 -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x38 -> 0x400011c0
+  range: 0x400011c0..0x400011c2 (raw through 0x400011cf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x3c -> 0x40009de0
+  range: 0x40009de0..0x40009e44 (raw through 0x40009e44); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009de9=read, 0x40009df9=read, 0x40009e0d=read, 0x40009e17=read
+    ECX:
+      +0x0c: 0x40009df2=read
+
+Throwhand    +0x40 -> 0x40009e50
+  range: 0x40009e50..0x40009eb4 (raw through 0x40009eb4); Ghidra exact function range; confidence=high
+  calls: 0x400051b0, 0x400032a0, 0x40003630
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009e59=read, 0x40009e69=read, 0x40009e7d=read, 0x40009e87=read
+    ECX:
+      +0x10: 0x40009e62=read
+
+Throwhand    +0x44 -> 0x40008870
+  range: 0x40008870..0x40008872 (raw through 0x4000887f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x48 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x4c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x50 -> 0x40008860
+  range: 0x40008860..0x40008864 (raw through 0x4000886f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x54 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x58 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x5c -> 0x400059b0
+  range: 0x400059b0..0x400059b2 (raw through 0x400059bf); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x60 -> 0x40008970
+  range: 0x40008970..0x40008977 (raw through 0x4000897f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x64 -> 0x40009ec0
+  range: 0x40009ec0..0x40009f11 (raw through 0x40009f11); Ghidra exact function range; confidence=high
+  calls: 0x400032a0
+  candidate-base fields (semantic object type not asserted):
+    ARG1:
+      +0x00: 0x40009ec5=read, 0x40009ee3=read, 0x40009eee=read, 0x40009efc=read
+
+Throwhand    +0x68 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x6c -> 0x40008a40
+  range: 0x40008a40..0x40008a45 (raw through 0x40008a4f); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x70 -> 0x400011e0
+  range: 0x400011e0..0x400011e2 (raw through 0x400011ef); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x74 -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Throwhand    +0x78 -> 0x40009f20
+  range: 0x40009f20..0x40009f4c (raw through 0x40009f4c); Ghidra exact function range; confidence=high
+  candidate-base fields (semantic object type not asserted):
+    ECX:
+      +0xb8: 0x40009f23=read
+      +0xbc: 0x40009f37=read
+
+Throwhand    +0x7c -> 0x400012d0
+  range: 0x400012d0..0x400012d5 (raw through 0x400012df); inferred RET + alignment-NOP boundary; confidence=high
+  candidate-base fields: (none proven in range)
+
+Focused class-constructor provenance
+  FUN_40009d20 range 0x40009d20..0x40009dd8; Ghidra exact function range; confidence=high
+    0x40009d3a: mov    edx,DWORD PTR [ecx+0xc]
+    0x40009d40: mov    edx,DWORD PTR [edx]
+    0x40009d42: mov    DWORD PTR [eax+0xc],edx
+    0x40009d45: mov    edx,DWORD PTR [ecx+0x10]
+    0x40009d48: mov    edx,DWORD PTR [edx]
+    0x40009d4a: mov    DWORD PTR [eax+0x10],edx
+    0x40009d4d: mov    edx,DWORD PTR [ecx+0xc]
+    0x40009d50: mov    edx,DWORD PTR [edx+0x4]
+    0x40009d53: mov    DWORD PTR [eax+0x14],edx
+    0x40009d56: mov    edx,DWORD PTR [ecx+0x10]
+    0x40009d59: mov    edx,DWORD PTR [edx+0x4]
+    0x40009d5c: mov    DWORD PTR [eax+0x18],edx
+    0x40009d5f: mov    edx,DWORD PTR [ecx+0xc]
+    0x40009d62: mov    edx,DWORD PTR [edx+0x8]
+    0x40009d65: mov    DWORD PTR [eax+0x1c],edx
+    0x40009d68: mov    edx,DWORD PTR [ecx+0x10]
+    0x40009d6b: mov    edx,DWORD PTR [edx+0x8]
+    0x40009d6e: mov    DWORD PTR [eax+0x20],edx
+
+Negative-search boundary for this audit: player.dll .text 0x40001000..0x4000a80f; printable immediates were read only from 0x40015000..0x40018fff.

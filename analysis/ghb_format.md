@@ -153,10 +153,14 @@ positions, 19 shared UVs, 12 shared normals, 32 corners, 20 triangles - a
 
 ## 6. Still open
 
-* The **bone weights** and the **clip blending**.
-* The **per-face material binding** (`A` in the Mesh record, the MatBlocks
-  map and the textures).
-* The **runtime unit** of the clip `f32` (see 8.3).
+* Nothing on the clip side any more.  The **per-face material binding**
+  (`A` in the Mesh record, the MatBlocks map and the textures) and the
+  **runtime unit** of the clip `f32` (see 8.3) were closed on 2026-11-11, and
+  the **clip selection, the frame index and the clip blending** (including the
+  "bone weights" question) were closed on 2026-11-16 - see
+  `analysis/ghb_clip_blend.md`.  The Ghoul does **not** skin vertices: the
+  blend is done on the two clips' 4x4 root matrices and the vertices are
+  transformed by the blended matrix.
 
 ## 8. The animation side (SOLVED 2026-11-11)
 
@@ -1083,15 +1087,53 @@ count   u32    at 0x2013ADF0    (3713 in the shipped SoF.exe)
 table   char*[] at 0x2013ADF8
 ```
 
-`FUN_200BDE30` (the writer) binary-searches that table, appends the string
-if it is not there and writes the index with the encoded-u16 primitive;
-`FUN_200BE060` (the reader) looks the index up and copies the bytes out.
+**CORRECTED 2026-11-19** (see `analysis/ghoul_residuals.md` §A): the global
+table is **read-only at runtime**.  `FUN_200BDE30` (the writer)
+binary-searches that table; when the string **is** there it writes the
+index with the encoded-u16 primitive, and when it is **not** there it does
+**not** append - it falls back to the **inline branch** and writes the
+string **Huffman-compressed** (the raw form when the compression would not
+help).  `FUN_200BE060` (the reader) has the mirror-image two branches:
+the global-table lookup and the inline Huffman decode.
+
+The only four accesses to `0x2013ADF0` / `0x2013ADF8` anywhere in
+`SoF.exe` are **reads** (`0x200BDE60`, `0x200BDE7D`, `0x200BDEC2`,
+`0x200BE0E1`) - there is no runtime store, so the table never grows.
+
 The static table holds the 1730 `GHOUL/.../*.GHL` bolt-on paths, the 1979
 plain names (the bolt-on model names, `ABOLT_HEAD`, ...) and the animation
 event names in upper case (`FIRE` 478, `INAIR` 2934, `JUMP` 2943, `SOUND`
-3204, `THUD` 3242).  The `.ghb` model paths are **not** in it - the server
-appends them at runtime when it loads a model, so their indices depend on
-the load order.
+3204, `THUD` 3242).  The `.ghb` model paths are **not** in it - they are
+written **inline, Huffman-compressed**, so they have **no index** and their
+encoding does **not** depend on any load order.
+
+The inline wire format (one bit stream, the reader is `FUN_200BE060`):
+
+```
+bit 0 = 1   -> the global table
+    bit 1 = 0   -> the empty string
+    bit 1 = 1   -> 2 bits: the class c
+                    4*(c+1) bits: the index into the global table
+bit 0 = 0   -> inline
+    bit 1 = 0   -> the empty string
+    bit 1 = 1   -> 2 bits: the class c
+                    (2c+2) bits: the length L (in bytes)
+                    L*8 bits: the header byte + the payload
+```
+
+The inline payload's **first byte** is the header: `0xFF` = the raw form
+(the next `L-1` bytes are the string), anything else = the Huffman form,
+where the header is the number of **padding bits** and the payload is
+`L*8 - header - 8` bits long, read **LSB first inside each byte**
+(`0` = the tree's left child, `1` = the right child).
+
+The Huffman tree is built at run time from a **static 256-float frequency
+table** at `SoF.exe 0x20157C60` (`FUN_200BD8C0` builds it, `FUN_200BD870`
+walks it into the `{code, length}` table at `DAT_204059C8`).  The
+extractor, the decoder and the round-trip self-test are in
+`analysis/ghoul_huffman.py` - the browser should embed the extracted code
+table rather than rebuild the tree.  The extracted table is already
+generated as **`web/www/ghoulhuff.json`**.
 
 `analysis/ghb_global_strings.py` dumps the table to
 `web/www/ghoulstrings.json` (the browser loads it with

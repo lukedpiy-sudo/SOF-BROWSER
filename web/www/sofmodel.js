@@ -633,10 +633,11 @@
 		 *
 		 * The datagram never carries raw strings: it carries indices into
 		 * the GLOBAL table at SoF.exe 0x2013ADF8 (3713 entries, dumped to
-		 * ghoulstrings.json by analysis/ghb_global_strings.py).  The
-		 * server appends the strings it does not know yet (the .ghb model
-		 * paths) at the end of that table, so the static part is what the
-		 * browser can resolve on its own. */
+		 * ghoulstrings.json by analysis/ghb_global_strings.py).  That table
+		 * is READ-ONLY at run time - a string that is not in it is written
+		 * INLINE, Huffman-compressed, instead (the code table is extracted
+		 * by analysis/ghoul_huffman.py).  So the strings it does not know
+		 * do NOT get appended to the global table. */
 		ghoulStrings: null,
 		loadGhoulStrings: function () {
 			if (this.ghoulStrings) return Promise.resolve(this.ghoulStrings);

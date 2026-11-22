@@ -1,0 +1,36 @@
+
+ulonglong __thiscall FUN_40002bd0(void *this,uint param_1,float param_2)
+
+{
+  int iVar1;
+  int iVar2;
+  undefined4 in_EDX;
+  uint uVar3;
+  longlong lVar4;
+  ulonglong uVar5;
+  
+  iVar1 = *(int *)((int)this + 0x158);
+  if (iVar1 == 0) {
+    return CONCAT44(in_EDX,param_1);
+  }
+  lVar4 = __ftol();
+  uVar3 = (uint)((ulonglong)lVar4 >> 0x20);
+  iVar2 = (int)lVar4;
+  if (param_2 != 0.0) {
+    if (iVar2 * 2 < iVar1) {
+      *(int *)((int)this + 0x158) = iVar1 + iVar2 * -2;
+      uVar5 = __ftol();
+      return uVar5;
+    }
+    *(undefined4 *)((int)this + 0x158) = 0;
+    uVar5 = __ftol();
+    return uVar5;
+  }
+  if (iVar2 < iVar1) {
+    *(int *)((int)this + 0x158) = iVar1 - iVar2;
+    return (ulonglong)uVar3 << 0x20;
+  }
+  *(undefined4 *)((int)this + 0x158) = 0;
+  return CONCAT44(uVar3,iVar2 - iVar1);
+}
+
