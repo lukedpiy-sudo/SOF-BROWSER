@@ -467,6 +467,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				case "spawned":
 					state.spawned = true; state.status = "spawned";
 					if (handshakeTimer) { clearTimeout(handshakeTimer); handshakeTimer = null; }
+					/* the server owns the game: once it spawns us, get the menu
+					 * out of the way so the player is actually in the map */
+					if (window.sofmenu && window.sofmenu.close) window.sofmenu.close();
 					publishServer();
 					break;
 				case "predresync":
@@ -1543,12 +1546,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	}).catch(function () { });
 	loadServerList();
 	setInterval(loadServerList, 20000);
-	/* The menu is the normal entry point.  A direct link can still autoplay
-	 * with ?autoplay=1 (or any relay/server/port parameter, for compatibility
-	 * with the old start links). */
-	if (params.get("autoplay") === "1" || params.has("server") || params.has("relay")) {
-		connect();
-	}
+	/* Join the configured server by default, so opening the page puts the
+	 * player in the level rather than leaving them in a free-fly preview.
+	 * ?menu=1 opens the front-end without connecting. */
+	if (params.get("menu") !== "1" && params.get("autoplay") !== "0") connect();
 	requestAnimationFrame(frame);
 
 	window.sofdebug = function () {

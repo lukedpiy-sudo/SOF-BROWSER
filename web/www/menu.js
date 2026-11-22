@@ -394,10 +394,11 @@
 		refreshServers: refreshServers
 	};
 
-	/* start at the menu; a deep link with autoplay=1 skips it */
+	/* The app connects by default and closes the menu when the server spawns
+	 * us.  ?menu=1 is the explicit front-end-only mode. */
 	applySettings();
 	fillSettingsForm();
-	if (new URLSearchParams(location.search).get("autoplay") !== "1") setVisible(true);
+	if (new URLSearchParams(location.search).get("menu") === "1") setVisible(true);
 	setInterval(updateStatus, 1000);
 	setInterval(function () { if ($("sof-server-rows") && isVisible()) {
 		const active = document.querySelector(".sof-screen.active");
