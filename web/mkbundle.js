@@ -14,6 +14,7 @@ const MODULES = [
 	"./cmdenc.js",
 	"./playerstate.js",
 	"./snapshot.js",
+	"./ghbhuff.js",
 	"./sofproto.js",
 	"./ghb.js"
 ];

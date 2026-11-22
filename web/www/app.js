@@ -484,7 +484,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					if (window.sofmusic) window.sofmusic.onTempEntity(data);
 					break;
 				case "ghoul":
-					/* the raw ghoul string table of the server (service 0x1A) */
+					/* the raw ghoul payload (service 0x1A/0x1B) is decoded by
+					 * web/ghbhuff.js into a per-entity .ghb path map; publish it
+					 * for sofmodel.entityModelPath(). */
+					if (window.sofmodel) window.sofmodel.ghoulModels = client.ghoulModels.models;
 					break;
 				case "configstrings":
 					Object.keys(data).forEach(function (k) { state.cs[k] = data[k]; });
@@ -1112,7 +1115,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		 * the blood, the sparks) */
 		const fx = window.sofmusic && sofmusic.fx && sofmusic.fx();
 		if (fx) { fx.update(dt); fx.draw(gl); }
-		/* the first person weapon: the Ghoul view model */
+		/* the first person weapon: the Ghoul view model.  app.js runs before
+		 * viewmodel.js, so the initial weapon has to be pushed on the first
+		 * rendered frame rather than from the module init. */
+		if (window.sofviewmodel && sofviewmodel.ensure && !state.testModel) {
+			if (sofviewmodel.state.weapon !== state.weapon) sofviewmodel.ensure(gl, state.weapon);
+		}
 		if (window.sofviewmodel && sofviewmodel.draw) {
 			const va2 = viewAngles();
 			sofviewmodel.draw({
@@ -1496,6 +1504,26 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.weaponRows = (j && j.weapons) || [];
 		if (window.sofviewmodel && !window.sofviewmodel.state.model) {
 			window.sofviewmodel.setWeapon(window.sofviewmodel.weaponFromUrl ? window.sofviewmodel.weaponFromUrl() : state.weapon);
+		}
+	}).catch(function () { });
+	/* the model indices on the wire need both of SoF's string tables */
+	if (window.sofmodel) {
+		if (window.sofmodel.loadStringTable) window.sofmodel.loadStringTable().catch(function () { });
+		if (window.sofmodel.loadGhoulStrings) window.sofmodel.loadGhoulStrings().catch(function () { });
+	}
+	/* the svc 0x1A payload decoder needs the global table (already loaded by
+	 * sofmodel above) and the extracted Huffman code table; once both are in
+	 * hand, decode every ghoul packet captured so far and keep decoding them
+	 * as they arrive. */
+	Promise.all([
+		window.sofmodel && window.sofmodel.loadGhoulStrings ? window.sofmodel.loadGhoulStrings() : Promise.resolve(null),
+		fetch("ghoulhuff.json").then(function (r) { return r.json(); }).catch(function () { return null; })
+	]).then(function (r) {
+		const names = r[0] || (window.sofmodel && window.sofmodel.ghoulStrings);
+		const huff = r[1] && r[1].table;
+		if (names && huff && client.setGhoulTables) {
+			client.setGhoulTables(names, huff);
+			if (window.sofmodel) window.sofmodel.ghoulModels = client.ghoulModels.models;
 		}
 	}).catch(function () { });
 	loadServerList();

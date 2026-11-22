@@ -842,7 +842,7 @@
 	function entityModelName(entity) {
 		try {
 			if (!entity || !entity.state) return null;
-			const v = entity.state[0x28];
+			const v = entity.state.readUInt32LE ? entity.state.readUInt32LE(0x28) : entity.state[0x28];
 			const t = window.sofmodel.stringTable;
 			return (t && t[v]) ? t[v] : null;
 		} catch (e) { return null; }
@@ -882,8 +882,22 @@
 	function entityModelPath(entity) {
 		try {
 			if (!entity || !entity.state) return null;
-			const idx = entity.state[0x28];
+			/* the entity state is a Buffer: +0x28 is a 32-bit model index,
+			 * not a byte.  Reading state[0x28] used to make every model
+			 * lookup fail, which is why no character ever rendered. */
+			const idx = entity.state.readUInt32LE ? entity.state.readUInt32LE(0x28) : entity.state[0x28];
 			const m = window.sofmodel;
+			/* The real Ghoul model path is carried by the svc 0x1A (svc_ghoulreliable)
+			 * spawn records: group 1 of the record names the model's main .GHL
+			 * script and the .ghb mesh is named after it.  web/ghbhuff.js decodes
+			 * the payload into an entity -> .ghb map (app.js publishes it here).
+			 * Try the entity number first, then the state's model index. */
+			if (m.ghoulModels) {
+				const byNum = m.ghoulModels[entity.number];
+				if (byNum && byNum.path && /\.ghb$/i.test(byNum.path)) return byNum.path;
+				const byIdx = m.ghoulModels[idx];
+				if (byIdx && byIdx.path && /\.ghb$/i.test(byIdx.path)) return byIdx.path;
+			}
 			/* the Ghoul table: the index names the model directly */
 			if (m.ghoulStrings) {
 				const n = m.ghoulStrings[idx];
@@ -1018,6 +1032,9 @@
 		 * by analysis/ghoul_huffman.py).  So the strings it does not know
 		 * do NOT get appended to the global table. */
 		ghoulStrings: null,
+		/* the entity -> .ghb path map decoded from svc 0x1A by web/ghbhuff.js
+		 * and published by app.js; see entityModelPath() */
+		ghoulModels: null,
 		loadGhoulStrings: function () {
 			if (this.ghoulStrings) return Promise.resolve(this.ghoulStrings);
 			return fetch("ghoulstrings.json").then(function (r) { return r.json(); }).then(function (j) {

@@ -28,6 +28,7 @@
 const { checksum } = require("./sofmd4.js");
 const { encodeCmd, encodeCmds } = require("./cmdenc.js");
 const { parseFrame, describeEntity } = require("./snapshot.js");
+const ghbhuff = require("./ghbhuff.js");
 
 /* The usercmd button bits, from the engine's own builder (SoF.exe 0x20005240)
  * and the frame assembler (0x200060C0).  The movement is NOT a bit: it goes
@@ -112,6 +113,22 @@ function createClient(opts) {
 	const cmdRing = [];
 	const ghoulPackets = [];
 	const soundPackets = [];
+	/* The svc 0x1A payload is a bit stream (analysis/ghoul_residuals.md §A).
+	 * ghoulCtx is built once the global string table and the extracted Huffman
+	 * code table are available; ghoulModels accumulates the decoded entity ->
+	 * .ghb path map across packets (the string table indices are a persistent
+	 * server-side counter).  In Node the two JSONs can be required directly;
+	 * the browser passes them in with setGhoulTables(). */
+	let ghoulCtx = null;
+	const ghoulModels = ghbhuff.createModelMap(null);
+	if (typeof window === "undefined") {
+		try {
+			ghoulCtx = ghbhuff.createContext(
+				require("./www/ghoulstrings.json").names,
+				require("./www/ghoulhuff.json").table);
+			ghoulModels.setContext(ghoulCtx);
+		} catch (e) { /* the JSONs are browser assets; Node clients may run elsewhere */ }
+	}
 	/* fragment reassembly buffer */
 	const fragBuf = new Map(); // unused: kept for reference
 	var fragPending = Buffer.alloc(0);
@@ -462,6 +479,9 @@ function unrelHdr() {
 			if (msg[8] === 0x1a || msg[8] === 0x1b) {
 				ghoulPackets.push(body);
 				if (ghoulPackets.length > 512) ghoulPackets.shift();
+				/* decode the payload into the per-entity .ghb map as soon as
+				 * the tables are available */
+				if (ghoulCtx) ghoulModels.add(body);
 			} else {
 				soundPackets.push(body);
 				if (soundPackets.length > 256) soundPackets.shift();
@@ -640,6 +660,17 @@ function unrelHdr() {
 		get entities() { return entities; },
 		get ghoulPackets() { return ghoulPackets; },
 		get soundPackets() { return soundPackets; },
+		/* the decoded svc 0x1A model map (see web/ghbhuff.js).  The browser
+		 * supplies the two JSON tables; once set, all buffered packets are
+		 * decoded and later ones are decoded as they arrive. */
+		setGhoulTables: function (globalStrings, huffTable) {
+			ghoulCtx = ghbhuff.createContext(globalStrings, huffTable);
+			ghoulModels.setContext(ghoulCtx);
+			for (const p of ghoulPackets) ghoulModels.add(p);
+			return ghoulModels;
+		},
+		get ghoulModels() { return ghoulModels; },
+		decodeGhoul: function (body) { return ghoulModels.add(body); },
 		get frameNumber() { return frameNumber; },
 		get serverTime() { return serverTime; },
 		get playerState() { return playerState; },
