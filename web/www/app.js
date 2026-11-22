@@ -901,6 +901,20 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				}
 			}
 		}
+		/* The authoritative player-state origin is the reliable camera anchor.
+		 * The old code only followed after matching it to an entity; when that
+		 * match failed the free-fly overview stayed above the level, which
+		 * looked like the player was not in the map at all. */
+		if (!params.get("nofollow") && state.playerOrigin && !params.get("third")) {
+			const po = state.playerOrigin;
+			const k2 = state.eyeInit ? Math.min(1, dt * 12) : 1;
+			cam.x += (po.x - cam.x) * k2;
+			cam.y += (po.z + 56 - cam.y) * k2;
+			cam.z += (po.y - cam.z) * k2;
+			state.hasSelf = true;
+			state.eyeInit = true;
+			return;
+		}
 		const self = params.get("nofollow") ? null : state.entities.get(state.self);
 		state.dbg = {
 			selfNum: state.self,
@@ -943,7 +957,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	function frameEntities() {
 		/* the first time we have entities, frame the whole scene so the
 		 * view starts outside the entity cloud */
-		if (state.camInit || state.entities.size < 3) return;
+		if (state.camInit || state.spawned || state.playerOrigin || state.entities.size < 3) return;
 		let minx = 1e9, maxx = -1e9, minz = 1e9, maxz = -1e9, maxy = -1e9;
 		state.entities.forEach(function (e) {
 			if (e.removed || !e.state) return;
