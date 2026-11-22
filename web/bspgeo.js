@@ -59,9 +59,11 @@ function extract(path) {
 		edges.push([b.readUInt16LE(o), b.readUInt16LE(o + 2)]);
 	}
 
-	/* surfedges: an int.  The absolute value is a 1 based edge index, the
-	 * sign is the direction: positive = the edge's first vertex, negative =
-	 * the edge's second vertex (reversed).
+	/* surfedges: an int.  The absolute value is a 0 BASED edge index (SoF
+	 * v46 differs from Quake II here - there is no +1), the sign is the
+	 * direction: positive = the edge's first vertex, negative = the edge's
+	 * second vertex (reversed).  Verified on nycdm1: all 6070 faces form a
+	 * closed vertex chain and 6062 are exactly coplanar with their plane.
 	 */
 	const surfCount = L(12).len / 4;
 	const surfedges = [];
@@ -131,8 +133,13 @@ function extract(path) {
 		}
 	}
 
-	/* verification: every vertex of a face has to lie on the face plane */
-	let checked = 0, bad = 0, worst = 0;
+	/* verification: every vertex of a face has to lie on the face plane,
+	 * the surfedges have to form a closed loop, and the winding has to
+	 * agree with the plane's side bit.  These are the tests that prove the
+	 * face -> surfedge -> edge -> vertex chain was decoded right; a wrong
+	 * edge base, surfedge sign or firstedge/numedges offset fails them. */
+	let checked = 0, bad = 0, worst = 0, nonPlanar = 0;
+	let closed = 0, open = 0, windingOk = 0, windingBad = 0, concave = 0;
 	for (const f of faces) {
 		const pl = planes[f.planenum];
 		if (!pl) continue;
@@ -141,10 +148,51 @@ function extract(path) {
 			const e = Math.abs(d);
 			if (e > worst) worst = e;
 			if (e > 1.0) bad++;
+			if (e > 0.1) nonPlanar++;
 			checked++;
 		}
+		/* walk the surfedges again: the end of edge k must be the start of
+		 * edge k+1 (the last wraps to the first). */
+		let links = 0;
+		for (let k = 0; k < f.numedges; k++) {
+			const se = surfedges[f.firstedge + k];
+			const nx = surfedges[f.firstedge + (k + 1) % f.numedges];
+			if (se === undefined || nx === undefined) break;
+			const e0 = edges[Math.abs(se)], e1 = edges[Math.abs(nx)];
+			if (!e0 || !e1) break;
+			if ((se < 0 ? e0[0] : e0[1]) === (nx < 0 ? e1[1] : e1[0])) links++;
+		}
+		if (links === f.numedges) closed++; else open++;
+		/* SoF faces are wound clockwise seen from the front (side 0), so
+		 * the right hand rule normal is -plane normal for side 0 and
+		 * +plane normal for side 1. */
+		let area = 0;
+		for (let k = 1; k + 1 < f.verts.length; k++) {
+			const a = f.verts[0].p, b = f.verts[k].p, c = f.verts[k + 1].p;
+			const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+			const vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+			area += (uy * vz - uz * vy) * pl.nx + (uz * vx - ux * vz) * pl.ny +
+				(ux * vy - uy * vx) * pl.nz;
+		}
+		const expect = f.side ? 1 : -1;
+		if (Math.abs(area) > 1e-4) {
+			if (Math.sign(area) === expect) windingOk++; else windingBad++;
+		}
+		/* convexity: all successive cross products must have one sign */
+		let pos = 0, neg = 0;
+		for (let k = 0; k < f.verts.length; k++) {
+			const a = f.verts[k].p, b = f.verts[(k + 1) % f.verts.length].p,
+				c = f.verts[(k + 2) % f.verts.length].p;
+			const ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+			const vx = c.x - b.x, vy = c.y - b.y, vz = c.z - b.z;
+			const cr = (uy * vz - uz * vy) * pl.nx + (uz * vx - ux * vz) * pl.ny +
+				(ux * vy - uy * vx) * pl.nz;
+			if (cr > 1e-4) pos++; else if (cr < -1e-4) neg++;
+		}
+		if (pos && neg) concave++;
 	}
-	return { version, planeCount, vertCount, edgeCount, surfCount, faceCount, planes, vertexes, edges, surfedges, faces, texinfos, check: { checked, bad, worst } };
+	const check = { checked, bad, worst, nonPlanar, closed, open, windingOk, windingBad, concave };
+	return { version, planeCount, vertCount, edgeCount, surfCount, faceCount, planes, vertexes, edges, surfedges, faces, texinfos, check };
 }
 
 module.exports = { readBsp, extract };
@@ -156,6 +204,9 @@ if (require.main === module) {
 	console.log("planes", m.planeCount, "vertexes", m.vertCount, "edges", m.edgeCount,
 		"surfedges", m.surfCount, "faces", m.faceCount);
 	console.log("coplanarity check:", m.check.checked, "vertices,", m.check.bad, "off plane, worst", m.check.worst.toFixed(4));
+	console.log("chain check: closed", m.check.closed, "open", m.check.open,
+		"| winding ok", m.check.windingOk, "bad", m.check.windingBad,
+		"| concave", m.check.concave, "| >0.1 off plane", m.check.nonPlanar);
 	const f = m.faces[0];
 	console.log("face 0: plane", f.planenum, "side", f.side, "edges", f.numedges, "texinfo", f.texinfo);
 	console.log("  verts:", f.verts.map(v => "(" + v.p.x.toFixed(1) + "," + v.p.y.toFixed(1) + "," + v.p.z.toFixed(1) + ")").join(" "));

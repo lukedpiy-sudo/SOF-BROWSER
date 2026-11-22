@@ -20,6 +20,7 @@
 	let playerName = params.get("name") || "webclient";
 	let wantConnect = false;
 	let reconnectTimer = null;
+	let handshakeTimer = null;
 
 	const canvas = document.getElementById("gl");
 	const hud = document.getElementById("hud");
@@ -36,7 +37,7 @@
 		ws: null, connected: false, spawned: false, frames: 0,
 		entities: new Map(), frameNumber: 0, serverTime: 0,
 		status: "menu", log: [], console: [], cs: {}, self: 1, servers: [], fov: 90, drawDistance: 40000, thirdPerson: false, showDebug: false,
-		hud: null, ps: null, clipPlayers: new Map(),
+		hud: null, ps: null, clipPlayers: new Map(), testModel: null,
 		/* client-side weapon presentation: the server owns the authoritative
 		 * ammo and health, the client owns the view model, the heat meter and
 		 * the selected weapon number (which is a string command in SoF) */
@@ -459,7 +460,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			switch (ev) {
 				case "oob": state.log.push(String(data).slice(0, 70)); if (state.log.length > 8) state.log.shift(); break;
 				case "connected": state.connected = true; state.status = "connected"; break;
-				case "spawned": state.spawned = true; state.status = "spawned"; publishServer(); break;
+				case "spawned":
+					state.spawned = true; state.status = "spawned";
+					if (handshakeTimer) { clearTimeout(handshakeTimer); handshakeTimer = null; }
+					publishServer();
+					break;
 				case "predresync":
 					/* svc 0x1d: the server restarted prediction, drop the local state */
 					if (window.sofpredict && state.lastFrame) {
@@ -564,6 +569,17 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			ws.send(JSON.stringify({ type: "connect", host: serverHost, port: serverPort }));
 			client.start();
 			state.status = "handshaking";
+			/* a browser cannot tell "server is slow" from "server is dead":
+			 * if the handshake never finishes, go back to the menu instead of
+			 * leaving the player staring at an empty free-fly preview */
+			if (handshakeTimer) clearTimeout(handshakeTimer);
+			handshakeTimer = setTimeout(function () {
+				if (!state.spawned) {
+					note("no response from " + serverHost + ":" + serverPort);
+					state.status = "no server response";
+					disconnect();
+				}
+			}, 15000);
 		};
 		ws.onmessage = function (ev) {
 			if (typeof ev.data === "string") return;      // the relay's JSON control
@@ -584,6 +600,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	function disconnect() {
 		wantConnect = false;
 		if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+		if (handshakeTimer) { clearTimeout(handshakeTimer); handshakeTimer = null; }
 		if (state.ws) {
 			try { state.ws.close(); } catch (e) { }
 			state.ws = null;
@@ -1103,7 +1120,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				dt: dt,
 				look: { yaw: va2.yaw, pitch: va2.pitch },
 				move: { origin: state.playerOrigin },
-				fov: state.fov || 90
+				fov: state.fov || 90,
+				x: state.testModel ? 0 : undefined,
+				y: state.testModel ? -12 : undefined,
+				z: state.testModel ? -90 : undefined,
+				scale: state.testModel ? 1 : undefined
 			});
 		}
 		drawGameHud();
@@ -1424,8 +1445,26 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				} else if (local[0] === "fov" && local[1]) {
 					state.fov = parseFloat(local[1]);
 					consolePrint("field of view: " + local[1], "info");
+				} else if (local[0] === "model" && local[1]) {
+					/* verification aid: draw a real Ghoul model in eye space,
+					 * independent of the server entity stream */
+					if (window.sofmodel && gl) {
+						const p = local[1].replace(/\\/g, "/");
+						state.testModel = window.sofmodel.load(p, gl);
+						if (window.sofviewmodel) {
+							window.sofviewmodel.state.weapon = 0;
+							window.sofviewmodel.state.path = p;
+							window.sofviewmodel.state.model = state.testModel;
+						}
+						consolePrint("loading Ghoul model " + p, "info");
+					} else consolePrint("Ghoul renderer not ready", "info");
+				} else if (local[0] === "modelclear") {
+					state.testModel = null;
+					if (window.sofviewmodel) window.sofviewmodel.state.model = null;
+					consolePrint("model test cleared", "info");
 				} else if (local[0] === "help") {
 					consolePrint("client: tp, speed <n>, sensitivity <n>, fov <n>", "info");
+					consolePrint("model <ghb path>, modelclear", "info");
 					consolePrint("everything else goes to the server", "info");
 				} else if (local[0] === "weaponselect" && local[1]) {
 					const w = parseInt(local[1], 10);

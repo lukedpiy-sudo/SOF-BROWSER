@@ -13,7 +13,7 @@
 	const DEFAULTS = {
 		name: "webclient",
 		relay: (location.protocol === "file:" ? "127.0.0.1:8080" : location.host),
-		master: (location.protocol === "file:" ? "http://127.0.0.1:8090" : location.protocol + "//" + location.hostname + ":8090"),
+		master: (location.protocol === "file:" ? "http://127.0.0.1:8091" : location.protocol + "//" + location.hostname + ":8091"),
 		server: "127.0.0.1",
 		port: 29000,
 		fov: 95,
@@ -32,7 +32,10 @@
 		try {
 			const raw = localStorage.getItem(SETTINGS_KEY);
 			const saved = raw ? JSON.parse(raw) : {};
-			return Object.assign({}, DEFAULTS, saved || {});
+			const s = Object.assign({}, DEFAULTS, saved || {});
+			/* port 8090 is occupied by another service on this machine */
+			if (typeof s.master === "string" && /:8090(\/|$)/.test(s.master)) s.master = DEFAULTS.master;
+			return s;
 		} catch (e) { return Object.assign({}, DEFAULTS); }
 	}
 	let settings = loadSettings();
@@ -382,7 +385,12 @@
 			else setVisible(false);
 		},
 		showScoreboard: showScoreboard,
-		onDisconnect: function () { updateStatus(); },
+		onDisconnect: function () {
+			/* never leave the user staring at a server-less world preview */
+			showScreen("main");
+			setVisible(true);
+			updateStatus();
+		},
 		refreshServers: refreshServers
 	};
 

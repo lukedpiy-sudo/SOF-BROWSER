@@ -51,6 +51,7 @@
 	/* the geometry */
 	var vbo = null, ibo = null, lmvbo = null;
 	var indexCount = 0, vertexCount = 0;
+	var groupByDraw = null;    /* the renderer's (start,count) -> our index range */
 	var atlasTex = null;
 	var prog = null, loc = {};
 
@@ -240,8 +241,55 @@
 	function build(ctx) {
 		gl = ctx;
 		var m = mapData;
-		var pos = [], nrm = [], uvs = [], lm = [], sty = [], idx = [];
+		var pos = [], nrm = [], uvs = [], lm = [], sty = [];
 		var faces = m.faces;
+		/* The draw hook below intercepts the renderer's drawElements.  Its
+		 * (count, offset) describe a range in the RENDERER'S index buffer,
+		 * but we draw from our own buffers, so we must not reuse them.
+		 *
+		 * app.js buildMap() records a (start, count) per material: start is
+		 * the index at which that material's FIRST face was appended, count
+		 * is its total index count.  Faces of one material are scattered
+		 * through the BSP face list, so those ranges overlap and are not
+		 * per-material groups at all.  A previous version of this module
+		 * built a compact face-order index buffer (skipping sky/no_draw) and
+		 * drew it with the renderer's offsets: after the first skipped face
+		 * every offset addressed a different face and the level broke into
+		 * floating slabs.
+		 *
+		 * So: (1) reproduce the renderer's (start, count) table from the
+		 * face list; (2) build OUR index buffer with genuinely contiguous
+		 * ranges, one per material; (3) in the draw hook identify the group
+		 * by the incoming (offset, count) and draw that group's range.  The
+		 * material texture is already bound by the renderer when it calls
+		 * drawElements, so each range is drawn with the right texture. */
+		var groups = Object.create(null), order = [];
+		var renderIdx = 0;
+		for (var i = 0; i < faces.length; i++) {
+			var f0 = faces[i];
+			if (!f0.v || f0.v.length < 3) continue;
+			var key0 = f0.mat || "";
+			if (!groups[key0]) { groups[key0] = { start: renderIdx, count: 0 }; order.push(key0); }
+			var n0 = (f0.v.length - 2) * 3;
+			groups[key0].count += n0;
+			renderIdx += n0;
+		}
+		/* our ranges cover only the faces the lightmapped pass draws */
+		var myAt = 0;
+		for (var q = 0; q < order.length; q++) {
+			var gq = groups[order[q]];
+			gq.myStart = myAt;
+			gq.myCount = 0;
+			for (var j = 0; j < faces.length; j++) {
+				if ((faces[j].mat || "") !== order[q] || !faces[j].v || faces[j].v.length < 3) continue;
+				if (order[q] === SKY_MAT || order[q] === NODRAW_MAT) continue;
+				gq.myCount += (faces[j].v.length - 2) * 3;
+			}
+			myAt += gq.myCount;
+		}
+		var idx = new Uint16Array(myAt);
+		var cursor = Object.create(null);
+		for (var q = 0; q < order.length; q++) cursor[order[q]] = groups[order[q]].myStart;
 		for (var i = 0; i < faces.length; i++) {
 			var f = faces[i];
 			if (!f.v || f.v.length < 3) continue;
@@ -261,7 +309,18 @@
 				lm.push(a[0], a[1]);
 				sty.push(0, 0, 0);
 			}
-			for (var t = 1; t + 1 < f.v.length; t++) idx.push(base, base + t, base + t + 1);
+			var key = f.mat || "";
+			for (var t = 1; t + 1 < f.v.length; t++) {
+				var at = cursor[key];
+				idx[at] = base; idx[at + 1] = base + t; idx[at + 2] = base + t + 1;
+				cursor[key] += 3;
+			}
+		}
+		/* the renderer identifies its groups by (offset, count) */
+		groupByDraw = Object.create(null);
+		for (var q = 0; q < order.length; q++) {
+			var gg = groups[order[q]];
+			groupByDraw[gg.start + ":" + gg.count] = gg;
 		}
 		vertexCount = pos.length / 3;
 		indexCount = idx.length;
@@ -289,7 +348,7 @@
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sty), gl.STATIC_DRAW);
 		ibo = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, idx, gl.STATIC_DRAW);
 
 		/* the lightmap atlas */
 		var img = new Image();
@@ -453,6 +512,9 @@
 	function isMapProgram(p) {
 		if (!p || myPrograms.has(p)) return false;
 		try {
+			/* sofmodel's program also has aNrm/aUV, but it is not the map:
+			 * it has a uScale uniform (and draws with offset 0). */
+			if (gl.getUniformLocation(p, "uScale") !== null) return false;
 			return gl.getAttribLocation(p, "aNrm") >= 0 && gl.getAttribLocation(p, "aUV") >= 0;
 		} catch (e) { return false; }
 	}
@@ -523,7 +585,15 @@
 				ctx.enableVertexAttribArray(attrBase + 4);
 				ctx.vertexAttribPointer(attrBase + 4, 3, ctx.FLOAT, false, 12, 0);
 				ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, ibo);
-				origDrawElements.call(ctx, mode, count, type, offset);
+				/* The incoming (count, offset) index the renderer's buffer,
+				 * not ours - its per-material ranges overlap, and we also
+				 * leave out the sky/no_draw faces.  Identify the material
+				 * by the renderer's (start, count) and draw OUR contiguous
+				 * range for it with the texture the renderer just bound. */
+				var bytes = type === ctx.UNSIGNED_INT ? 4 : 2;
+				var g = groupByDraw ? groupByDraw[(offset / bytes) + ":" + count] : null;
+				origDrawElements.call(ctx, mode, g ? g.myCount : count, type,
+					g ? g.myStart * bytes : offset);
 				/* put the renderer's buffers back */
 				ctx.bindBuffer(ctx.ARRAY_BUFFER, oldVBO);
 				ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, oldIBO);

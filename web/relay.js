@@ -17,7 +17,7 @@
  * stock server needs no modification at all.
  *
  * USAGE
- *   node relay.js [--http 8080] [--server 127.0.0.1:27960]
+ *   node relay.js [--http 8080] [--server 127.0.0.1:27960] [--pak file.pak ...]
  *
  * The browser opens  ws://host:8080/relay  and (optionally) sends a JSON
  * line  {"type":"connect","host":"127.0.0.1","port":27960}  first.
@@ -39,14 +39,14 @@ const path = require("path");
 
 // ---------------------------------------------------------------- args
 function parseArgs(argv) {
-	const out = { http: 8080, server: null, verbose: false, www: require("path").join(__dirname, "www"), pak: null };
+	const out = { http: 8080, server: null, verbose: false, www: require("path").join(__dirname, "www"), pak: [] };
 	for (let i = 2; i < argv.length; i++) {
 		const a = argv[i];
 		if (a === "--http") out.http = parseInt(argv[++i], 10);
 		else if (a === "--server") out.server = argv[++i];
 		else if (a === "--verbose" || a === "-v") out.verbose = true;
 		else if (a === "--www") out.www = require("path").resolve(argv[++i]);
-		else if (a === "--pak") out.pak = argv[++i];
+		else if (a === "--pak") out.pak.push(require("path").resolve(argv[++i]));
 	}
 	return out;
 }
@@ -236,7 +236,7 @@ function handleSession(ws, req) {
  * There is more than one pak: 831 of the 1591 sounds that the level scripts
  * name live in pak1.pak, and the SoF Plus content is in basicpack2015v2.pak.
  * The paks are searched in the order the engine loads them (pak0 first). */
-const pakPaths = (args.pak ? [args.pak] : [
+const pakPaths = (args.pak.length ? args.pak : [
 	"C:\\Users\\User\\Soldier of Fortune\\Base\\pak0.pak",
 	"C:\\Users\\User\\Soldier of Fortune\\Base\\pak1.pak",
 	"C:\\Users\\User\\Soldier of Fortune\\Base\\pak2.pak",

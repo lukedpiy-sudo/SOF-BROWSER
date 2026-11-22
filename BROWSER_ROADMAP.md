@@ -23,10 +23,12 @@ Legend: **[x]** done - **[~]** in progress - **[ ]** not started - **[!]** block
 | 5 | Usercmds (bit packed, checksummed, server accepted) | **[x] 100%** | - |
 | 6 | Asset pipeline (.bsp v46, .m32, .ghb/.GHL, .adp) | **[~] 87%** | - |
 | 7 | WebGL renderer (scene, camera, models, Ghoul anim, HUD, audio) | **[~] 84%** | #4,#6 |
-| 8 | Website + master listing + relay | **[x] 100%** | - |
+| 8 | Website + master listing + relay | **[x] 100%** | requires a real SoF dedicated server; none runs on this Linux box and there is no public master |
 | 9 | Modding layer (weapon/item tables, new content) | **[~] 68%** | - |
 
-**Overall: ~78% of the browser client is done.**
+**Overall: the client shell and protocol are done (~80%), but the game is not
+playable until a real SoF dedicated server is running and the end-to-end match
+is verified.** No server is running on this Linux machine.
 
 > **OPEN BLOCKER (2026-10-22):** the server stops sending the player state a
 > few seconds after the spawn - the block comes back empty and the world
@@ -64,6 +66,7 @@ Legend: **[x]** done - **[~]** in progress - **[ ]** not started - **[!]** block
 
 ### Session log
 
+| 2026-11-22 (geometry fix) | The shredded-map symptom was **not** a BSP decode error: all 6070 faces decode with closed vertex chains and correct winding. `soflight.js` was drawing its own index buffer with `app.js`'s scattered per-material `(start,count)` ranges, so 15487/16151 triangles used the wrong face/texture mapping. Rebuilt soflight's index buffer with contiguous per-material ranges: **15352/15352 drawn triangles now correct, 0 out-of-bounds**. Also fixed the relay to accept multiple `--pak` files (it was given a directory, so all `/pak/*` asset requests 404'd), added a 15 s no-response timeout that returns to the menu, removed the two fake master entries, and verified a real Ghoul model loads from the pak in-browser. |
 | 2026-11-22 (phase 2, integrated) | The Ghoul/time side, world surface and audio ports were folded in: `sofmodel.js` now has per-entity two-track clip players with sub-frame animated vertices/normals; `sofsurface.js` draws the real SURF_SKY faces and shares a fog bridge (`window.sofFog`); `effects.js` draws persistent decal quads and particle billboards; `sofmusic.js` parses the real binary `svc_sound` packets, resolves the sound table and builds AI/general voice paths. All four were verified with `node --check` and headless Chrome; the integrated menu smoke test reports the fog bridge, chat input, 31 weapon rows and every module API present. |
 | 2026-11-22 (phase 2) | **The browser client now has a real front-end.** `web/www/menu.js` + `menu.css` add a main menu, pause menu, settings (persisted in `localStorage`), controls screen, server browser driven by the GameSpy/HTTP master, scoreboard (`Tab`) and an in-game menu (`Esc`). `app.js` gained a stable `window.sofapp` bridge so the menu drives connection/identity/settings without touching the protocol core; `sofproto.js` gained `setUserinfo`. Weapon keys `1`-`0`, `R` reload, the heat meter and weapon name were added to the live HUD, and the fire button now triggers the decoded view-model animation. Verified in headless Chrome: menu, settings save, live server list (2 entries from `gsmaster.js`) and the join path through the WebSocket relay. |
 | 2026-10-20 (b) | #4 20% -> **60%**. Discovered **REA** (`morluto/rea`) already installed as an opencode MCP server with Ghidra 12.1.4 + JDK 21 - `tools/rea.cmd` decompiles SoF.exe to C. Decoded the frame header, the frame layout (`[cmd][0x14 playerinfo][0x15 entities]`), the entity-number encoding and the **full 116-byte entity-state field table**; the origin scale **1/8** is confirmed against live coordinates. `web/snapshot.js` now parses a real capture (14 entities/frame). |

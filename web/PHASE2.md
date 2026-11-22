@@ -1,8 +1,17 @@
 # Phase 2 — browser multiplayer client shell
 
-This phase adds the player-facing shell around the already-working SoF protocol
-client. The game still speaks the **real SoF wire protocol** to a real dedicated
-server through the WebSocket/UDP relay; nothing is emulated or faked.
+This phase adds the player-facing shell around the SoF protocol client. It is
+**not a playable game on its own**: a real SoF dedicated server must be running
+and reachable, otherwise the client stops at `getchallenge`. There is no
+built-in server emulator and no public GameSpy master anymore.
+
+Verified services on this machine:
+
+* client + relay: `http://127.0.0.1:8080/index.html`
+* master API: `http://127.0.0.1:8091/api/servers`
+
+The master list starts empty. Publish a real server into it (Settings → master
+URL), or type the server IP/port into the server browser and join directly.
 
 ## What was added
 
@@ -24,7 +33,10 @@ server through the WebSocket/UDP relay; nothing is emulated or faked.
 
 ```bash
 # terminal 1: relay (also serves the static client and /pak/*)
-PATH="$HOME/.local/node/bin:$PATH" node web/relay.js --http 8080 --www web/www --pak "Soldier of Fortune/Base"
+PATH="$HOME/.local/node/bin:$PATH" node web/relay.js --http 8080 --www web/www \
+  --pak "Soldier of Fortune/Base/pak0.pak" --pak "Soldier of Fortune/Base/pak1.pak" \
+  --pak "Soldier of Fortune/Base/pak2.pak" --pak "Soldier of Fortune/Base/pak3.pak" \
+  --pak "Soldier of Fortune/Base/basicpack2015v2.pak"
 
 # terminal 2: master / server-list API
 PATH="$HOME/.local/node/bin:$PATH" node web/gsmaster.js --http 8090 --udp 27900 --tcp 28900
