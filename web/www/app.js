@@ -263,6 +263,10 @@
 		const byMat = new Map();
 		for (const f of m.faces) {
 			if (!f.v || f.v.length < 3) continue;
+			/* sky and nodraw are drawn by sofsurface.js, not here.  Drawing
+			 * them as opaque textured geometry leaves black slivers standing
+			 * through the corridors. */
+			if (/\bsky\b|no_draw/i.test(f.mat || "")) continue;
 			const key = f.mat || "";
 			if (!byMat.has(key)) { byMat.set(key, { name: key, start: idx.length, count: 0, tex: null }); groups.push(byMat.get(key)); }
 			const g = byMat.get(key);
@@ -663,7 +667,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		},
 		getServers: function () { return state.servers.slice(); },
 		refreshServers: function () { loadServerList(); },
-		send: function (text) { client.sendStringCmd(text); }
+		send: function (text) { client.sendStringCmd(text); },
+		look: function (dx, dy) { client.look(dx || 0, dy || 0); },
+		setView: function (yaw, pitch) {
+			client.view.yaw = yaw || 0;
+			client.view.pitch = pitch || 0;
+		}
 	};
 
 	/* the master: the known SoF servers.  The original GameSpy master is

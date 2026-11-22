@@ -1,0 +1,49 @@
+
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void FUN_5008a540(void)
+
+{
+  int iVar1;
+  int *unaff_ESI;
+  longlong lVar2;
+  int unaff_retaddr;
+  int *piStack_34;
+  int iStack_30;
+  
+  iVar1 = (**(code **)(*DAT_5015c4d8 + 4))();
+  if (iVar1 == 0) {
+    (*DAT_5015cb60)(s_stat_moneyadd_50146c5c);
+    lVar2 = __ftol();
+    DAT_5015d26c = (int)lVar2;
+    (*DAT_5015cb54)(s_stat_moneyadd_50146c5c,0);
+    FUN_500ad5f0();
+    piStack_34 = *(int **)(*(int *)(DAT_5015cca0 + 0x4d8) + 0x34c);
+    if (piStack_34 != (int *)0x0) {
+      iStack_30 = DAT_5015cca0 + 0x464;
+      (**(code **)(*piStack_34 + 0xf4))(&piStack_34);
+      (**(code **)(*unaff_ESI + 0x104))(1,*(undefined4 *)(unaff_retaddr + 0x2ec));
+    }
+    DAT_5015d8d8 = DAT_5015d8d8 + DAT_5015d250;
+    DAT_5015d250 = 0;
+    DAT_5015d8dc = DAT_5015d8dc + DAT_5015d254;
+    DAT_5015d8e0 = DAT_5015d8e0 + DAT_5015d258;
+    DAT_5015d8e4 = DAT_5015d8e4 + DAT_5015d25c;
+    DAT_5015d8e8 = DAT_5015d8e8 + DAT_5015d260;
+    DAT_5015d8ec = DAT_5015d8ec + DAT_5015d264;
+    _DAT_5015d8f8 = (DAT_5015ccdc - _DAT_5015d270) + _DAT_5015d8f8;
+    DAT_5015d8f0 = DAT_5015d8f0 + DAT_5015d268;
+    DAT_5015d254 = 0;
+    DAT_5015d8f4 = DAT_5015d8f4 + DAT_5015d26c;
+    DAT_5015d258 = 0;
+    DAT_5015d25c = 0;
+    DAT_5015d260 = 0;
+    DAT_5015d264 = 0;
+    DAT_5015d268 = 0;
+    DAT_5015d26c = 0;
+    DAT_5015ccdc = 0.0;
+    _DAT_5015d270 = 0.0;
+  }
+  return;
+}
+
