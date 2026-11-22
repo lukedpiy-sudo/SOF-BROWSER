@@ -54,6 +54,37 @@
 	let started = false;
 	const loops = [];
 
+	/* --------------------------------------------------- phase 2: sound assets
+	 * soundtable.json is the engine's "sound" precache list: a name -> the
+	 * paths of its variants (e.g. "weapons/fx/rics/Ric" -> Ric1..Ric6.wav).
+	 * The server/module send a NAME, the driver needs a FILE, and the engine
+	 * picks the variant itself (FUN_50007520 / irand), so the browser has to
+	 * do the same resolution before it fetches anything. */
+	let soundTable = null;
+	let soundIndex = null;          /* normalised name -> the table entry */
+	let soundNames = null;          /* numeric svc_sound index -> name (optional) */
+	const soundCache = {};           /* decoded AudioBuffers, keyed by pak path */
+	const activeChannels = {};       /* "entity:channel" -> the last source */
+
+	/* the AI voice events of gamex86.dll FUN_5001E050 / FUN_5001E5A0:
+	 * the name -> the id (the order in the source is the order in the table;
+	 * "choke" is the general-voice path, not the AI event path). */
+	const VOICE_EVENTS = {
+		backup: 1, throw: 2, duck: 3, retreat: 4, help: 5, react: 6, choke: 7
+	};
+	/* the level prefixes of FUN_50001090 (the table at 0x5012F3B4..F4A4) */
+	const VOICE_LEVELS = [
+		"arm1", "arm2", "arm3", "ger1", "ger2", "ger3", "ger4",
+		"irq1a", "irq1b", "irq2a", "irq2b", "irq3a", "irq3b",
+		"jpn1", "jpn2", "jpn3", "sud1", "sud2", "sud3",
+		"nyc1", "nyc2", "nyc3", "sib1", "sib2", "sib3",
+		"kos1", "kos2", "kos3", "trn1", "TSR1", "TSR2", "tut1"
+	];
+	/* the AI precaches a voice at volume 0.4 (the controller at +0x70), the
+	 * body-damage/gore caller of FUN_5001E5A0 pushes 0.8 */
+	const AI_VOICE_VOLUME = 0.4;
+	const GENERAL_VOICE_VOLUME = 0.8;
+
 	function note(msg) {
 		state.errors.push(String(msg));
 		if (state.errors.length > 12) state.errors.shift();
@@ -564,31 +595,18 @@
 		const c = audio();
 		if (!c) return Promise.resolve();
 		const full = path.charAt(0) === "/" ? path.slice(1) : path;
-		const p = full.indexOf("sound/") === 0 ? full : "sound/" + full;
 		const gain = c.createGain();
 		gain.gain.value = (vol === undefined || vol === null ? 1 : vol) * state.volume;
 		gain.connect(c.destination);
-		return fetchPak(p).then(function (b) {
-			if (/\.adp$/i.test(p)) {
-				const d = dec.decodeAdp(new Uint8Array(b));
-				const buf = c.createBuffer(1, d.samples.length, d.rate);
-				const ch = buf.getChannelData(0);
-				for (let i = 0; i < d.samples.length; i++) ch[i] = d.samples[i] / 32768;
-				const s = c.createBufferSource();
-				s.buffer = buf;
-				s.connect(gain);
-				s.start(0);
-				return true;
-			}
-			return c.decodeAudioData(b).then(function (buf) {
-				const s = c.createBufferSource();
-				s.buffer = buf;
-				s.connect(gain);
-				s.start(0);
-				return true;
-			});
+		/* the same name -> file + variant resolution as every other sound */
+		return fetchSound(full).then(function (buf) {
+			const s = c.createBufferSource();
+			s.buffer = buf;
+			s.connect(gain);
+			s.start(0);
+			return true;
 		}).catch(function (e) {
-			note("the sound " + p + ": " + (e && e.message ? e.message : e));
+			note("the sound " + full + ": " + (e && e.message ? e.message : e));
 		});
 	}
 
@@ -666,6 +684,97 @@
 		return out;
 	}
 
+	/* The real SoF svc_sound writer is SoF.exe 0x20061F50 (SV_StartSound)
+	 * and its client handler is 0x2000EA20 (CL_ParseStartSoundPacket).  The
+	 * disassembly of the handler gives this wire format:
+	 *
+	 *   u8    flags
+	 *   u8    entity number (bit 0x20 adds 256)
+	 *   bit 0x01  u8  the angle/pan (x 1/255)
+	 *   bit 0x02  u8  the attenuation/rolloff (x 1/64)
+	 *   bit 0x10  u8  the volume (x 1/255)
+	 *   bit 0x08  u16  the sound index: index>>3 = the sound, &7 = the channel
+	 *   bit 0x04  three i16s: the origin (x 1/8)
+	 *
+	 * There is no sound NAME in the packet - the numeric index is resolved
+	 * through the precache list.  The browser keeps that list in
+	 * soundtable.json / setSoundNames() and falls back to the entity's sound.
+	 */
+	function parseStartSoundSof(b, off) {
+		let p = off || 0;
+		if (!b || p + 2 > b.length) return null;
+		const flags = b[p++];
+		let entity = b[p++];
+		if (flags & 0x20) entity += 256;
+		const out = { flags: flags, entity: entity, sof: true };
+		if (flags & 0x01) { out.angle = b[p] / 255; p++; }
+		if (flags & 0x02) { out.rolloff = b[p] / 64; p++; }
+		if (flags & 0x10) { out.volume = b[p] / 255; p++; }
+		if (flags & 0x08) {
+			if (p + 2 > b.length) return null;
+			const word = b[p] | (b[p + 1] << 8); p += 2;
+			out.soundIndex = (word >> 3) & 0x1fff;
+			out.channel = word & 7;
+		}
+		if (flags & 0x04) {
+			if (p + 6 > b.length) return null;
+			const rd = function () {
+				let v = b[p] | (b[p + 1] << 8); p += 2;
+				if (v & 0x8000) v -= 0x10000;
+				return v / 8;
+			};
+			out.origin = { x: rd(), y: rd(), z: rd() };
+		}
+		out.end = p;
+		return out;
+	}
+
+	/* the numeric precache list is sent as configstrings; the classic first
+	 * sound slot is 288 (CS_SOUNDS in the Quake-derived protocol), but a
+	 * build can move it - fall back to every sound-like configstring in
+	 * numeric key order. */
+	let csSounds = null;
+	let csSoundsFor = -1;
+	function soundNameFromConfigstrings(index) {
+		const s = global.sofstate;
+		if (!s || !s.cs) return null;
+		const direct = s.cs[288 + index];
+		if (direct && /\.(adp|wav)$/i.test(String(direct))) {
+			return String(direct).replace(/\\/g, "/");
+		}
+		const count = Object.keys(s.cs).length;
+		if (count !== csSoundsFor) {
+			csSoundsFor = count;
+			csSounds = Object.keys(s.cs)
+				.filter(function (k) { return /^\d+$/.test(k) && /\.(adp|wav)$/i.test(String(s.cs[k])); })
+				.sort(function (a, b) { return (+a) - (+b); })
+				.map(function (k) { return String(s.cs[k]).replace(/\\/g, "/"); });
+		}
+		return (csSounds && csSounds[index]) || null;
+	}
+
+	/* resolve the numeric sound index of a svc_sound packet to a name */
+	function soundNameOfIndex(ev) {
+		if (!ev || ev.soundIndex === undefined) return null;
+		if (soundNames && soundNames[ev.soundIndex]) return soundNames[ev.soundIndex];
+		const fromCs = soundNameFromConfigstrings(ev.soundIndex);
+		if (fromCs) return fromCs;
+		/* last resort: the sending entity names its sound at +0x28 */
+		const s = global.sofstate;
+		if (s && s.entities && s.entities[ev.entity]) return entitySoundName(s.entities[ev.entity]);
+		return null;
+	}
+
+	/* set (or replace) the numeric precache list; a live capture of the
+	 * server's sound list can be fed in here to name every svc_sound event */
+	function setSoundNames(list) {
+		if (!list) { soundNames = null; return; }
+		soundNames = Array.isArray(list)
+			? list.slice()
+			: Object.keys(list).reduce(function (a, k) { a[k] = list[k]; return a; }, {});
+		return soundNames;
+	}
+
 	function parseSoundInfo(b, off) {
 		var p = off || 0;
 		if (!b || p >= b.length) return null;
@@ -703,11 +812,29 @@
 		const b = data && data.body;
 		if (!b) return;
 		state.soundEvents = (state.soundEvents || 0) + 1;
-		const ev = parseStartSound(b, 0);
-		if (!ev || !ev.name) return;
-		const origin = entityOriginByNumber(ev.entity);
-		const vol = ev.volume === undefined ? 1 : ev.volume / 0.255;
-		playEntitySound(ev.name, origin, ev.rolloff === undefined ? 1 / 255 : ev.rolloff, vol);
+		const legacy = parseStartSound(b, 0);
+		/* a binary SoF packet can make the legacy string reader return
+		 * garbage; only accept names that really look like a sound file */
+		if (legacy && legacy.name && /^[\x20-\x7e]{1,200}$/.test(legacy.name) &&
+			/\.(wav|adp)$/i.test(legacy.name)) {
+			const origin = entityOriginByNumber(legacy.entity);
+			const vol = legacy.volume === undefined ? 1 : legacy.volume / 0.255;
+			playEntitySound(legacy.name, origin,
+				legacy.rolloff === undefined ? 1 / 255 : legacy.rolloff, vol);
+			return;
+		}
+		/* the SoF wire format (SV_StartSound / CL_ParseStartSoundPacket): a
+		 * numeric index and the position in the packet itself */
+		const ev = parseStartSoundSof(b, 0);
+		if (!ev) return;
+		const name = soundNameOfIndex(ev);
+		state.soundIndices = (state.soundIndices || 0) + 1;
+		if (!name) { state.unresolvedSounds = (state.unresolvedSounds || 0) + 1; return; }
+		const origin = ev.origin || entityOriginByNumber(ev.entity);
+		playEntitySound(name, origin,
+			ev.rolloff === undefined ? 1 / 255 : ev.rolloff,
+			ev.volume === undefined ? 1 : ev.volume,
+			{ channel: ev.channel, entity: ev.entity, angle: ev.angle, kind: ev.kind });
 	}
 
 	/* the music intensity service: the state the game is in */
@@ -718,6 +845,40 @@
 		if (!info || info.musicIntensity === undefined) return;
 		state.musicState = info.musicIntensity;
 		setMusicState(info.musicIntensity);
+	}
+
+	/* ------------------------------------------------- temp-entity sounds
+	 * The client effect functions (web/effectmap.js, SoF.exe 0x201343E0)
+	 * read a vec3 origin out of most svc_temp_entity messages and play a
+	 * sound of their own.  The static analysis does not name which sound
+	 * belongs to which effect index, so the mapping is data-driven here:
+	 * setEffectSounds({index: "weapons/fx/rics/Ric", ...}) registers it.
+	 * The origin, however, is in the packet and is decoded unconditionally.
+	 */
+	const effectSounds = {};
+	const NO_ORIGIN_EFFECTS = {
+		3: 1, 5: 1, 13: 1, 16: 1, 19: 1, 22: 1, 29: 1, 30: 1, 35: 1, 36: 1,
+		37: 1, 39: 1, 41: 1, 42: 1, 67: 1, 68: 1, 69: 1, 70: 1, 71: 1, 72: 1,
+		73: 1, 74: 1, 75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1, 81: 1, 82: 1,
+		83: 1, 84: 1, 85: 1, 86: 1, 87: 1, 88: 1, 90: 1, 100: 1, 101: 1,
+		105: 1, 189: 1
+	};
+
+	function setEffectSounds(map) {
+		if (!map) { Object.keys(effectSounds).forEach(function (k) { delete effectSounds[k]; }); return; }
+		Object.keys(map).forEach(function (k) { effectSounds[k] = map[k]; });
+		return effectSounds;
+	}
+
+	/* the leading vec3 of a temp entity (the engine's MSG_ReadCoord: i16/8) */
+	function parseTempOrigin(b) {
+		if (!b || b.length < 7) return null;
+		const rd = function (o) {
+			let v = b[o] | (b[o + 1] << 8);
+			if (v & 0x8000) v -= 0x10000;
+			return v / 8;
+		};
+		return { x: rd(1), y: rd(3), z: rd(5) };
 	}
 
 	/* the effect system of the page: the temp entities of the server spawn
@@ -742,11 +903,15 @@
 		const b = data && data.body;
 		if (!b || b.length < 1) return;
 		const index = b[0];
-		const sys = effectSystem();
-		if (!sys) { state.tempEntities = (state.tempEntities || 0) + 1; return; }
-		const origin = viewerOrigin() || { x: 0, y: 0, z: 0 };
 		state.tempEntities = (state.tempEntities || 0) + 1;
-		sys.spawn(index, origin);
+		/* the effect's origin is in the message; only the few effects whose
+		 * reader starts with a byte/short have none and use the viewer */
+		const packetOrigin = NO_ORIGIN_EFFECTS[index] ? null : parseTempOrigin(b);
+		const origin = packetOrigin || viewerOrigin() || { x: 0, y: 0, z: 0 };
+		const sys = effectSystem();
+		if (sys) sys.spawn(index, origin);
+		const sound = effectSounds[index];
+		if (sound) playImpact(sound, origin, { channel: 0 });
 		update();
 	}
 
@@ -813,55 +978,252 @@
 		return null;
 	}
 
+	/* ------------------------------------------------------- the sound table
+	 * Load soundtable.json and build a normalised index.  All keys of the
+	 * table are base names without an extension or a variant number, so a
+	 * wire name such as "sound\weapons\fx\rics\Ric3.wav" is normalised to
+	 * "weapons/fx/rics/ric" before the lookup. */
+	function loadSoundTable() {
+		if (soundTable) return Promise.resolve(soundTable);
+		return fetch("soundtable.json").then(function (r) {
+			if (!r.ok) throw new Error("no sound table");
+			return r.json();
+		}).then(function (j) {
+			soundTable = j;
+			soundIndex = {};
+			Object.keys(j).forEach(function (k) {
+				soundIndex[normaliseSound(k)] = j[k];
+			});
+			state.soundTableSize = Object.keys(j).length;
+			return soundTable;
+		}).catch(function (e) {
+			note("the sound table: " + (e && e.message ? e.message : e));
+			soundTable = {};
+			soundIndex = {};
+			return soundTable;
+		});
+	}
+
+	function normaliseSound(name) {
+		let s = String(name || "").replace(/\\/g, "/").toLowerCase();
+		if (s.indexOf("sound/") === 0) s = s.slice(6);
+		s = s.replace(/\.(adp|wav)$/i, "");
+		/* a wire name carries the variant ("Ric3"), the table key does not */
+		s = s.replace(/(\/|^)([^/]*?)[0-9]+$/, "$1$2");
+		return s;
+	}
+
+	/* the variant number of a wire name, 1-based (0 = not given) */
+	function soundVariantOf(name) {
+		const m = String(name || "").replace(/\\/g, "/").match(/([0-9]+)\.(adp|wav)$/i);
+		return m ? (parseInt(m[1], 10) || 0) : 0;
+	}
+
+	/* name -> the path of one variant, relative to "sound/".  The engine
+	 * picks a random variant when no number is carried (FUN_50007520). */
+	function resolveSoundPath(name, variant) {
+		const key = normaliseSound(name);
+		const entry = soundIndex && soundIndex[key];
+		if (entry && entry.paths && entry.paths.length) {
+			let n = variant;
+			if (n === undefined || n === null || n < 1) n = soundVariantOf(name);
+			if (n >= 1 && n <= entry.paths.length) return entry.paths[n - 1];
+			if (n >= 1) return entry.paths[entry.paths.length - 1];
+			if (entry.paths.length === 1) return entry.paths[0];
+			return entry.paths[Math.floor(Math.random() * entry.paths.length)];
+		}
+		/* not in the table: degrade gracefully, keep the name as it came */
+		return String(name || "").replace(/\\/g, "/").replace(/^sound\//i, "");
+	}
+
+	/* ------------------------------------------------------ the voice paths
+	 * The exact format strings of gamex86.dll (ghoul_residuals.md §C):
+	 *   "%s%d/%s/%s%d.wav"   the AI voice, with a variant
+	 *   "%s%d/%s/%s.wav"     the AI voice, without a variant
+	 *   "%s%d/%s/Wake%d.wav" the wake
+	 *   "%s%d/%s/Greet%d.adp" the greet
+	 *   "%s/%s%d.wav"        the general voice ("hit/<event><n>.wav")
+	 */
+	function voiceEventPath(group, groupNum, aiClass, event, variant) {
+		const base = String(group || "") + (groupNum === undefined || groupNum === null ? "" : groupNum) +
+			"/" + String(aiClass || "") + "/" + String(event || "");
+		return variant === undefined || variant === null ? base + ".wav" : base + variant + ".wav";
+	}
+	function voiceWakePath(group, groupNum, aiClass, variant) {
+		return String(group || "") + groupNum + "/" + String(aiClass || "") + "/Wake" + (variant || 1) + ".wav";
+	}
+	function voiceGreetPath(group, groupNum, aiClass, variant) {
+		return String(group || "") + groupNum + "/" + String(aiClass || "") + "/Greet" + (variant || 1) + ".adp";
+	}
+	function generalVoicePath(dir, event, variant) {
+		return String(dir || "hit") + "/" + String(event || "") + (variant || 1) + ".wav";
+	}
+
+	/* probe the variants the way the engine probes Wake1.wav, Wake2.wav ...
+	 * with FS_FileExists: the table tells us which ones exist without a
+	 * network round trip. */
+	function pickVoiceVariant(base, count, max) {
+		if (count && count > 0) return 1 + Math.floor(Math.random() * count);
+		const limit = max || 8;
+		for (let i = 1; i <= limit; i++) {
+			const key = normaliseSound(base + i);
+			if (soundIndex && soundIndex[key]) return i;
+		}
+		return 1;
+	}
+
+	/* ------------------------------------------- StartSound (slots 1/22/23)
+	 * The module's PlaySound (gamex86.dll 0x5007CCB0) precaches a sound with
+	 * import slot 1 and starts it with slot 22 -> slot 23.  The arguments
+	 * are (entity, channel, volume, pitch, delay); the position comes from
+	 * the entity or from the packet.  Everything below is that call in the
+	 * browser, with the driver's mix (engineMix/engineStereo). */
+	function startSound(name, opts) {
+		const c = audio();
+		if (!c) return;
+		const o = opts || {};
+		const origin = o.origin || null;
+		const mix = engineMix(origin, o.rolloff);
+		const st = engineStereo(mix);
+		let volume = (o.volume === undefined || o.volume === null) ? 1 : o.volume;
+		if (volume < 0) volume = 0;
+		if (volume > 1) volume = 1;
+		const pitch = (o.pitch === undefined || o.pitch === null || o.pitch <= 0) ? 1 : o.pitch;
+		const channel = (o.channel === undefined || o.channel === null) ? 2 : (o.channel | 0);
+		const entity = (o.entity === undefined || o.entity === null) ? -1 : (o.entity | 0);
+		const key = entity + ":" + channel;
+		const delay = Math.max(0, (o.delay || 0) * 1000);
+
+		const emit = function () {
+			fetchSound(name, o.variant).then(function (buf) {
+				/* a mono sound is mixed into both channels: the mean of the
+				 * driver's two volumes is its loudness */
+				const g = c.createGain();
+				g.gain.value = state.volume * volume * Math.min(1, (st.left + st.right) / 2);
+				let node = g;
+				let pan = mix.pan;
+				if (origin === null && o.angle !== undefined && o.angle !== null) {
+					/* entityless sounds: the packet's angle is the pan */
+					pan = o.angle * 2 - 1;
+					if (pan < -1) pan = -1;
+					if (pan > 1) pan = 1;
+				}
+				if (c.createStereoPanner) {
+					const sp = c.createStereoPanner();
+					const sum = st.left + st.right;
+					sp.pan.value = sum > 0 ? (st.right - st.left) / sum : pan;
+					g.connect(sp);
+					node = sp;
+				}
+				const s = c.createBufferSource();
+				s.buffer = buf;
+				s.playbackRate.value = pitch;
+				/* the engine stops a previous sound on the same entity and
+				 * channel before it starts a new one */
+				const prev = activeChannels[key];
+				if (prev) {
+					try { prev.stop(); } catch (e) { }
+					try { prev.disconnect(); } catch (e) { }
+				}
+				activeChannels[key] = s;
+				s.onended = function () {
+					if (activeChannels[key] === s) delete activeChannels[key];
+					try { s.disconnect(); } catch (e) { }
+				};
+				s.connect(g);
+				node.connect(c.destination);
+				s.start(0);
+				state.playedSounds = (state.playedSounds || 0) + 1;
+				if (o.kind !== undefined) state.soundKinds = (state.soundKinds || 0) + 1;
+				update();
+			}).catch(function (e) {
+				note("sound " + name + ": " + (e && e.message ? e.message : e));
+			});
+		};
+		if (delay) setTimeout(emit, delay);
+		else emit();
+	}
+
+	/* the AI voice helpers (ghoul_residuals.md §C.3), all positional */
+	function playVoice(opts) {
+		const o = opts || {};
+		const event = String(o.event || "").toLowerCase();
+		const id = VOICE_EVENTS[event] || 0;
+		let path;
+		let vol = AI_VOICE_VOLUME;
+		if (o.kind === "wake") {
+			path = voiceWakePath(o.group, o.groupNum, o.aiClass, o.variant || 1);
+		} else if (o.kind === "greet") {
+			path = voiceGreetPath(o.group, o.groupNum, o.aiClass, o.variant || 1);
+		} else if (o.kind === "general") {
+			path = generalVoicePath(o.dir || "hit", event, o.variant || 1);
+			vol = GENERAL_VOICE_VOLUME;
+		} else {
+			const variant = o.variant || pickVoiceVariant(
+				String(o.group || "") + o.groupNum + "/" + (o.aiClass || "") + "/" + event, o.count);
+			path = voiceEventPath(o.group, o.groupNum, o.aiClass, event, variant);
+		}
+		state.voiceLines = (state.voiceLines || 0) + 1;
+		startSound(path, {
+			origin: o.origin || null, rolloff: o.rolloff, volume: (o.volume === undefined ? vol : o.volume),
+			pitch: o.pitch, delay: o.delay, channel: 2, entity: o.entity, variant: o.variant
+		});
+		return path;
+	}
+
+	/* weapon and impact sounds: the names are resolved through soundtable so
+	 * both "weapons/assault/Fire" and "weapons/fx/rics/Ric3.wav" work */
+	function playWeapon(name, origin, opts) {
+		state.weaponSounds = (state.weaponSounds || 0) + 1;
+		const o = opts || {};
+		return startSound(name, {
+			origin: origin, rolloff: o.rolloff, volume: o.volume, pitch: o.pitch,
+			delay: o.delay, channel: o.channel === undefined ? 1 : o.channel, entity: o.entity,
+			variant: o.variant, angle: o.angle
+		});
+	}
+	function playImpact(name, origin, opts) {
+		state.impactSounds = (state.impactSounds || 0) + 1;
+		const o = opts || {};
+		return startSound(name, {
+			origin: origin, rolloff: o.rolloff, volume: o.volume, pitch: o.pitch,
+			delay: o.delay, channel: o.channel === undefined ? 0 : o.channel, entity: o.entity,
+			variant: o.variant, angle: o.angle
+		});
+	}
+
 	/* fetch a sound and decode it: the .adp files are IMA ADPCM, the .wav
-	 * files are plain PCM */
-	function fetchSound(name) {
-		const p = /^sound\//i.test(name) ? name : "sound/" + name;
-		if (/\.adp$/i.test(name)) {
+	 * files are plain PCM.  Decoded buffers are cached: weapon fire and
+	 * impact sounds repeat many times in a match. */
+	function fetchSound(name, variant) {
+		const path = resolveSoundPath(name, variant);
+		const p = /^sound\//i.test(path) ? path : "sound/" + path;
+		if (soundCache[p]) return Promise.resolve(soundCache[p]);
+		const done = function (buf) { soundCache[p] = buf; return buf; };
+		if (/\.adp$/i.test(p)) {
+			if (!dec) return Promise.reject(new Error("the audio decoder is not loaded"));
 			return fetchPak(p).then(function (b) {
 				const d = dec.decodeAdp(new Uint8Array(b));
 				const c = audio();
 				const buf = c.createBuffer(1, d.samples.length, d.rate);
 				const ch = buf.getChannelData(0);
 				for (let i = 0; i < d.samples.length; i++) ch[i] = d.samples[i] / 32768;
-				return buf;
+				return done(buf);
 			});
 		}
-		return fetchPak(p).then(function (b) { return audio().decodeAudioData(b); });
+		return fetchPak(p).then(function (b) { return audio().decodeAudioData(b); }).then(done);
 	}
 
 	/* play a sound of an entity: the driver's mix (the reference distance,
-	 * the rolloff and the pan law) */
-	function playEntitySound(name, origin, rolloff, volume) {
-		const c = audio();
-		if (!c) return;
-		const mix = engineMix(origin, rolloff);
-		const st = engineStereo(mix);
-		const vol = (volume === undefined || volume === null) ? 1 : volume;
-		fetchSound(name).then(function (buf) {
-			const g = c.createGain();
-			/* the driver plays a mono sound in both channels, so the sum of
-			 * the two volumes is the loudness of the sound */
-			g.gain.value = state.volume * vol * Math.min(1, (st.left + st.right) / 2);
-			let node = g;
-			if (c.createStereoPanner) {
-				const sp = c.createStereoPanner();
-				/* the pan law of the driver: the difference of the two
-				 * volumes over their sum */
-				const sum = st.left + st.right;
-				sp.pan.value = sum > 0 ? (st.right - st.left) / sum : 0;
-				g.connect(sp);
-				node = sp;
-			}
-			const s = c.createBufferSource();
-			s.buffer = buf;
-			s.connect(g);
-			node.connect(c.destination);
-			s.start(0);
-			state.playedSounds = (state.playedSounds || 0) + 1;
-			update();
-		}).catch(function (e) {
-			note("the entity sound " + name + ": " + (e && e.message ? e.message : e));
+	 * the rolloff and the pan law).  Kept as the public entry point; the work
+	 * is now done by startSound so that pitch, channel and delay are handled
+	 * the same way as the module's PlaySound statement. */
+	function playEntitySound(name, origin, rolloff, volume, opts) {
+		const o = opts || {};
+		return startSound(name, {
+			origin: origin, rolloff: rolloff, volume: volume,
+			pitch: o.pitch, delay: o.delay, channel: o.channel, entity: o.entity,
+			variant: o.variant, angle: o.angle, kind: o.kind
 		});
 	}
 
@@ -905,6 +1267,15 @@
 		if (state.playedSounds) {
 			lines.push("entity sounds: " + state.playedSounds);
 		}
+		if (state.soundTableSize) lines.push("sound table: " + state.soundTableSize);
+		if (state.soundIndices) {
+			lines.push("svc sounds: " + state.soundIndices + " numeric" +
+				(state.unresolvedSounds ? ", " + state.unresolvedSounds + " unnamed" : ""));
+		}
+		if (state.weaponSounds || state.impactSounds || state.voiceLines) {
+			lines.push("weapons " + (state.weaponSounds || 0) + "  impacts " +
+				(state.impactSounds || 0) + "  voices " + (state.voiceLines || 0));
+		}
 		overlay.textContent = lines.join("\n");
 	}
 
@@ -945,6 +1316,7 @@
 				tick();
 			});
 			loadAmbients();
+			loadSoundTable().then(function () { tick(); });
 			loadStringTable().then(function () { tick(); });
 			loadGhoulStrings().then(function () { tick(); });
 		};
@@ -985,11 +1357,29 @@
 		stringTable: function () { return stringTable; },
 		entitySoundName: entitySoundName,
 		playEntitySound: playEntitySound,
+		/* phase 2: positional weapon/impact sounds and the AI/general voice */
+		startSound: startSound,
+		playWeapon: playWeapon,
+		playImpact: playImpact,
+		playVoice: playVoice,
+		voiceEventPath: voiceEventPath,
+		voiceWakePath: voiceWakePath,
+		voiceGreetPath: voiceGreetPath,
+		generalVoicePath: generalVoicePath,
+		voiceEventId: function (name) { return VOICE_EVENTS[String(name || "").toLowerCase()] || 0; },
+		voiceLevels: function () { return VOICE_LEVELS.slice(); },
+		loadSoundTable: loadSoundTable,
+		resolveSoundPath: resolveSoundPath,
+		normaliseSound: normaliseSound,
+		soundTable: function () { return soundTable; },
+		setSoundNames: setSoundNames,
+		setEffectSounds: setEffectSounds,
 		onSound: onSound,
 		onSoundInfo: onSoundInfo,
 		onTempEntity: onTempEntity,
 		fx: function () { return effectSystem(); },
 		parseStartSound: parseStartSound,
+		parseStartSoundSof: parseStartSoundSof,
 		parseSoundInfo: parseSoundInfo,
 		useContext: useContext,
 		setMusicState: setMusicState,

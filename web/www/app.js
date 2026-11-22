@@ -12,10 +12,14 @@
 
 	// ------------------------------------------------------------- setup
 	const params = new URLSearchParams(location.search);
-	const relayHost = params.get("relay") || location.host;
-	const serverHost = params.get("server") || "127.0.0.1";
-	const serverPort = parseInt(params.get("port") || "29000", 10);
-	const name = params.get("name") || "webclient";
+	/* These are mutable so the front-end (menu.js) can pick a server and a
+	 * relay at runtime.  Query parameters still work for deep links. */
+	let relayHost = params.get("relay") || location.host;
+	let serverHost = params.get("server") || "127.0.0.1";
+	let serverPort = parseInt(params.get("port") || "29000", 10);
+	let playerName = params.get("name") || "webclient";
+	let wantConnect = false;
+	let reconnectTimer = null;
 
 	const canvas = document.getElementById("gl");
 	const hud = document.getElementById("hud");
@@ -31,12 +35,45 @@
 	const state = {
 		ws: null, connected: false, spawned: false, frames: 0,
 		entities: new Map(), frameNumber: 0, serverTime: 0,
-		status: "connecting", log: [], console: [], cs: {}, self: 1, servers: [], fov: 90, drawDistance: 40000, thirdPerson: false, showDebug: false,
-		hud: null, ps: null
+		status: "menu", log: [], console: [], cs: {}, self: 1, servers: [], fov: 90, drawDistance: 40000, thirdPerson: false, showDebug: false,
+		hud: null, ps: null, clipPlayers: new Map(),
+		/* client-side weapon presentation: the server owns the authoritative
+		 * ammo and health, the client owns the view model, the heat meter and
+		 * the selected weapon number (which is a string command in SoF) */
+		weapon: 3, weaponRows: [], heat: 0, heatLock: 0, heatCool: 0
+	};
+	/* SoF weapon numbers from the game module's 31-row table.  The engine has
+	 * no weapon field in the usercmd: changing weapon is the `weaponselect N`
+	 * string command, so the browser mirrors that exactly. */
+	const WEAPON_SLOTS = [1, 3, 4, 5, 6, 7, 9, 11, 12, 14, 17, 19];
+	const WEAPON_NAMES = {
+		1: "KNIFE", 3: "9MM PISTOL", 4: ".44 MAGNUM", 5: "MACHINE PISTOL",
+		6: "ASSAULT RIFLE", 7: "SNIPER RIFLE", 9: "AUTO SHOTGUN",
+		11: "SHOTGUN", 12: "MACHINE GUN", 14: "ROCKET LAUNCHER",
+		17: "MPG", 19: "FLAMETHROWER"
 	};
 	window.sofstate = state;
 	window.sofconsole = state.console;
 	const note = function (m) { state.console.push(String(m)); if (state.console.length > 40) state.console.shift(); say(m); };
+
+	/* Per-entity Ghoul animation.  The wire snapshot does not carry the AI
+	 * state code, so each character starts on an idle clip and keeps its own
+	 * clock; the decoded two-track player handles any later clip change. */
+	function clipPlayerFor(e) {
+		if (!window.sofmodel || !window.sofmodel.createClipPlayer) return null;
+		let p = state.clipPlayers.get(e.number);
+		if (p) return p;
+		const m = window.sofmodel.modelForEntity(e);
+		if (!m || !m.clips || !m.clips.length) return null;
+		let clip = m.clips.find(function (c) {
+			const n = (c.name || "").toLowerCase();
+			return n.indexOf("idle") >= 0 || n.indexOf("stand") >= 0;
+		}) || m.clips[0];
+		p = window.sofmodel.createClipPlayer(m);
+		p.play(clip.name, 0, 0, 0);
+		state.clipPlayers.set(e.number, p);
+		return p;
+	}
 
 	/* ---------------------------------------------------------------------
 	 * The player figure.
@@ -395,8 +432,23 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (q.toString()) state.mods = Object.assign({}, state.mods || {}, Object.fromEntries(q));
 	}
 
+	function buildUserinfo() {
+		return "\\name\\" + playerName + "\\spectator\\0\\cl_violence\\63\\fov\\95\\rate\\3000\\team_red_blue\\0";
+	}
+	/* The svc_sound wire format carries a numeric precache index, not a name.
+	 * Feed every string the server gave us that looks like a sound to the
+	 * audio module so it can resolve those indices positionally. */
+	function syncSoundNames() {
+		if (!window.sofmusic || !window.sofmusic.setSoundNames) return;
+		const names = [];
+		Object.keys(state.cs).forEach(function (k) {
+			const v = state.cs[k];
+			if (typeof v === "string" && /\.(wav|adp)$/i.test(v)) names.push(v.replace(/\\/g, "/"));
+		});
+		if (names.length) window.sofmusic.setSoundNames(names);
+	}
 	const client = window.sofproto.createClient({
-		userinfo: "\\name\\" + name + "\\spectator\\0\\cl_violence\\63\\fov\\95\\rate\\3000\\team_red_blue\\0",
+		userinfo: buildUserinfo(),
 		send: (buf) => {
 			if (state.ws && state.ws.readyState === 1) {
 				const bin = toBinary(buf);
@@ -431,6 +483,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					break;
 				case "configstrings":
 					Object.keys(data).forEach(function (k) { state.cs[k] = data[k]; });
+					syncSoundNames();
 					break;
 				case "frame":
 					state.frames++;
@@ -497,11 +550,17 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	state.view = client.view;
 
 	function connect() {
+		if (state.ws && (state.ws.readyState === 0 || state.ws.readyState === 1)) return;
+		wantConnect = true;
 		state.status = "connecting";
-		const ws = new WebSocket("ws://" + relayHost + "/relay");
+		if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+		const wsUrl = "ws://" + relayHost + "/relay";
+		note("connecting to " + relayHost + " -> " + serverHost + ":" + serverPort);
+		const ws = new WebSocket(wsUrl);
 		ws.binaryType = "arraybuffer";
 		state.ws = ws;
 		ws.onopen = function () {
+			client.setUserinfo(buildUserinfo());
 			ws.send(JSON.stringify({ type: "connect", host: serverHost, port: serverPort }));
 			client.start();
 			state.status = "handshaking";
@@ -514,25 +573,95 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		ws.onclose = function () {
 			state.status = "disconnected";
 			state.connected = false;
-			setTimeout(connect, 2000);
+			state.spawned = false;
+			state.ws = null;
+			if (window.sofmenu) window.sofmenu.onDisconnect();
+			if (wantConnect) reconnectTimer = setTimeout(connect, 2000);
 		};
 		ws.onerror = function () { state.status = "relay error"; };
 	}
 
+	function disconnect() {
+		wantConnect = false;
+		if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+		if (state.ws) {
+			try { state.ws.close(); } catch (e) { }
+			state.ws = null;
+		}
+		state.connected = false;
+		state.spawned = false;
+		state.status = "disconnected";
+	}
+
+	/* The public API used by menu.js.  It deliberately avoids exposing the
+	 * protocol client itself - the menu only drives connection, identity and
+	 * settings. */
+	window.sofapp = {
+		connect: function (host, port, relay, name) {
+			if (host) serverHost = String(host);
+			if (port) serverPort = parseInt(port, 10) || serverPort;
+			if (relay) relayHost = String(relay);
+			if (name) playerName = String(name);
+			disconnect();
+			connect();
+		},
+		disconnect: disconnect,
+		getState: function () {
+			return {
+				status: state.status, connected: state.connected, spawned: state.spawned,
+				server: serverHost + ":" + serverPort, relay: relayHost,
+				name: playerName, map: state.cs[0] || "", frames: state.frames,
+				health: state.hud && state.hud.health, armor: state.hud && state.hud.armor,
+				ammo: state.hud && state.hud.ammo, weapon: state.weapon,
+				heat: state.heat, overheated: state.heatLock > 0,
+				servers: state.servers.slice(),
+				entities: Array.from(state.entities.values()).filter(function (e) {
+					return !e.removed && e.state;
+				}).map(function (e) {
+					return { number: e.number, name: e.state.client || e.state.netname || ("#" + e.number),
+						team: e.state.team || "", score: e.state.score || 0, ping: e.state.ping || 0 };
+				})
+			};
+		},
+		setSetting: function (key, value) {
+			if (key === "fov") state.fov = parseFloat(value);
+			else if (key === "drawDistance") state.drawDistance = parseFloat(value);
+			else if (key === "fogStart" || key === "fogEnd") {
+				if (window.sofFog) {
+					const f = window.sofFog.get();
+					window.sofFog.set(key === "fogStart" ? value : f.start,
+						key === "fogEnd" ? value : f.end,
+						f.color[0], f.color[1], f.color[2]);
+				}
+			}
+			else if (key === "moveSpeed") client.setMoveSpeed(parseFloat(value));
+			else if (key === "lookSpeed" || key === "sensitivity") client.setLookSpeed(parseFloat(value));
+			else if (key === "thirdPerson") state.thirdPerson = !!value;
+			else if (key === "showDebug") state.showDebug = !!value;
+			else if (key === "volume" && window.sof) window.sof.setVolume(parseFloat(value));
+			else if (key === "master") window.MASTER_URL = String(value);
+		},
+		getServers: function () { return state.servers.slice(); },
+		refreshServers: function () { loadServerList(); },
+		send: function (text) { client.sendStringCmd(text); }
+	};
+
 	/* the master: the known SoF servers.  The original GameSpy master is
 	 * dead, so we run our own (web/gsmaster.js) and the browser client
 	 * publishes the server it is talking to. */
-	const masterUrl = (window.MASTER_URL || "http://127.0.0.1:8090") + "/api/servers";
+	function masterUrl() {
+		return (window.MASTER_URL || "http://127.0.0.1:8090") + "/api/servers";
+	}
 	function loadServerList() {
 		if (typeof fetch !== "function") return;
-		fetch(masterUrl).then(function (r) { return r.json(); }).then(function (j) {
+		fetch(masterUrl()).then(function (r) { return r.json(); }).then(function (j) {
 			state.servers = (j && j.servers) || [];
 		}).catch(function () { });
 	}
 	function publishServer() {
 		if (typeof fetch !== "function") return;
 		try {
-			fetch(masterUrl, {
+			fetch(masterUrl(), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
@@ -570,6 +699,18 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			state.thirdPerson = !state.thirdPerson;
 			note("camera: " + (state.thirdPerson ? "third person" : "first person"));
 		}
+		/* number keys select weapons, R reloads - both are real SoF commands */
+		const digit = /^Digit([0-9])$/.exec(e.code);
+		if (digit && !wasDown) {
+			const slot = digit[1] === "0" ? 10 : (parseInt(digit[1], 10) - 1);
+			const w = WEAPON_SLOTS[slot];
+			if (w) selectWeapon(w);
+		}
+		if (e.code === "KeyR" && !wasDown) {
+			client.sendStringCmd("reload");
+			if (window.sofviewmodel) window.sofviewmodel.setWeapon(state.weapon);
+			note("reload");
+		}
 		/* F1 toggles the debug dump (it used to cover the whole picture) */
 		if (e.code === "F1") {
 			e.preventDefault();
@@ -581,6 +722,19 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			e.preventDefault();
 			openConsole();
 		}
+		/* Escape opens the in-game menu */
+		if (e.code === "Escape" && window.sofmenu) {
+			e.preventDefault();
+			window.sofmenu.togglePause();
+		}
+		/* Tab shows the scoreboard (the menu module owns the overlay) */
+		if (e.code === "Tab" && window.sofmenu) {
+			e.preventDefault();
+			window.sofmenu.showScoreboard(true);
+		}
+	});
+	document.addEventListener("keyup", function (e) {
+		if (e.code === "Tab" && window.sofmenu) window.sofmenu.showScoreboard(false);
 	});
 	document.addEventListener("keyup", (e) => {
 		if (consoleOpen) return;
@@ -591,8 +745,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	/* the left mouse button is the attack (fire) button, the right one the
 	 * "use" button - both are usercmd button bits */
 	document.addEventListener("mousedown", function (e) {
-		if (e.button === 0) { client.setKey("Mouse0", true); playFire(); }
-		if (e.button === 2) client.setKey("Mouse2", true);
+		/* clicks on the menu / console are UI, not weapon input */
+		if (e.target && e.target.closest && e.target.closest("#sof-menu, #console, #sof-chat")) return;
+		if (e.button === 0) { client.setKey("Mouse0", true); playFire(false); }
+		if (e.button === 2) client.setKey("Mouse2", true); playFire(true);
 	});
 	document.addEventListener("mouseup", function (e) {
 		if (e.button === 0) client.setKey("Mouse0", false);
@@ -785,11 +941,16 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	function frameInner(now) {
 		const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
 		last = now;
+		coolHeat(dt);
 		resize();
 		frameEntities();
 		updateCamera(dt);
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
+		state.clipPlayers.forEach(function (p, num) {
+			if (!state.entities.has(num)) state.clipPlayers.delete(num);
+			else if (p.tick) p.tick(dt);
+		});
 		let drawn = 0;
 		mapDrawn = 0;
 		if (gl) {
@@ -860,11 +1021,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				/* the original Ghoul model, when its geometry is decoded: the
 				 * static meshes are, the animated ones (the characters and
 				 * the weapons) are not yet */
-				if (window.sofmodel && sofmodel.drawEntity && sofmodel.drawEntity(e, mvp, o)) {
-					drawn++;
-					/* the model draw uses its own program and buffers */
-					bindEntityState(mvp);
-					return;
+				if (window.sofmodel && sofmodel.drawEntity) {
+					const player = clipPlayerFor(e);
+					const sample = player ? player.sample() : null;
+					if (sofmodel.drawEntity(e, mvp, o, sample)) {
+						drawn++;
+						/* the model draw uses its own program and buffers */
+						bindEntityState(mvp);
+						return;
+					}
 				}
 				/* another player */
 				drawFigure(o.x, o.y, o.z, o.yaw || 0, false, 1);
@@ -982,6 +1147,18 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		};
 		drawBar(18, bottom + 2, h.health, "#c03028", "HP");
 		drawBar(18, bottom + 18, h.armor, "#8892a0", "AP");
+
+		/* the selected weapon and the heat meter (row +0x118/+0x11C) */
+		const wn = WEAPON_NAMES[state.weapon] || ("WEAPON " + state.weapon);
+		hctx.textAlign = "center";
+		hctx.font = "12px monospace";
+		hctx.fillStyle = state.heatLock > 0 ? "#ff7040" : "#c8c8a0";
+		hctx.fillText(wn + (state.heatLock > 0 ? "  OVERHEATED" : ""), W / 2, bottom + 10);
+		const hw = 150, hx = W / 2 - hw / 2, hy = bottom + 16;
+		hctx.fillStyle = "rgba(0,0,0,0.6)"; hctx.fillRect(hx - 1, hy - 1, hw + 2, 7);
+		hctx.fillStyle = "rgba(40,44,48,0.9)"; hctx.fillRect(hx, hy, hw, 5);
+		hctx.fillStyle = state.heat > 0.75 ? "#e0613a" : "#d9a441";
+		hctx.fillRect(hx, hy, Math.round(hw * Math.max(0, Math.min(1, state.heat))), 5);
 
 		/* the ammunition, in the bottom right, as in the original */
 		hctx.textAlign = "right";
@@ -1138,11 +1315,58 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const n = 1 + Math.floor(Math.random() * 4);
 		S.playVaried("sound/player/foot/" + kind + "/" + cap + n + ".wav", 0.12, 0.45);
 	}
-	function playFire() {
+	function weaponRow(w) {
+		return state.weaponRows.find(function (r) { return r.index === (w || state.weapon); });
+	}
+	function heatRate(alt) {
+		const row = weaponRow();
+		if (!row) return 0.03;
+		/* weapons.json calls these fields delay/altdelay; RE proved they are
+		 * the primary/alternate heat rates (row +0x118 / +0x11C) */
+		return parseFloat(alt ? row.altdelay : row.delay) || 0.03;
+	}
+	function addHeat(alt) {
+		if (state.heatLock > 0) return false;
+		state.heat = Math.min(1, state.heat + heatRate(alt));
+		if (state.heat >= 1) {
+			state.heatLock = 1.5;
+			state.heatCool = 1.0;
+			if (S) S.playVaried("sound/misc/padd_max.wav", 0.18, 0.9);
+			return false;
+		}
+		if (state.heat > 0.75 && S) S.playVaried("sound/misc/padd_warning.wav", 0.1, 0.8);
+		return true;
+	}
+	function coolHeat(dt) {
+		if (state.heatLock > 0) {
+			state.heatLock = Math.max(0, state.heatLock - dt);
+			state.heat = state.heatCool * (state.heatLock / 1.5);
+			return;
+		}
+		/* FUN_500EE8B0: heat -= (heat * 0.015 + 0.003) * 0.7 */
+		state.heat = Math.max(0, state.heat - (state.heat * 0.015 + 0.003) * 0.7 * dt * 60);
+	}
+	function selectWeapon(w) {
+		w = parseInt(w, 10);
+		if (!w || w === state.weapon) return;
+		state.weapon = w;
+		if (window.sofviewmodel) window.sofviewmodel.setWeapon(w);
+		client.sendStringCmd("weaponselect " + w);
+		note("weapon: " + (WEAPON_NAMES[w] || ("#" + w)));
+	}
+	function playFire(alt) {
+		if (!addHeat(!!alt)) return;
+		if (window.sofviewmodel) window.sofviewmodel.fire();
 		if (!S) return;
-		/* the weapon is not known yet (it is in the bit packed player state),
-		 * so the shotgun is used until that is decoded */
-		S.playVaried("sound/weapons/shotgun/Fire.wav", 0.06, 0.85);
+		const name = WEAPON_NAMES[state.weapon] || "SHOTGUN";
+		const file = name === "SHOTGUN" ? "sound/weapons/shotgun/Fire.wav" :
+			name === "9MM PISTOL" ? "sound/weapons/Glock/fire.wav" :
+			name === "ASSAULT RIFLE" ? "sound/weapons/assault/fire.wav" :
+			name === "MACHINE GUN" ? "sound/weapons/mgun/fire.wav" :
+			name === "FLAMETHROWER" ? "sound/weapons/flamegun/Fire1.wav" :
+			name === "ROCKET LAUNCHER" ? "sound/weapons/Rocket/Fire.wav" :
+			"sound/weapons/Glock/fire.wav";
+		S.playVaried(file, 0.06, 0.85);
 	}
 	function playUse() {
 		if (!S) return;
@@ -1203,8 +1427,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				} else if (local[0] === "help") {
 					consolePrint("client: tp, speed <n>, sensitivity <n>, fov <n>", "info");
 					consolePrint("everything else goes to the server", "info");
-				} else if (local[0] === "weaponselect" && local[1] && window.sofviewmodel) {
-					sofviewmodel.setWeapon(parseInt(local[1], 10));
+				} else if (local[0] === "weaponselect" && local[1]) {
+					const w = parseInt(local[1], 10);
+					state.weapon = w;
+					if (window.sofviewmodel) window.sofviewmodel.setWeapon(w);
 					client.sendStringCmd(text);
 					consolePrint("sent to the server", "info");
 				} else {
@@ -1227,9 +1453,20 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		mapItems = list.filter(function (e) { return e.origin && /item_/.test(e.classname); })
 			.map(function (e) { return e.origin; });
 	}).catch(function () { });
+	fetch("weapons.json").then(function (r) { return r.json(); }).then(function (j) {
+		state.weaponRows = (j && j.weapons) || [];
+		if (window.sofviewmodel && !window.sofviewmodel.state.model) {
+			window.sofviewmodel.setWeapon(window.sofviewmodel.weaponFromUrl ? window.sofviewmodel.weaponFromUrl() : state.weapon);
+		}
+	}).catch(function () { });
 	loadServerList();
 	setInterval(loadServerList, 20000);
-	connect();
+	/* The menu is the normal entry point.  A direct link can still autoplay
+	 * with ?autoplay=1 (or any relay/server/port parameter, for compatibility
+	 * with the old start links). */
+	if (params.get("autoplay") === "1" || params.has("server") || params.has("relay")) {
+		connect();
+	}
 	requestAnimationFrame(frame);
 
 	window.sofdebug = function () {

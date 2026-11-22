@@ -1,0 +1,122 @@
+/* SoF browser client front-end: menu, settings, server browser, scoreboard.
+ * Deliberately plain CSS and vanilla DOM - no framework, no build step. */
+:root {
+	--sof-bg: #080b0d;
+	--sof-panel: rgba(10, 15, 18, 0.96);
+	--sof-line: #2d3b36;
+	--sof-amber: #d9a441;
+	--sof-amber-dim: #7d622d;
+	--sof-text: #d8dedb;
+	--sof-muted: #8a9a93;
+	--sof-green: #8fd19a;
+	--sof-red: #dd6a5b;
+}
+
+* { box-sizing: border-box; }
+html, body { background: var(--sof-bg); }
+
+#sof-menu {
+	position: absolute;
+	inset: 0;
+	z-index: 50;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background:
+		radial-gradient(circle at 50% 30%, rgba(217,164,65,0.08), transparent 55%),
+		rgba(4, 7, 9, 0.88);
+	color: var(--sof-text);
+	font-family: "Trebuchet MS", Arial, sans-serif;
+}
+#sof-menu.visible { display: flex; }
+
+.sof-shell {
+	width: min(940px, 94vw);
+	max-height: 92vh;
+	overflow: auto;
+	background: var(--sof-panel);
+	border: 1px solid var(--sof-line);
+	box-shadow: 0 0 0 1px #050708, 0 22px 70px rgba(0,0,0,0.75);
+}
+.sof-head {
+	display: flex; align-items: baseline; justify-content: space-between;
+	padding: 20px 28px 14px; border-bottom: 1px solid var(--sof-line);
+}
+.sof-head h1 {
+	margin: 0; font-size: 26px; letter-spacing: 3px; font-weight: 700;
+	color: var(--sof-amber); text-transform: uppercase;
+}
+.sof-head .sub { color: var(--sof-muted); font-size: 12px; letter-spacing: 1px; }
+.sof-body { padding: 22px 28px 28px; }
+.sof-screen { display: none; }
+.sof-screen.active { display: block; }
+
+.sof-menu-list { display: grid; gap: 8px; max-width: 420px; }
+.sof-btn {
+	display: block; width: 100%; text-align: left; cursor: pointer;
+	background: #101719; color: var(--sof-text); border: 1px solid var(--sof-line);
+	padding: 12px 16px; font: inherit; font-size: 15px; letter-spacing: 1px;
+	text-transform: uppercase; transition: background 0.12s, border-color 0.12s;
+}
+.sof-btn:hover { background: #1b2624; border-color: var(--sof-amber-dim); color: #fff; }
+.sof-btn.primary { border-left: 3px solid var(--sof-amber); }
+.sof-btn.danger { color: var(--sof-red); }
+.sof-btn.small { width: auto; display: inline-block; padding: 7px 12px; font-size: 12px; }
+.sof-status { margin-top: 18px; color: var(--sof-muted); font-size: 12px; line-height: 1.6; }
+.sof-status b { color: var(--sof-green); font-weight: normal; }
+
+.sof-row { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.sof-row > label { width: 180px; flex: none; color: var(--sof-muted); font-size: 13px; }
+.sof-row input[type="text"], .sof-row input[type="number"], .sof-row select {
+	flex: 1; background: #0b1012; color: var(--sof-text);
+	border: 1px solid var(--sof-line); padding: 8px 10px; font: inherit;
+}
+.sof-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--sof-amber); }
+.sof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 26px; }
+.sof-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.sof-note { color: var(--sof-muted); font-size: 12px; line-height: 1.65; margin-top: 18px; }
+.sof-note code { color: var(--sof-amber); }
+
+.sof-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sof-table th, .sof-table td {
+	text-align: left; padding: 9px 10px; border-bottom: 1px solid #1c2623;
+}
+.sof-table th { color: var(--sof-amber-dim); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+.sof-table tr { cursor: pointer; }
+.sof-table tr:hover { background: #141d1b; }
+.sof-table tr.selected { background: #1d2822; }
+.sof-table .empty { color: var(--sof-muted); font-style: italic; cursor: default; }
+.sof-list-wrap { max-height: 42vh; overflow: auto; border: 1px solid #1c2623; }
+
+#sof-scoreboard {
+	position: absolute; inset: 12% 18%; z-index: 40; display: none;
+	background: rgba(6,10,12,0.92); border: 1px solid var(--sof-line);
+	padding: 18px 22px; color: var(--sof-text);
+	font-family: "Trebuchet MS", Arial, sans-serif;
+}
+#sof-scoreboard.visible { display: block; }
+#sof-scoreboard h2 { margin: 0 0 12px; color: var(--sof-amber); letter-spacing: 2px; font-size: 18px; }
+
+.sof-kbd { color: var(--sof-amber); font-weight: bold; }
+.sof-hidden { display: none !important; }
+
+#sof-chat {
+	position: absolute; left: 14px; bottom: 54px; z-index: 45; display: none;
+	width: min(620px, 70vw);
+	background: rgba(6,10,12,0.94); border: 1px solid var(--sof-line);
+	padding: 8px 10px; color: var(--sof-text);
+	font-family: monospace; font-size: 13px;
+}
+#sof-chat.visible { display: block; }
+#sof-chat .label { color: var(--sof-amber); margin-right: 8px; }
+#sof-chat input {
+	width: calc(100% - 70px); background: #0b1012; color: var(--sof-text);
+	border: 1px solid var(--sof-line); padding: 5px 7px; font: inherit;
+}
+#sof-chat-log {
+	position: absolute; left: 14px; bottom: 96px; z-index: 44;
+	width: min(620px, 70vw); max-height: 22vh; overflow: hidden;
+	color: #cfe0d6; font-family: monospace; font-size: 12px; line-height: 1.5;
+	text-shadow: 0 1px 2px #000; pointer-events: none;
+}
+#sof-chat-log div { background: rgba(6,10,12,0.45); }

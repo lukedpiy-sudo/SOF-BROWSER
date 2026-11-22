@@ -79,7 +79,7 @@ function createClient(opts) {
 	const o = opts || {};
 	const send = o.send || function () { };
 	const onEvent = o.onEvent || function () { };
-	const userinfo = o.userinfo || DEFAULT_USERINFO;
+	let userinfo = o.userinfo || DEFAULT_USERINFO;
 	const seedDefault = (o.seed === undefined ? 3 : o.seed) & 0xffff;
 
 	let seq = 1;            // our outgoing netchan sequence
@@ -635,6 +635,8 @@ function unrelHdr() {
 		view: view,
 		setMoveSpeed: function (v) { moveSpeed = v; },
 		setLookSpeed: function (v) { lookSpeed = v; },
+		setUserinfo: function (info) { if (info) userinfo = info; },
+		getUserinfo: function () { return userinfo; },
 		get entities() { return entities; },
 		get ghoulPackets() { return ghoulPackets; },
 		get soundPackets() { return soundPackets; },

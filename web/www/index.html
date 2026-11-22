@@ -20,6 +20,7 @@
 	#consoleInput { width: 100%; background: #0f1216; color: #d8d8d8; border: 1px solid #2a3a2f;
 		font-family: monospace; font-size: 12px; padding: 3px 5px; margin-top: 6px; }
 </style>
+<link rel="stylesheet" href="menu.css">
 </head>
 <body>
 <div id="wrap">
@@ -31,10 +32,9 @@
 			placeholder="type a command and press enter (help)">
 	</div>
 	<div id="bar">
-		Soldier of Fortune browser client &mdash;
-		<a href="?relay=127.0.0.1:8080&amp;server=127.0.0.1&amp;port=29000">relay 127.0.0.1:8080</a> /
-		server 127.0.0.1:29000 &mdash; click the view for mouse look, WASD to move,
-		<b>`</b> for the console, <b>V</b> for the third person camera
+		Soldier of Fortune browser client &mdash; <b>Esc</b> menu, <b>Tab</b> scoreboard,
+		<b>`</b> console, <b>V</b> camera, WASD to move &mdash;
+		<a href="content.html">content &amp; mods</a>
 	</div>
 </div>
 <script src="bundle.js"></script>
@@ -49,5 +49,7 @@
 <script src="sofmusic.js"></script>
 <script src="eft.js"></script>
 <script src="effects.js"></script>
+<!-- the menu runs last so it can apply settings to every renderer/audio module -->
+<script src="menu.js"></script>
 </body>
 </html>

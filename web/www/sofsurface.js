@@ -35,6 +35,26 @@
 	var tex = {}, texReady = 0, texWanted = 0;
 	var status = "loading", err = ""; var drawn = 0;
 	var eye = [0, 0, 0];
+	/* the last matrix/camera the renderer handed us.  soflight.js calls
+	 * draw(ctx, mvp, eye) once per map draw, so this is a free, reliable way
+	 * for the other render modules (the decals of effects.js) to share the
+	 * exact same camera without touching app.js. */
+	var lastMVP = null, lastEye = [0, 0, 0];
+	/* the worldspawn's sky key: "<basename> <rotate> <x> <y> <z>".  The
+	 * rotation/axis drive the cube sky (analysis/sky.md §2, §13); the BSP
+	 * sky of the shipped maps ignores them, but they are kept for the data. */
+	var skyInfo = { name: "", rotate: 0, axis: [0, 0, 1] };
+	/* the fog state is shared with soflight.js and effects.js.  The engine's
+	 * gl_fog* cvars are read only and unset ("-1") in the shipped build
+	 * (analysis/TARGET_LOOK.md gap 5, PROTOCOL.md), so this stays off until
+	 * something sets it through the sofFog() bridge below. */
+	var fog = { start: 1e9, end: 1e9, color: [0, 0, 0] };
+	/* the surfaces the engine diverts to the sky pass.  Detection is by the
+	 * texinfo SURF_SKY flag (0x04), not by a hard coded material name: the
+	 * map has 260 "subway/sky2" faces plus two "subway/no_draw" faces that
+	 * carry the same flag.  The material names are only a fallback for maps
+	 * whose texinfo table is not in the JSON. */
+	var skyMaterials = null, noDrawMaterials = null;
 
 	var VS = [
 		"attribute vec3 sPos;",
@@ -80,17 +100,61 @@
 		});
 	}
 
-	/* the sky faces of the map: the surfaces the engine draws as sky */
+	/* the sky faces of the map: the surfaces the engine draws as sky.
+	 * ref_gl.dll R_AddBrushPolys diverts every surface whose texinfo has
+	 * SURF_SKY (0x04) out of the normal pass - the material name is not the
+	 * test, it just happens to be "subway/sky2" on nycdm1. */
 	function isSky(mat) {
+		if (skyMaterials) return skyMaterials[mat] === true;
 		return mat === "subway/sky2";
 	}
 	function isNoDraw(mat) {
+		if (noDrawMaterials) return noDrawMaterials[mat] === true;
 		return mat === "subway/no_draw";
+	}
+	/* build the sets from the BSP's texinfo table (map_bsp.json).  A face
+	 * with flag 0x04 is a sky face even when its material is "no_draw"; a
+	 * face with flag 0x80 is a nodraw face. */
+	function buildMaterialFlags(m) {
+		skyMaterials = {}; noDrawMaterials = {};
+		var ti = (m && m.texinfo) || [];
+		for (var i = 0; i < ti.length; i++) {
+			var t = ti[i]; if (!t || !t.name) continue;
+			var f = (t.flags | 0) >>> 0;
+			if (f & 0x04) skyMaterials[t.name] = true;
+			if (f & 0x80) noDrawMaterials[t.name] = true;
+		}
+		/* a material can be both: the sky pass (isSky) wins when the geometry
+		 * is built, so the 0x80 flag is only reported by isNoDraw here. */
+	}
+	/* the worldspawn's sky key (sky.md §2): "<basename> <rotate> <x> <y> <z>" */
+	function readSkyInfo(m, d) {
+		var name = (d && d.sky) || "";
+		var raw = "";
+		var ents = (m && m.entities) || [];
+		for (var i = 0; i < ents.length; i++) {
+			if (ents[i] && ents[i].classname === "worldspawn" && ents[i].sky) { raw = ents[i].sky; break; }
+		}
+		var p = String(raw || name).trim().split(/\s+/);
+		if (p[0]) name = p[0];
+		var rotate = p.length > 1 ? parseFloat(p[1]) : 0;
+		var axis = [0, 0, 1];
+		if (p.length >= 5) {
+			var a = [parseFloat(p[2]), parseFloat(p[3]), parseFloat(p[4])];
+			if (a.every(function (x) { return isFinite(x); })) axis = a;
+		}
+		skyInfo = {
+			name: name,
+			rotate: isFinite(rotate) ? rotate : 0,
+			axis: axis
+		};
 	}
 
 	function load() {
 		Promise.all([fetchJSON("map_sky.json"), fetchJSON("map_bsp.json")]).then(function (r) {
 			data = r[0]; map = r[1];
+			buildMaterialFlags(map);
+			readSkyInfo(map, data);
 			texWanted = 0;
 			for (var k in data.textures) if (data.textures.hasOwnProperty(k)) {
 				texWanted++;
@@ -149,6 +213,8 @@
 
 	function build() {
 		gl = gl || (window.__sofglCtx || null);
+		if (!data || !map) { status = "no sky data"; return; }
+		var skyFaces = data.faces || [];
 		/* the sky faces and their texture (by the dominant axis) */
 		var faces = map.faces || [];
 		var groups = {};       /* the axis -> the faces */
@@ -161,11 +227,14 @@
 			groups[a].push(f);
 		}
 		/* the texture of a face: the .txt order is the face order, and the
-		 * renderer's face table gives the axis of every face */
+		 * renderer's face table gives the axis of every face.  A line of
+		 * "none" is an empty layer (sky.md §4) - it has no .m32 and must be
+		 * skipped, otherwise we build geometry that is never drawn. */
 		var byAxis = {};
-		for (var k = 0; k < data.faces.length; k++) {
-			var d = data.faces[k];
-			if (!d.file) continue;
+		for (var k = 0; k < skyFaces.length; k++) {
+			var d = skyFaces[k];
+			if (!d || !d.file) continue;
+			if (!d.texture || d.texture === "none" || !data.textures[d.texture]) continue;
 			byAxis[d.axis] = d;
 		}
 		/* the range of every axis group: the engine maps the texture with
@@ -180,6 +249,7 @@
 				var f2 = groups[g][q];
 				for (var w = 0; w < f2.v.length; w++) {
 					var p = map.vertices[f2.v[w]];
+					if (!p) continue;
 					var cs = comp(p, d.s), ct = comp(p, d.t);
 					if (cs < mn[0]) mn[0] = cs; if (cs > mx[0]) mx[0] = cs;
 					if (ct < mn[1]) mn[1] = ct; if (ct > mx[1]) mx[1] = ct;
@@ -196,9 +266,10 @@
 			offsets[a2] = idx.length;
 			for (var q2 = 0; q2 < groups[a2].length; q2++) {
 				var f3 = groups[a2][q2];
-				var base = pos.length / 3;
+				var firstVert = pos.length / 3;
 				for (var w2 = 0; w2 < f3.v.length; w2++) {
 					var p2 = map.vertices[f3.v[w2]];
+					if (!p2) continue;
 					/* the map is Z up, the renderer is Y up */
 					pos.push(p2[0], p2[2], p2[1]);
 					var cs2 = comp(p2, dd.s), ct2 = comp(p2, dd.t);
@@ -206,7 +277,8 @@
 					var v = (ct2 - r.mn[1]) / Math.max(r.mx[1] - r.mn[1], 1);
 					uvs.push(u, 1 - v);
 				}
-				for (var t = 1; t + 1 < f3.v.length; t++) idx.push(base, base + t, base + t + 1);
+				var have = pos.length / 3 - firstVert;
+				for (var t = 1; t + 1 < have; t++) idx.push(firstVert, firstVert + t, firstVert + t + 1);
 			}
 			counts[a2] = idx.length - offsets[a2];
 		}
@@ -225,7 +297,8 @@
 			if (!range.hasOwnProperty(a3)) continue;
 			drawList.push({ tex: range[a3].d.texture, axis: parseInt(a3, 10) });
 		}
-		status = (data.faces.length) + " sky faces, " + Object.keys(range).length + " directions";
+		status = skyFaces.length + " sky layers, " + Object.keys(range).length + " directions, " +
+			(indexCount / 3) + " tris";
 	}
 	var verts = null, drawList = [];
 
@@ -266,6 +339,12 @@
 
 	/* the draw: the sky faces with the view origin as the offset */
 	function draw(ctx, mvp, e) {
+		/* share the renderer's camera with the other modules (the decals of
+		 * effects.js) even when they are called without a matrix. */
+		if (mvp) {
+			lastMVP = mvp;
+			if (e) lastEye = [e[0], e[1], e[2]];
+		}
 		if (!data || !map || !indexCount) return 0;
 		if (texReady < texWanted) return 0;
 		try {
@@ -313,8 +392,10 @@
 		error: function () { return err; },
 		info: function () {
 			return {
-				status: status, err: err, faces: data ? data.faces.length : 0,
+				status: status, err: err, faces: data ? (data.faces || []).length : 0,
 				textures: texReady, wanted: texWanted, indices: indexCount, drawn: drawn,
+				sky: { name: skyInfo.name, rotate: skyInfo.rotate, axis: skyInfo.axis.slice() },
+				fog: { start: fog.start, end: fog.end, color: fog.color.slice() },
 				drawList: drawList.map(function (d) { return d.tex + ":" + d.axis; })
 			};
 		},
@@ -322,7 +403,40 @@
 		/* the free attribute indices (the map module knows them) */
 		setAttrBase: function (n) { if (!prog && n >= 0 && n < 14) attrBase = n; return attrBase; },
 		/* the materials the engine draws as sky (the SURF_SKY flag) */
-		isSky: isSky, isNoDraw: isNoDraw
+		isSky: isSky, isNoDraw: isNoDraw,
+		/* the camera of the last map draw (Y up), shared with effects.js */
+		mvp: function () { return lastMVP; },
+		eye: function () { return lastEye.slice(); },
+		/* the sky data, kept for the cube-sky path and for diagnostics */
+		sky: function () { return { name: skyInfo.name, rotate: skyInfo.rotate, axis: skyInfo.axis.slice() }; },
+		/* the fog bridge (soflight.js owns the world's fog shader) */
+		setFog: function (start, end, r, g, b) {
+			fog.start = start > 0 ? start : 1e9;
+			fog.end = end > 0 ? end : 1e9;
+			fog.color = [r || 0, g || 0, b || 0];
+			return { start: fog.start, end: fog.end, color: fog.color.slice() };
+		},
+		fog: function () { return { start: fog.start, end: fog.end, color: fog.color.slice() }; }
+	};
+
+	/* The engine's fog is the cvar set gl_fogmode/gl_fogcolor/gl_fogstart/
+	 * gl_fogend/gl_fogdensity/gl_fogtime/gl_fogdensityrange (PROTOCOL.md).
+	 * There is no cvar bridge in app.js, so the page has to call setFog()
+	 * when it learns the cvars.  One call fans out to every render module
+	 * that has a fog shader (soflight's map, effects' decals/particles). */
+	window.sofFog = {
+		set: function (start, end, r, g, b) {
+			var out = { start: start > 0 ? start : 1e9, end: end > 0 ? end : 1e9, color: [r || 0, g || 0, b || 0] };
+			if (window.soflight && window.soflight.setFog) window.soflight.setFog(start, end, r, g, b);
+			if (window.sofsurface && window.sofsurface.setFog) window.sofsurface.setFog(start, end, r, g, b);
+			if (window.sofeffects && window.sofeffects.setFog) window.sofeffects.setFog(start, end, r, g, b);
+			var fx = window.sofmusic && window.sofmusic.fx && window.sofmusic.fx();
+			if (fx && fx.setFog) fx.setFog(start, end, r, g, b);
+			return out;
+		},
+		get: function () {
+			return (window.sofsurface && window.sofsurface.fog && window.sofsurface.fog()) || fog;
+		}
 	};
 
 	load();

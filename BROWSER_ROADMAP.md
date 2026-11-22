@@ -23,7 +23,7 @@ Legend: **[x]** done - **[~]** in progress - **[ ]** not started - **[!]** block
 | 5 | Usercmds (bit packed, checksummed, server accepted) | **[x] 100%** | - |
 | 6 | Asset pipeline (.bsp v46, .m32, .ghb/.GHL, .adp) | **[~] 87%** | - |
 | 7 | WebGL renderer (scene, camera, models, Ghoul anim, HUD, audio) | **[~] 84%** | #4,#6 |
-| 8 | Website + master listing + relay | **[~] 95%** | - |
+| 8 | Website + master listing + relay | **[x] 100%** | - |
 | 9 | Modding layer (weapon/item tables, new content) | **[~] 68%** | - |
 
 **Overall: ~78% of the browser client is done.**
@@ -63,6 +63,9 @@ Legend: **[x]** done - **[~]** in progress - **[ ]** not started - **[!]** block
 > state** (the HUD and the local camera) and the **audio**.
 
 ### Session log
+
+| 2026-11-22 (phase 2, integrated) | The Ghoul/time side, world surface and audio ports were folded in: `sofmodel.js` now has per-entity two-track clip players with sub-frame animated vertices/normals; `sofsurface.js` draws the real SURF_SKY faces and shares a fog bridge (`window.sofFog`); `effects.js` draws persistent decal quads and particle billboards; `sofmusic.js` parses the real binary `svc_sound` packets, resolves the sound table and builds AI/general voice paths. All four were verified with `node --check` and headless Chrome; the integrated menu smoke test reports the fog bridge, chat input, 31 weapon rows and every module API present. |
+| 2026-11-22 (phase 2) | **The browser client now has a real front-end.** `web/www/menu.js` + `menu.css` add a main menu, pause menu, settings (persisted in `localStorage`), controls screen, server browser driven by the GameSpy/HTTP master, scoreboard (`Tab`) and an in-game menu (`Esc`). `app.js` gained a stable `window.sofapp` bridge so the menu drives connection/identity/settings without touching the protocol core; `sofproto.js` gained `setUserinfo`. Weapon keys `1`-`0`, `R` reload, the heat meter and weapon name were added to the live HUD, and the fire button now triggers the decoded view-model animation. Verified in headless Chrome: menu, settings save, live server list (2 entries from `gsmaster.js`) and the join path through the WebSocket relay. |
 | 2026-10-20 (b) | #4 20% -> **60%**. Discovered **REA** (`morluto/rea`) already installed as an opencode MCP server with Ghidra 12.1.4 + JDK 21 - `tools/rea.cmd` decompiles SoF.exe to C. Decoded the frame header, the frame layout (`[cmd][0x14 playerinfo][0x15 entities]`), the entity-number encoding and the **full 116-byte entity-state field table**; the origin scale **1/8** is confirmed against live coordinates. `web/snapshot.js` now parses a real capture (14 entities/frame). |
 | 2026-10-20 (c) | **#5 25% -> 95%.** The usercmd wire format is solved: `[0x02][checksum][u32 seq][the bit packed cmd]`, the checksum key is the outgoing netchan sequence, and the cmd is a 24-byte struct bit packed and delta encoded against the previous cmd. `web/cmdenc.js` is **byte exact** against the engine's own writer (12/12 vectors, via `tools/cmdwrite2.exe` which calls `SoF.exe` through `LoadLibraryA` with no GUI). The server now accepts our usercmds: the client reaches state 3 and the world streams. |
 | 2026-10-20 (d) | **#6 10% -> 20%.** The `.bsp` v46 header is decoded: `IBSP` + version 46 + **22 lumps** of (off,len) with no `numlumps`; the header is exactly 184 bytes and the file ends exactly at the last lump. `web/bsp.js` is a lump reader. Lumps 0 (entities), 1 (planes), 2 (vertexes) and 5 (shaders) are identified. See `analysis/BSP_V46.md`. |
