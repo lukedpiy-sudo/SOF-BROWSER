@@ -27,11 +27,11 @@ dedicated server, not a simulated client.
 
 ## C. Map and rendering
 
-14. [ ] **Missing walls / see-through map** — major open issue; identify missing faces, sky/no-draw filtering, backfaces or camera-outside-space.
-15. [ ] **Sky slabs** — bright cream rectangles still visible; need correct sky texture/tint/geometry.
-16. [ ] **Lighting parity** — too flat/bright vs reference; match baked lightmap, dynamic lights and fog.
-17. [ ] **Texture/material correctness** — all 81 map materials from real `.m32` with correct UVs/mips.
-18. [ ] **Detail/effects surfaces** — decals, grime, blood and surface detail persist between clients.
+14. [ ] **Missing walls / see-through map** — open; with camera anchored/mobile, remaining bright voids are rendering-side.
+15. [ ] **Sky slabs** — open; `subway/sky2` texture is effectively white (mean 244) while the real sky textures are dark (mean ~40); a `?nosky=1` probe was added to isolate the contributor.
+16. [ ] **Lighting parity** — open; fog/tint tightened but still not reference-dark.
+17. [~] **Texture/material correctness** — 82 real `.m32` materials load; overbright/white faces still present under investigation.
+18. [ ] **Detail/effects surfaces** — open.
 
 ## D. Weapon and combat
 

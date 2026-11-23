@@ -549,7 +549,8 @@
 					updatePVS([e[0], e[2], e[1]]);
 				}
 				/* the sky: the engine's sky faces, moved with the view */
-				if (window.sofsurface && window.sofsurface.draw) {
+				if (window.sofsurface && window.sofsurface.draw &&
+					!/[?&]nosky=1/.test(window.location.search)) {
 					skies += window.sofsurface.draw(ctx, mvp, e) || 0;
 				}
 				/* the draw */
