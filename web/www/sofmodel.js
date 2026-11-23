@@ -533,12 +533,15 @@
 			const p = c.posIndex < 0 ? c.pos : [0, 0, 0];
 			const nn = nrm ? nrm[i] : (c.nrmIndex < 0 ? c.nrm : null);
 			const uv = c.texIndex < 0 ? c.uv : null;
-			/* the world models are Z up and the matrix turns them into the
-			 * renderer's Y up; the view models are already in the engine's
-			 * eye space (the forward -X, the up +Z, the right +Y), which
-			 * the renderer takes as (-y, z, x) */
+			/* The world models are Z up and the matrix turns them into the
+			 * renderer's Y up.  View models are already in the engine's eye
+			 * space.  Their barrel runs along +X (the mesh bounds prove it:
+			 * X -14..25, Y -13..-0.75, Z -25..12), so the barrel has to map to
+			 * the renderer's -Z (into the screen).  Keeping X = -Y puts the
+			 * gun on the right of the view; only Z was reversed before, which
+			 * made the gun point backwards at the camera. */
 			let x, y, z;
-			if (m.space === "view") { x = -p[1]; y = p[2]; z = p[0]; }
+			if (m.space === "view") { x = -p[1]; y = p[2]; z = -p[0]; }
 			else { x = p[0]; y = p[1]; z = p[2]; }
 			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
 			data[i * 8 + 3] = nn ? nn[0] : 0;
@@ -719,7 +722,7 @@
 				pz = mat[2] * x + mat[6] * y + mat[10] * z + mat[14];
 			}
 			let x, y, z;
-			if (m.space === "view") { x = -py; y = pz; z = px; }
+			if (m.space === "view") { x = -py; y = pz; z = -px; }
 			else { x = px; y = py; z = pz; }
 			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
 			/* normals from the palette, animated per frame (static corners

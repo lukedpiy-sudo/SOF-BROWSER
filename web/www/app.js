@@ -38,10 +38,22 @@
 		entities: new Map(), frameNumber: 0, serverTime: 0,
 		status: "menu", log: [], console: [], cs: {}, self: 1, servers: [], fov: 90, drawDistance: 40000, thirdPerson: false, showDebug: false,
 		hud: null, ps: null, clipPlayers: new Map(), testModel: null,
-		/* client-side weapon presentation: the server owns the authoritative
-		 * ammo and health, the client owns the view model, the heat meter and
-		 * the selected weapon number (which is a string command in SoF) */
-		weapon: 3, weaponRows: [], heat: 0, heatLock: 0, heatCool: 0
+		/* The server owns health and the authoritative HUD stats, but this
+		 * browser client does not yet receive a weapon-object update from the
+		 * module, so the local magazine/reserve/reload loop is kept here.  The
+		 * real attack bit is still sent to the server on every shot. */
+		weapon: 3, weaponRows: [], heat: 0, heatLock: 0, heatCool: 0,
+		localAmmo: null, localReserve: null, magSize: 18,
+		ammoInitialized: false, firing: false, nextFire: 0, lastShotAt: 0
+	};
+	const FIRE_INTERVAL = {
+		1: 0.45, 3: 0.17, 4: 0.28, 5: 0.10, 6: 0.09, 7: 1.10,
+		9: 0.75, 11: 0.65, 12: 0.08, 14: 0.80, 17: 0.12, 19: 0.08
+	};
+	const AUTO_WEAPONS = { 5: true, 6: true, 9: true, 12: true, 17: true, 19: true };
+	const MAG_SIZE = {
+		1: 999, 3: 18, 4: 8, 5: 30, 6: 30, 7: 5, 9: 10,
+		11: 8, 12: 50, 14: 1, 17: 10, 19: 45
 	};
 	/* SoF weapon numbers from the game module's 31-row table.  The engine has
 	 * no weapon field in the usercmd: changing weapon is the `weaponselect N`
@@ -509,8 +521,52 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					/* the authoritative player state: the health, the armor, the
 					 * ammunition and the carried item, decoded from the bit
 					 * packed client state block */
-					if (data.frame.hud) state.hud = data.frame.hud;
-					if (data.frame.playerStateDecoded) state.ps = data.frame.playerStateDecoded;
+					if (data.frame.hud) {
+						state.hud = data.frame.hud;
+						/* seed the local magazine once from the server's stats; a
+						 * later reserve increase means a real pickup/reload */
+						if (!state.ammoInitialized && data.frame.hud.ammo > 0) {
+							state.localAmmo = data.frame.hud.ammo;
+							state.localReserve = data.frame.hud.ammo2;
+							state.magSize = MAG_SIZE[state.weapon] || data.frame.hud.ammo;
+							state.ammoInitialized = true;
+						} else if (state.ammoInitialized && data.frame.hud.ammo2 > (state.serverReserve || 0)) {
+							state.localReserve = data.frame.hud.ammo2;
+						}
+						state.serverReserve = data.frame.hud.ammo2;
+					}
+					if (data.frame.playerStateDecoded) {
+						state.ps = data.frame.playerStateDecoded;
+						/* The decoded 0x14 block carries the authoritative origin
+						 * directly.  Use it as the camera anchor instead of
+						 * waiting for the entity-number correlation, which can
+						 * fail whenever the server reuses an entity slot. */
+						const po = state.ps.origin;
+						if (po && po.length >= 3) {
+							state.playerOrigin = {
+								x: po[0], y: po[1], z: po[2], at: -1,
+								authoritative: true
+							};
+							/* A fresh spawn faces yaw 0 (-Y), which at several
+							 * deathmatch points looks straight out of the level.
+							 * Aim once at the nearest real weapon pickup so the
+							 * player starts looking into the map. */
+							if (!state.spawnAimed && mapItemList.length) {
+								let aim = null, bestD = 1e9;
+								for (const m of mapItemList) {
+									if (!/item_weapon/i.test(m.classname || "")) continue;
+									const d = Math.hypot(m.origin[0] - po[0], m.origin[1] - po[1]);
+									if (d < bestD) { bestD = d; aim = m; }
+								}
+								if (aim) {
+									client.view.yaw = Math.atan2(aim.origin[0] - po[0],
+										-(aim.origin[1] - po[1])) * 180 / Math.PI;
+									client.view.pitch = 0;
+									state.spawnAimed = true;
+								}
+							}
+						}
+					}
 					/* the instantaneous speed, measured from the authoritative
 					 * origin (the player state block's origin is bit packed, so
 					 * the entity state is used here) */
@@ -543,13 +599,23 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					 * identifies which entity we are */
 					if (data.frame.playerState) {
 						const ps = data.frame.playerState;
+						const decoded = state.ps && state.ps.origin;
 						for (const e of data.entities.values()) {
 							if (e.removed || !e.state) continue;
 							const o = rawOrigin(e);
+							if (decoded && decoded.length >= 3 &&
+								Math.abs(o.x - decoded[0]) < 2 &&
+								Math.abs(o.y - decoded[1]) < 2 &&
+								Math.abs(o.z - decoded[2]) < 2) {
+								state.self = e.number;
+								break;
+							}
 							const at = window.sofsnapshot.findPlayerOrigin(ps, o.x, o.y, o.z);
 							if (at >= 0) {
 								state.self = e.number;
-								state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: at };
+								if (!state.playerOrigin) {
+									state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: at };
+								}
 								break;
 							}
 						}
@@ -639,7 +705,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				server: serverHost + ":" + serverPort, relay: relayHost,
 				name: playerName, map: state.cs[0] || "", frames: state.frames,
 				health: state.hud && state.hud.health, armor: state.hud && state.hud.armor,
-				ammo: state.hud && state.hud.ammo, weapon: state.weapon,
+				ammo: state.localAmmo === null ? (state.hud && state.hud.ammo) : state.localAmmo,
+				reserve: state.localReserve === null ? (state.hud && state.hud.ammo2) : state.localReserve,
+				weapon: state.weapon,
 				heat: state.heat, overheated: state.heatLock > 0,
 				servers: state.servers.slice(),
 				entities: Array.from(state.entities.values()).filter(function (e) {
@@ -716,8 +784,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		});
 		state.probe = { map: map, until: performance.now() + 400 };
 	}
+	function isUiEvent(e) {
+		return !!(e && e.target && e.target.closest &&
+			e.target.closest("#sof-menu, #console, #sof-chat, #sof-chat-input"));
+	}
 	document.addEventListener("keydown", (e) => {
-		if (consoleOpen) return;      /* the console has the keyboard */
+		if (consoleOpen || isUiEvent(e)) return;      /* UI has the keyboard */
 		const wasDown = keys[e.code];
 		keys[e.code] = true;
 		client.setKey(e.code, true);
@@ -741,7 +813,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (e.code === "KeyR" && !wasDown) {
 			client.sendStringCmd("reload");
 			if (window.sofviewmodel) window.sofviewmodel.setWeapon(state.weapon);
-			note("reload");
+			reloadLocal();
 		}
 		/* F1 toggles the debug dump (it used to cover the whole picture) */
 		if (e.code === "F1") {
@@ -773,17 +845,27 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		keys[e.code] = false;
 		client.setKey(e.code, false);
 	});
-	canvas.addEventListener("click", function () { canvas.requestPointerLock(); });
+	canvas.addEventListener("click", function () {
+		/* Pointer lock is useful, but it is not required for mouse look and
+		 * can be denied outright in embedded/test browsers. */
+		try {
+			const p = canvas.requestPointerLock && canvas.requestPointerLock();
+			if (p && typeof p.catch === "function") p.catch(function () { });
+		} catch (e) { /* click-drag look remains available */ }
+	});
 	/* the left mouse button is the attack (fire) button, the right one the
 	 * "use" button - both are usercmd button bits */
 	document.addEventListener("mousedown", function (e) {
 		/* clicks on the menu / console are UI, not weapon input */
-		if (e.target && e.target.closest && e.target.closest("#sof-menu, #console, #sof-chat")) return;
-		if (e.button === 0) { client.setKey("Mouse0", true); playFire(false); }
-		if (e.button === 2) client.setKey("Mouse2", true); playFire(true);
+		if (isUiEvent(e)) return;
+		if (e.button === 0) {
+			client.setKey("Mouse0", true); state.firing = true; playFire(false);
+			dragLook = true; lastMouseX = e.clientX; lastMouseY = e.clientY;
+		}
+		if (e.button === 2) { client.setKey("Mouse2", true); playFire(true); }
 	});
 	document.addEventListener("mouseup", function (e) {
-		if (e.button === 0) client.setKey("Mouse0", false);
+		if (e.button === 0) { client.setKey("Mouse0", false); state.firing = false; dragLook = false; }
 		if (e.button === 2) client.setKey("Mouse2", false);
 	});
 	document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
@@ -808,11 +890,22 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		}
 		return { yaw: cam.yaw || 0, pitch: cam.pitch || 0 };
 	}
+	/* Mouse look must not depend on pointer lock: it is denied in many test
+	 * and embedded browsers.  Use movementX/Y whenever present, and fall back
+	 * to drag deltas when the browser reports none. */
+	let dragLook = false, lastMouseX = 0, lastMouseY = 0;
 	document.addEventListener("mousemove", function (e) {
-		if (document.pointerLockElement !== canvas) return;
-		cam.yaw = (cam.yaw + e.movementX * 0.2) % 360;
-		cam.pitch = Math.max(-89, Math.min(89, cam.pitch + e.movementY * 0.2));
-		client.look(e.movementX, e.movementY);
+		if (isUiEvent && isUiEvent(e)) return;
+		let dx = e.movementX, dy = e.movementY;
+		if ((!dx && !dy) && dragLook) {
+			dx = e.clientX - lastMouseX;
+			dy = e.clientY - lastMouseY;
+		}
+		lastMouseX = e.clientX; lastMouseY = e.clientY;
+		if (!dx && !dy) return;
+		cam.yaw = (cam.yaw + dx * 0.2) % 360;
+		cam.pitch = Math.max(-89, Math.min(89, cam.pitch + dy * 0.2));
+		client.look(dx, dy);
 	});
 
 	// -------------------------------------------------------- the drawing
@@ -901,17 +994,23 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				}
 			}
 		}
-		/* The authoritative player-state origin is the reliable camera anchor.
+		/* The decoded player-state origin is the reliable camera anchor.
 		 * The old code only followed after matching it to an entity; when that
 		 * match failed the free-fly overview stayed above the level, which
 		 * looked like the player was not in the map at all. */
-		if (!params.get("nofollow") && state.playerOrigin && !params.get("third")) {
+		if (!params.get("nofollow") && state.playerOrigin) {
 			const po = state.playerOrigin;
-			const k2 = state.eyeInit ? Math.min(1, dt * 12) : 1;
-			cam.x += (po.x - cam.x) * k2;
-			cam.y += (po.z + 56 - cam.y) * k2;
-			cam.z += (po.y - cam.z) * k2;
 			state.hasSelf = true;
+			const va = viewAngles();
+			const yaw = va.yaw * Math.PI / 180;
+			const back = state.thirdPerson ? 110 : 0;
+			const k2 = state.eyeInit ? Math.min(1, dt * 18) : 1;
+			const tx = po.x - Math.sin(yaw) * back;
+			const ty = po.z + (state.thirdPerson ? 62 : 56);
+			const tz = po.y - Math.cos(yaw) * back;
+			cam.x += (tx - cam.x) * k2;
+			cam.y += (ty - cam.y) * k2;
+			cam.z += (tz - cam.z) * k2;
 			state.eyeInit = true;
 			return;
 		}
@@ -988,9 +1087,25 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
 		last = now;
 		coolHeat(dt);
+		/* the browser owns the local magazine loop until the server sends a
+		 * weapon-object update; AUTO weapons keep firing while held */
+		if (state.firing && AUTO_WEAPONS[state.weapon] && !params.get("nofire")) {
+			playFire(false);
+		}
 		resize();
 		frameEntities();
 		updateCamera(dt);
+		/* The DM map has open drops.  When the authoritative origin falls out
+		 * of the world, rejoin: `kill`/`suicide` are not accepted by this
+		 * dedicated server, and a fresh connection gives a real spawn point. */
+		if (state.playerOrigin && state.playerOrigin.z < -110 && !state.rescuing) {
+			state.rescuing = true;
+			note("fell out of the map - respawning");
+			setTimeout(function () {
+				window.sofapp.connect(serverHost, serverPort, relayHost, playerName);
+				state.rescuing = false;
+			}, 700);
+		}
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
 		state.clipPlayers.forEach(function (p, num) {
@@ -1097,6 +1212,21 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			hctx.moveTo(cx, cy + 3); hctx.lineTo(cx, cy + 7);
 			hctx.stroke();
 		}
+		/* A muzzle flash at the view-model muzzle.  The Ghoul model has its own
+		 * flash animation, but a short screen-space bloom makes every shot
+		 * readable even before the effect asset is wired in. */
+		const vm = window.sofviewmodel && window.sofviewmodel.state;
+		if (vm && vm.flash > 0.05) {
+			const sw = hud.width, sh = hud.height;
+			const fx = sw * 0.67, fy = sh * 0.62, r = 26 * vm.flash;
+			const g = hctx.createRadialGradient(fx, fy, 0, fx, fy, r);
+			g.addColorStop(0, "rgba(255,246,190,0.85)");
+			g.addColorStop(0.35, "rgba(255,178,60,0.45)");
+			g.addColorStop(1, "rgba(255,120,20,0)");
+			hctx.fillStyle = g;
+			hctx.beginPath(); hctx.arc(fx, fy, r, 0, Math.PI * 2); hctx.fill();
+		}
+
 		/* The debug dump is a development aid: it covered the whole picture.
 		 * It is now behind a key (F1) and off by default, so the game looks
 		 * like the game. */
@@ -1155,10 +1285,13 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				look: { yaw: va2.yaw, pitch: va2.pitch },
 				move: { origin: state.playerOrigin },
 				fov: state.fov || 90,
-				x: state.testModel ? 0 : undefined,
-				y: state.testModel ? -12 : undefined,
-				z: state.testModel ? -90 : undefined,
-				scale: state.testModel ? 1 : undefined
+				/* The shipped INVIEW mesh is centred near the eye: its grip is
+				 * behind the near plane until it is pushed forward.  The muzzle
+				 * is at engine +X, which the corrected mapping puts at -Z. */
+				x: state.testModel ? 0 : 10,
+				y: state.testModel ? -12 : -10,
+				z: state.testModel ? -90 : -38,
+				scale: state.testModel ? 1 : 0.65
 			});
 		}
 		drawGameHud();
@@ -1173,8 +1306,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	 * client state block (the engine's stats array).
 	 * ------------------------------------------------------------------- */
 	function drawGameHud() {
-		const h = state.hud;
-		if (!h) return;
+		if (!state.hud) return;
+		const h = Object.assign({}, state.hud, {
+			ammo: state.localAmmo === null ? state.hud.ammo : state.localAmmo,
+			ammo2: state.localReserve === null ? state.hud.ammo2 : state.localReserve
+		});
 		const W = hud.width, H = hud.height;
 		const bottom = H - 46;
 		hctx.save();
@@ -1439,12 +1575,42 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		w = parseInt(w, 10);
 		if (!w || w === state.weapon) return;
 		state.weapon = w;
+		state.magSize = MAG_SIZE[w] || state.magSize;
+		const row = weaponRow(w);
+		if (state.hud && state.hud.ammo > 0) state.localAmmo = Math.min(state.hud.ammo, state.magSize);
 		if (window.sofviewmodel) window.sofviewmodel.setWeapon(w);
 		client.sendStringCmd("weaponselect " + w);
 		note("weapon: " + (WEAPON_NAMES[w] || ("#" + w)));
 	}
+	function reloadLocal() {
+		if (state.localAmmo === null) return;
+		const size = state.magSize || MAG_SIZE[state.weapon] || 18;
+		const need = Math.max(0, size - state.localAmmo);
+		const take = Math.min(need, state.localReserve || 0);
+		if (!take) return;
+		state.localAmmo += take;
+		state.localReserve -= take;
+		state.lastShotAt = performance.now() / 1000;
+		note("reload: " + state.localAmmo + "/" + state.localReserve);
+		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.12, 0.7);
+	}
 	function playFire(alt) {
+		const now = performance.now() / 1000;
+		if (now < state.nextFire || state.heatLock > 0) return;
+		/* seed from the server stats if the first frame has not arrived yet */
+		if (state.localAmmo === null && state.hud) {
+			state.localAmmo = state.hud.ammo;
+			state.localReserve = state.hud.ammo2;
+		}
+		if (state.localAmmo !== null && state.localAmmo <= 0) {
+			reloadLocal();
+			state.nextFire = now + 0.35;
+			return;
+		}
+		state.nextFire = now + (FIRE_INTERVAL[state.weapon] || 0.2);
+		state.lastShotAt = now;
 		if (!addHeat(!!alt)) return;
+		if (state.localAmmo !== null) state.localAmmo--;
 		if (window.sofviewmodel) window.sofviewmodel.fire();
 		if (!S) return;
 		const name = WEAPON_NAMES[state.weapon] || "SHOTGUN";
@@ -1613,6 +1779,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			vel: state.vel || 0, velMax: state.velMax || 0,
 			auto: state.autoInfo || null,
 			probe: state.probeResult || null,
+				ammo: state.localAmmo, reserve: state.localReserve,
 				cam: { x: Math.round(cam.x), y: Math.round(cam.y), z: Math.round(cam.z) }
 			};
 		} catch (e) { return { error: String(e && e.message || e) }; }
