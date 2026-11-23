@@ -36,6 +36,15 @@ const dgram = require("dgram");
 const url = require("url");
 const fs = require("fs");
 const path = require("path");
+const child = require("child_process");
+
+/* A single build identity for the HTML marker and every script query string.
+ * The client no longer needs a manually edited version string. */
+let BUILD = String(Date.now());
+try {
+	BUILD = child.execSync("git rev-parse --short HEAD", { cwd: __dirname, stdio: ["ignore", "pipe", "ignore"] })
+		.toString().trim() || BUILD;
+} catch (e) { /* not a git checkout: the timestamp still busts the cache */ }
 
 // ---------------------------------------------------------------- args
 function parseArgs(argv) {
@@ -306,6 +315,12 @@ const server = http.createServer((req, res) => {
 				".css": "text/css; charset=utf-8", ".png": "image/png", ".json": "application/json",
 				".wav": "audio/wav", ".md": "text/plain; charset=utf-8"
 			};
+			if (p === "/index.html") {
+				let html = data.toString("utf8");
+				html = html.replace(/build [^\]<]+/g, "build " + BUILD);
+				html = html.replace(/([?&]v=)[^"'&]+/g, "$1" + BUILD);
+				data = Buffer.from(html, "utf8");
+			}
 			res.writeHead(200, { "Content-Type": types[ext] || "application/octet-stream", "Cache-Control": "no-store" });
 			res.end(data);
 		});

@@ -540,7 +540,7 @@ function unrelHdr() {
 			if (key === lastAskKey) return;  /* duplicate request */
 			lastAskKey = key;
 			askTimers.forEach(clearTimeout);
-			askTimers = [500, 1600].map(function (ms) {
+			askTimers = [2000, 5000].map(function (ms) {
 				return setTimeout(function () {
 					if (lastAskKey === key && !spawnDone) sendStringCmd(text);
 				}, ms);
@@ -671,8 +671,23 @@ function unrelHdr() {
 
 	function start() { oob("getchallenge 1\n"); }
 
+	/* A reconnect must start a genuinely new handshake.  Reusing the old
+	 * sequence, reliable toggles and spawn flags makes the server ignore the
+	 * new "new"/configstrings answers, so the client hangs forever. */
+	function reset() {
+		seq = 1; srvSeq = 0; srvReliableToggle = 0; myToggle = 0; relToggle = true;
+		beginSent = false; baselinesSent = false; spawnDone = false; connected = false;
+		lastFrame = null; frameNumber = 0; serverTime = 0; userId = -1; playerState = null;
+		entities = new Map();
+		Object.keys(configstrings).forEach(function (k) { delete configstrings[k]; });
+		cmdRing.length = 0;
+		prevCmd = Buffer.alloc(24); curCmd = Buffer.alloc(24);
+		askTimers.forEach(clearTimeout); askTimers = []; lastAskKey = "";
+		view.buttons = 0; view.forwardmove = 0; view.sidemove = 0; view.upmove = 0;
+	}
+
 	return {
-		start, onDatagram, sendStringCmd, sendUserinfo, sendUserCmd, setKey, look,
+		start, reset, onDatagram, sendStringCmd, sendUserinfo, sendUserCmd, setKey, look,
 		view: view,
 		setMoveSpeed: function (v) { moveSpeed = v; },
 		setLookSpeed: function (v) { lookSpeed = v; },

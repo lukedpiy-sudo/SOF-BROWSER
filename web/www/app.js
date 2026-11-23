@@ -495,7 +495,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		},
 		onEvent: (ev, data) => {
 			switch (ev) {
-				case "oob": state.log.push(String(data).slice(0, 70)); if (state.log.length > 8) state.log.shift(); break;
+				case "oob": {
+					const t = String(data);
+					state.log.push(t.slice(0, 70)); if (state.log.length > 8) state.log.shift();
+					if (/full|reject|incompatible|refused/i.test(t)) {
+						setLoading(true, "server refused connection: " + t.trim().slice(0, 60));
+					}
+					break;
+				}
 				case "connected": state.connected = true; state.status = "connected"; setLoading(true, "connected - downloading map and assets..."); break;
 				case "spawned":
 					state.spawned = true; state.status = "spawned";
@@ -506,7 +513,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					/* the server owns the game: once it spawns us, get the menu
 					 * out of the way so the player is actually in the map */
 					if (window.sofmenu && window.sofmenu.close) window.sofmenu.close();
-					setLoading(false);
+					/* Keep the loading overlay up until the first authoritative
+					 * origin arrives; "spawned" only means begin was sent. */
 					publishServer();
 					break;
 				case "predresync":
@@ -578,42 +586,6 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 							if (!state.initialOrigin) {
 								state.initialOrigin = { x: po[0], y: po[1], z: po[2] };
 							}
-							/* A fresh spawn faces yaw 0 (-Y), which at several
-							 * deathmatch points looks out of the level or into a
-							 * wall.  Aim once at the map centre instead of a
-							 * pickup: several pickups sit behind walls or drops. */
-							if (!state.spawnAimed && state.mapBounds) {
-								let yaw = 0, best = -1;
-								const P = window.sofpredict;
-								const ready = P && P.info && P.info().ready && P.trace;
-								if (ready) {
-									/* Pick the direction with the longest clear, grounded
-									 * path.  A fixed spawn yaw can face a wall or a hole. */
-									const from = [po[0], po[1], po[2] + 4];
-									for (let i = 0; i < 16; i++) {
-										const a = i * 22.5 * Math.PI / 180;
-										const dx = Math.sin(a), dy = -Math.cos(a);
-										const to = [from[0] + dx * 320, from[1] + dy * 320, from[2]];
-										const hit = P.trace(from, to);
-										const d = hit.frac * 320;
-										if (d <= best || d < 30) continue;
-										/* reject a direction that ends over a drop */
-										const end = hit.end;
-										const down = P.trace([end[0], end[1], end[2] + 10],
-											[end[0], end[1], end[2] - 90]);
-										if (down.frac >= 0.999) continue;
-										best = d; yaw = i * 22.5;
-									}
-								}
-								if (best < 0) {
-									const c = state.mapBounds;
-									yaw = Math.atan2((c.min[0] + c.max[0]) / 2 - po[0],
-										-((c.min[1] + c.max[1]) / 2 - po[1])) * 180 / Math.PI;
-								}
-								client.view.yaw = yaw;
-								client.view.pitch = 0;
-								state.spawnAimed = true;
-							}
 						}
 					}
 					/* the instantaneous speed, measured from the authoritative
@@ -679,6 +651,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 						state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: -2,
 							authoritative: true };
 					}
+					/* Find a direction the server actually lets us walk in.
+					 * Static brush traces were unreliable at real DM spawns. */
+					if (!state.spawnAimed && !state.orient && state.playerOrigin) {
+						state.orient = {
+							i: 0, yaws: [0, 45, 90, 135, 180, 225, 270, 315],
+							best: -1, yaw: 0, dirAt: 0
+						};
+						setLoading(true, "finding a clear direction...");
+					}
 					break;
 				case "frameError": note("frame error: " + (data && data.message ? data.message : data)); break;
 			}
@@ -691,6 +672,18 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 
 	function connect() {
 		if (state.ws && (state.ws.readyState === 0 || state.ws.readyState === 1)) return;
+		/* Clear all handshake/sequence state before a new connection. */
+		if (client.reset) client.reset();
+		state.spawned = false;
+		state.connected = false;
+		state.ps = null;
+		state.hud = null;
+		state.playerOrigin = null;
+		state.initialOrigin = null;
+		state.spawnAimed = false;
+		state.orient = null;
+		state.eyeInit = false;
+		state.console.length = 0;
 		wantConnect = true;
 		state.status = "connecting";
 		setLoading(true, "connecting to " + serverHost + ":" + serverPort + "...");
@@ -732,7 +725,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			if (window.sofmenu) window.sofmenu.onDisconnect();
 			if (wantConnect) reconnectTimer = setTimeout(connect, 2000);
 		};
-		ws.onerror = function () { state.status = "relay error"; };
+		ws.onerror = function () {
+			state.status = "relay error";
+			setLoading(true, "relay unavailable - run ./run-local.sh restart");
+		};
 	}
 
 	function disconnect() {
@@ -1165,10 +1161,37 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		resize();
 		frameEntities();
 		updateCamera(dt);
+		/* Probe the eight compass directions with the real server and keep the
+		 * one that actually moves us.  Brush-based tracing was unreliable at
+		 * real DM spawns, so this is the only test that matters. */
+		if (state.orient && state.playerOrigin) {
+			const o = state.orient;
+			const t = performance.now();
+			if (!o.dirAt) {
+				o.dirAt = t;
+				o.from = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+				client.view.yaw = o.yaws[o.i];
+				client.setKey("KeyW", true);
+			} else if (t - o.dirAt > 700) {
+				const d = Math.hypot(state.playerOrigin.x - o.from.x,
+					state.playerOrigin.y - o.from.y);
+				if (d > o.best) { o.best = d; o.yaw = o.yaws[o.i]; }
+				client.setKey("KeyW", false);
+				o.i++; o.dirAt = 0;
+				if (o.i >= o.yaws.length) {
+					client.view.yaw = o.yaw;
+					state.spawnAimed = true;
+					state.orient = null;
+					state.moveAttemptAt = 0;
+					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
+					setLoading(false);
+				}
+			}
+		}
 		/* The DM map has open drops.  When the authoritative origin falls out
 		 * of the world, rejoin: `kill`/`suicide` are not accepted by this
 		 * dedicated server, and a fresh connection gives a real spawn point. */
-		const fellFromSpawn = state.playerOrigin && state.initialOrigin &&
+		const fellFromSpawn = !state.orient && state.playerOrigin && state.initialOrigin &&
 			state.playerOrigin.z < state.initialOrigin.z - 35;
 		if (state.playerOrigin && (fellFromSpawn || state.playerOrigin.z < -110)) {
 			rejoinForSpawn("bad spawn / fall detected - rejoining");
@@ -1176,7 +1199,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		/* Some deathmatch points drop the player inside solid geometry: the
 		 * server accepts the input but the origin barely moves.  Reconnect so
 		 * the server picks another spawn instead of leaving the player stuck. */
-		const tryingToMove = client.view.forwardmove !== 0 || client.view.sidemove !== 0;
+		const tryingToMove = !state.orient &&
+			(client.view.forwardmove !== 0 || client.view.sidemove !== 0);
 		if (state.spawned && state.playerOrigin && tryingToMove) {
 			if (!state.moveAttemptAt) {
 				state.moveAttemptAt = performance.now();

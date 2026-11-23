@@ -11,6 +11,7 @@ stop() {
 	pkill -x SoF.exe 2>/dev/null || true
 	pkill -f 'node .*web/relay\.js' 2>/dev/null || true
 	pkill -f 'node .*web/gsmaster\.js' 2>/dev/null || true
+	pkill -f 'node .*web/server_watchdog\.js' 2>/dev/null || true
 }
 
 start() {
@@ -32,6 +33,9 @@ start() {
 	nohup setsid env PATH="$HOME/.local/node/bin:$PATH" \
 		node "$ROOT/web/gsmaster.js" --http 8091 --udp 27901 --tcp 28901 \
 		--store "$LOGDIR/gsservers.json" >"$LOGDIR/gsmaster.log" 2>&1 < /dev/null &
+
+	nohup setsid env PATH="$HOME/.local/node/bin:$PATH" \
+		node "$ROOT/web/server_watchdog.js" >"$LOGDIR/watchdog.log" 2>&1 < /dev/null &
 
 	python3 - "$LOGDIR" <<'PY'
 import socket, sys, time
