@@ -37,7 +37,7 @@ dedicated server, not a simulated client.
 
 19. [~] **Weapon presence** — live memory confirms a player object exists per client, but no weapon is selected; correct object offset still open.
 20. [~] **Local fire loop** — ammo/sound/flash/attack bit work locally; not authoritative.
-21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3` and `use weapon_pistol` all tested; stats[2] stays 18.
+21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3`, `use weapon_pistol` and `+set weaponarena 1` all tested; stats[2] stays 18. Live memory diff showed `weaponselect` changes no player-object dword.
 22. [ ] **Weapon pickup** — real pickup must authoritatively change weapon, ammo and reserve.
 23. [ ] **Reload** — local reload exists; server-authoritative reload needed.
 24. [ ] **Shot traces / hit detection** — server traces against players and world.
