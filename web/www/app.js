@@ -655,7 +655,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					state.status = "no server response";
 					disconnect();
 				}
-			}, 15000);
+			}, 45000);
 		};
 		ws.onmessage = function (ev) {
 			if (typeof ev.data === "string") return;      // the relay's JSON control
@@ -860,13 +860,16 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (isUiEvent(e)) return;
 		if (e.button === 0) {
 			client.setKey("Mouse0", true); state.firing = true; playFire(false);
-			dragLook = true; lastMouseX = e.clientX; lastMouseY = e.clientY;
 		}
 		if (e.button === 2) { client.setKey("Mouse2", true); playFire(true); }
+		/* Middle-drag is the fallback look when pointer lock is denied.  It
+		 * does not fire, unlike a left drag. */
+		if (e.button === 1) { dragLook = true; lastMouseX = e.clientX; lastMouseY = e.clientY; }
 	});
 	document.addEventListener("mouseup", function (e) {
-		if (e.button === 0) { client.setKey("Mouse0", false); state.firing = false; dragLook = false; }
+		if (e.button === 0) { client.setKey("Mouse0", false); state.firing = false; }
 		if (e.button === 2) client.setKey("Mouse2", false);
+		if (e.button === 1) dragLook = false;
 	});
 	document.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 

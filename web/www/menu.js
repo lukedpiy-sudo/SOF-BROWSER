@@ -128,7 +128,7 @@
 		'    <div class="sof-screen" data-screen="controls">',
 		'      <div class="sof-grid"><div>',
 		'        <p><span class="sof-kbd">W A S D</span> &nbsp; move / strafe</p>',
-		'        <p><span class="sof-kbd">MOUSE</span> &nbsp; look around</p>',
+		'        <p><span class="sof-kbd">MOUSE</span> &nbsp; look around (middle-drag if pointer lock is blocked)</p>',
 		'        <p><span class="sof-kbd">SHIFT</span> &nbsp; sprint</p>',
 		'        <p><span class="sof-kbd">LEFT CLICK</span> &nbsp; fire</p>',
 		'        <p><span class="sof-kbd">RIGHT CLICK</span> &nbsp; alternate fire</p>',
