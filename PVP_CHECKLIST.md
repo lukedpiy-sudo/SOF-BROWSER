@@ -76,7 +76,7 @@ dedicated server, not a simulated client.
 
 46. [ ] **Two-client PVP smoke test** — connect, see, move, shoot, damage, score, respawn.
 47. [ ] **Four-to-eight client stress test** — no handshake stalls, stale-slot lockouts or desync.
-48. [ ] **Headless regression suite** — one command, pass/fail report.
+48. [x] **Headless regression suite** — `node web/regression.js` verifies spawn, errors, movement, camera, fire and loading state; all pass.
 49. [ ] **Performance** — stable frame rate, load target, no memory growth over 10 min.
 50. [ ] **Final release checklist** — all items ticked, committed, pushed, known-good URL.
 
