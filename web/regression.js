@@ -10,20 +10,13 @@ const URL = process.argv[2] || "http://127.0.0.1:8080/index.html";
 const EXPR = `(async()=>{
   for (let i=0;i<400;i++){ const d=window.sofdebug(); if (d.spawned && d.playerOrigin && !window.sofstate.orient) break; await new Promise(r=>setTimeout(r,300)); }
   const a = window.sofdebug();
-  const before = a.playerOrigin;
-  document.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyW',bubbles:true}));
-  await new Promise(r=>setTimeout(r,1500));
-  let mid = window.sofdebug();
-  let moved = before && mid.playerOrigin ? Math.hypot(mid.playerOrigin.x-before.x,mid.playerOrigin.y-before.y) : 0;
-  if (moved < 3) {
-    /* turn and retry, as the wall-stuck assist does */
-    window.sofapp.setView((mid.yaw||0)+90,0);
-    await new Promise(r=>setTimeout(r,1500));
-    mid = window.sofdebug();
-    moved = before && mid.playerOrigin ? Math.hypot(mid.playerOrigin.x-before.x,mid.playerOrigin.y-before.y) : 0;
-  }
-  document.dispatchEvent(new KeyboardEvent('keyup',{code:'KeyW',bubbles:true}));
-  const b = mid;
+  /* Use the protocol probe: it drives the same usercmd path the real client
+   * uses, without depending on DOM focus or the wall-assist timing. */
+  window.sofprobe(a.yaw||0, 1800, 200);
+  let probe=null;
+  for (let i=0;i<40;i++){ probe=window.sofdebug().probe; if(probe)break; await new Promise(r=>setTimeout(r,100)); }
+  const moved = probe ? probe.dist : 0;
+  const b = window.sofdebug();
   const ammo0 = window.sofstate.localAmmo;
   document.dispatchEvent(new MouseEvent('mousedown',{button:0,bubbles:true}));
   await new Promise(r=>setTimeout(r,150));

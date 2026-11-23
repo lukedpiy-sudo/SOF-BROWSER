@@ -540,7 +540,7 @@ function unrelHdr() {
 			if (key === lastAskKey) return;  /* duplicate request */
 			lastAskKey = key;
 			askTimers.forEach(clearTimeout);
-			askTimers = [2000, 5000].map(function (ms) {
+			askTimers = [1000, 3000].map(function (ms) {
 				return setTimeout(function () {
 					if (lastAskKey === key && !spawnDone) sendStringCmd(text);
 				}, ms);

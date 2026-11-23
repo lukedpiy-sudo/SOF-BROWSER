@@ -83,7 +83,7 @@
 	function rejoinForSpawn(reason) {
 		if (state.rescuing) return;
 		state.rescueCount = (state.rescueCount || 0) + 1;
-		if (state.rescueCount > 3) {
+		if (state.rescueCount > 2) {
 			note(reason + " (giving up after 3 retries)");
 			setLoading(false);
 			return;
@@ -719,7 +719,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					setLoading(true, "server stalled - restart it with ./run-local.sh restart");
 					disconnect();
 				}
-			}, 45000);
+			}, 60000);
 		};
 		ws.onmessage = function (ev) {
 			if (typeof ev.data === "string") return;      // the relay's JSON control
@@ -1200,8 +1200,6 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					state.wallAt = 0;
 					state.wallAssists = 0;
 					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
-					/* A spawn where no direction moves 20 units is wedged; try
-					 * another real spawn instead of trapping the player. */
 					setLoading(false);
 				}
 			}
@@ -1224,6 +1222,25 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		}
 		const tryingToMove = !state.orient &&
 			(client.view.forwardmove !== 0 || client.view.sidemove !== 0);
+		/* Predictive steering: if a wall is within 64 units ahead, turn toward
+		 * the clearer side before the server stops the player. */
+		if (tryingToMove && state.playerOrigin && window.sofpredict &&
+			window.sofpredict.info && window.sofpredict.info().ready) {
+			const P = window.sofpredict;
+			const p = state.playerOrigin;
+			const from = [p.x, p.y, p.z + 4];
+			const probe = function (yawDeg) {
+				const a = yawDeg * Math.PI / 180;
+				const to = [from[0] + Math.sin(a) * 64, from[1] - Math.cos(a) * 64, from[2]];
+				return P.trace(from, to).frac;
+			};
+			const fwd = probe(client.view.yaw);
+			if (fwd < 0.95) {
+				const l = probe(client.view.yaw - 35), r = probe(client.view.yaw + 35);
+				if (l > r && l > fwd) client.view.yaw -= 20;
+				else if (r > fwd) client.view.yaw += 20;
+			}
+		}
 		if (state.spawned && state.playerOrigin && tryingToMove) {
 			const t = performance.now();
 			if (!state.wallAt) {
