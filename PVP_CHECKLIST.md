@@ -35,7 +35,7 @@ dedicated server, not a simulated client.
 
 ## D. Weapon and combat
 
-19. [~] **Weapon presence** — pistol ammo in HUD; server does not expose/grant weapon object correctly.
+19. [~] **Weapon presence** — live memory confirms a player object exists per client, but no weapon is selected; correct object offset still open.
 20. [~] **Local fire loop** — ammo/sound/flash/attack bit work locally; not authoritative.
 21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3` and `use weapon_pistol` all tested; stats[2] stays 18.
 22. [ ] **Weapon pickup** — real pickup must authoritatively change weapon, ammo and reserve.

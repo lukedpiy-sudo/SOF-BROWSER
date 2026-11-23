@@ -20,6 +20,7 @@ const SOC_DIR = path.join(ROOT, "Soldier of Fortune");
 const LOG = "/tmp/opencode/sof-server.log";
 const sock = dgram.createSocket("udp4");
 let restarting = false;
+let failures = 0;
 
 function alive(cb) {
 	const s = dgram.createSocket("udp4");
@@ -82,8 +83,13 @@ function checkIdleClients() {
 sock.on("error", function () { });
 setInterval(function () {
 	alive(function (ok) {
-		if (!ok) restartServer("UDP challenge timed out");
-		else checkIdleClients();
+		if (!ok) {
+			failures++;
+			if (failures >= 3) { failures = 0; restartServer("UDP challenge timed out"); }
+		} else {
+			failures = 0;
+			checkIdleClients();
+		}
 	});
 }, 10000);
 console.log("[watchdog] supervising " + HOST + ":" + PORT);
