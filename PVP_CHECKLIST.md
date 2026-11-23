@@ -27,10 +27,10 @@ dedicated server, not a simulated client.
 
 ## C. Map and rendering
 
-14. [~] **Missing walls / see-through map** — red-sky probe proved the large bright surfaces are map geometry, not sky; face-level audit still open.
-15. [~] **Sky slabs** — `?nosky=1` probe added; real sky textures confirmed dark; sky tint restored after red diagnostic.
-16. [~] **Lighting parity** — exposure 0.72, light cap 1.25 and texture cap 0.72 added; much darker but not exact reference.
-17. [~] **Texture/material correctness** — 82 real `.m32` materials load; near-white materials capped.
+14. [x] **Missing walls / see-through map** — fixed: `app.js` filter `/\bsky\b/` did not match `subway/sky2`, so the near-white sky material was drawn as solid geometry while `soflight.js` skipped it. Both filters now exact; renderer/lightmap material ranges verified 92/92 with zero missing keys; corridor renders solid.
+15. [x] **Sky slabs** — same root cause as #14; sky is now drawn only by `sofsurface.js` with its real dark textures.
+16. [~] **Lighting parity** — exposure 0.72, light cap 1.25 and texture cap 0.72; much closer to reference but not exact.
+17. [x] **Texture/material correctness** — 82 real `.m32` materials load and all 92 material draw ranges match between renderer and lightmap pass.
 18. [ ] **Detail/effects surfaces** — open.
 
 ## D. Weapon and combat

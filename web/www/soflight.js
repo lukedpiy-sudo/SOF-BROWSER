@@ -275,6 +275,11 @@
 		for (var i = 0; i < faces.length; i++) {
 			var f0 = faces[i];
 			if (!f0.v || f0.v.length < 3) continue;
+			/* app.js omits these from the renderer's index buffer.  The
+			 * incoming (offset,count) is built WITHOUT them, so our group
+			 * ranges must be built without them too or every material after
+			 * the first sky face maps to the wrong geometry. */
+			if (f0.mat === SKY_MAT || f0.mat === NODRAW_MAT) continue;
 			var key0 = f0.mat || "";
 			if (!groups[key0]) { groups[key0] = { start: renderIdx, count: 0 }; order.push(key0); }
 			var n0 = (f0.v.length - 2) * 3;
@@ -696,6 +701,8 @@
 				lights: lights.length, selected: selected,
 				atlas: atlasData ? [atlasData.atlas.w, atlasData.atlas.h] : null,
 				ambient: ambient, lmOnly: lmOnly,
+				groups: groupByDraw ? Object.keys(groupByDraw).length : 0,
+				groupKeys: groupByDraw ? Object.keys(groupByDraw) : [],
 				onlyLoc: loc.only ? 1 : 0, lmLoc: loc.lm ? 1 : 0,
 				glErr: gl ? gl.getError() : -1,
 				style0: styles[1], style1: styles[2],

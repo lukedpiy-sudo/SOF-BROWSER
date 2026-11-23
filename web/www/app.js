@@ -82,6 +82,12 @@
 	}
 	function rejoinForSpawn(reason) {
 		if (state.rescuing) return;
+		state.rescueCount = (state.rescueCount || 0) + 1;
+		if (state.rescueCount > 3) {
+			note(reason + " (giving up after 3 retries)");
+			setLoading(false);
+			return;
+		}
 		state.rescuing = true;
 		note(reason);
 		setTimeout(function () {
@@ -299,7 +305,10 @@
 			/* sky and nodraw are drawn by sofsurface.js, not here.  Drawing
 			 * them as opaque textured geometry leaves black slivers standing
 			 * through the corridors. */
-			if (/\bsky\b|no_draw/i.test(f.mat || "")) continue;
+			/* Must match soflight.js exactly: \bsky\b does NOT match
+			 * "subway/sky2", so the renderer was drawing the near-white sky
+			 * material as solid slabs while the lightmap pass skipped it. */
+			if (f.mat === "subway/sky2" || f.mat === "subway/no_draw") continue;
 			const key = f.mat || "";
 			if (!byMat.has(key)) { byMat.set(key, { name: key, start: idx.length, count: 0, tex: null }); groups.push(byMat.get(key)); }
 			const g = byMat.get(key);
@@ -364,6 +373,7 @@
 			texCount++;
 		}
 		mapGroups = groups;
+		window.sofmapgroups = groups;
 		mapStatus = m.faces.length + " faces, " + m.vertices.length + " vertices, " + texCount + " textures";
 		/* where is the map?  place the camera above it and look down */
 		let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
@@ -1184,7 +1194,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					state.orient = null;
 					state.moveAttemptAt = 0;
 					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
-					setLoading(false);
+					/* A spawn where no direction moves even 5 units is wedged;
+					 * rejoin so the server gives us a different point. */
+					if (o.best < 5) rejoinForSpawn("wedged spawn - rejoining");
+					else setLoading(false);
 				}
 			}
 		}
