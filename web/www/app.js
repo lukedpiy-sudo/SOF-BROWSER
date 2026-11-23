@@ -862,6 +862,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const wasDown = keys[e.code];
 		keys[e.code] = true;
 		client.setKey(e.code, true);
+		/* a fresh key press starts a fresh stuck check */
+		if (/^(KeyW|KeyA|KeyS|KeyD|ArrowUp|ArrowDown)$/.test(e.code)) {
+			state.wallAt = 0; state.wallAssists = 0;
+		}
 		probeSelf();
 		/* the use key picks an item up */
 		if (!wasDown && (e.code === "KeyE" || e.code === "Enter")) { playUse(); tryPickup(); }
@@ -1193,6 +1197,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					state.spawnAimed = true;
 					state.orient = null;
 					state.moveAttemptAt = 0;
+					state.wallAt = 0;
+					state.wallAssists = 0;
 					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
 					/* A spawn where no direction moves 20 units is wedged; try
 					 * another real spawn instead of trapping the player. */

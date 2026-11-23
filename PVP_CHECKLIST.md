@@ -16,9 +16,9 @@ dedicated server, not a simulated client.
 
 ## B. Movement and camera
 
-6. [x] **Server-authoritative walking** — verified across 3 fresh spawns: 17.3, 26.8 and 7.3 units in 1.8 s.
-7. [~] **Collision / no clipping** — server stops movement at walls; several DM spawns remain wedged. Added wall-stuck steering (turn, jump) but this is not yet reliable.
-8. [x] **Spawn validity** — runtime compass probe walks in 8 directions and keeps the first that moves; 3/3 spawns became mobile.
+6. [~] **Server-authoritative walking** — direct protocol input moves 99 units/3 s; DOM-key path fixed (fresh stuck-check reset), but several spawns still produce zero displacement. Regression is intermittent (0 / 0 / 30.7 across runs).
+7. [~] **Collision / no clipping** — server stops movement at walls; several DM spawns remain wedged. Wall-stuck steering (turn, jump) added but not reliable.
+8. [~] **Spawn validity** — runtime compass probe helps, but wedged spawns still occur. BSP open-point search and empirical spawn patching tried; no universally safe spawn found yet.
 9. [x] **Jumping** — verified Z 120.1 → 135.3 → 157.8 with landing/height change.
 10. [x] **Camera anchor** — `cam.y = playerOrigin.z + 56` verified across 3 spawns.
 11. [x] **Third-person camera** — `V` toggle verified, camera moved back 104 units.
@@ -76,7 +76,7 @@ dedicated server, not a simulated client.
 
 46. [ ] **Two-client PVP smoke test** — connect, see, move, shoot, damage, score, respawn.
 47. [ ] **Four-to-eight client stress test** — no handshake stalls, stale-slot lockouts or desync.
-48. [x] **Headless regression suite** — `node web/regression.js` verifies spawn, errors, movement, camera, fire and loading state; all pass.
+48. [~] **Headless regression suite** — `node web/regression.js` exists and checks spawn/errors/movement/camera/fire/loading; movement check is intermittent because of wedged spawns.
 49. [ ] **Performance** — stable frame rate, load target, no memory growth over 10 min.
 50. [ ] **Final release checklist** — all items ticked, committed, pushed, known-good URL.
 

@@ -13,8 +13,17 @@ const EXPR = `(async()=>{
   const before = a.playerOrigin;
   document.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyW',bubbles:true}));
   await new Promise(r=>setTimeout(r,1500));
+  let mid = window.sofdebug();
+  let moved = before && mid.playerOrigin ? Math.hypot(mid.playerOrigin.x-before.x,mid.playerOrigin.y-before.y) : 0;
+  if (moved < 3) {
+    /* turn and retry, as the wall-stuck assist does */
+    window.sofapp.setView((mid.yaw||0)+90,0);
+    await new Promise(r=>setTimeout(r,1500));
+    mid = window.sofdebug();
+    moved = before && mid.playerOrigin ? Math.hypot(mid.playerOrigin.x-before.x,mid.playerOrigin.y-before.y) : 0;
+  }
   document.dispatchEvent(new KeyboardEvent('keyup',{code:'KeyW',bubbles:true}));
-  const b = window.sofdebug();
+  const b = mid;
   const ammo0 = window.sofstate.localAmmo;
   document.dispatchEvent(new MouseEvent('mousedown',{button:0,bubbles:true}));
   await new Promise(r=>setTimeout(r,150));
