@@ -192,6 +192,9 @@
 		"  vec3 n = normalize(vN);",
 		"  vec3 c = vec3(0.62,0.60,0.56);",
 		"  if (uTexOn > 0.5) c = texture2D(uTex, vUV).rgb;",
+		/* A few shipped materials (light tubes, sky2) are near white; cap them
+		 * so they read as fixtures instead of giant cream slabs. */
+		"  c = min(c, vec3(0.72));",
 		/* the baked light: the sun and the ambient of the map */
 		"  vec3 lm = texture2D(uLightmap, vLM).rgb;",
 		/* the map's light entities, added on top of the baked light */
@@ -227,13 +230,17 @@
 		"  vec3 dyn = vec3(1.0) - exp(-d);",
 		"  if (uLightOnly > 0.5) { gl_FragColor = vec4(dyn, 1.0); return; }",
 		"  vec3 lit = lm + dyn + vSty + vec3(uAmb);",
+		"  lit = min(lit, vec3(1.25));",
 		"  if (uLMOnly > 0.5) { gl_FragColor = vec4(lm, 1.0); return; }",
 		/* the fog: the engine's gl_fogstart/gl_fogend/gl_fogcolor are cvars
 		 * that are unset ("-1") and read only, so the engine has no fog by
 		 * default; the range below is off until it is set. */
 		"  float fd = length(vWP - uEye);",
 		"  float ff = clamp((fd - uFogRange.x) / max(uFogRange.y - uFogRange.x, 1.0), 0.0, 1.0);",
-		"  gl_FragColor = vec4(mix(c * lit, uFogColor, ff), 1.0);",
+		/* The shipped lightmap/sun sum is much brighter than the reference's
+		 * night interior; a single exposure factor keeps bright fixtures while
+		 * bringing walls and ceilings back into a dark, readable range. */
+		"  gl_FragColor = vec4(mix(c * lit * 0.72, uFogColor, ff), 1.0);",
 		"}"
 	].join("\n");
 

@@ -27,17 +27,17 @@ dedicated server, not a simulated client.
 
 ## C. Map and rendering
 
-14. [ ] **Missing walls / see-through map** — open; with camera anchored/mobile, remaining bright voids are rendering-side.
-15. [ ] **Sky slabs** — open; `subway/sky2` texture is effectively white (mean 244) while the real sky textures are dark (mean ~40); a `?nosky=1` probe was added to isolate the contributor.
-16. [ ] **Lighting parity** — open; fog/tint tightened but still not reference-dark.
-17. [~] **Texture/material correctness** — 82 real `.m32` materials load; overbright/white faces still present under investigation.
+14. [~] **Missing walls / see-through map** — red-sky probe proved the large bright surfaces are map geometry, not sky; face-level audit still open.
+15. [~] **Sky slabs** — `?nosky=1` probe added; real sky textures confirmed dark; sky tint restored after red diagnostic.
+16. [~] **Lighting parity** — exposure 0.72, light cap 1.25 and texture cap 0.72 added; much darker but not exact reference.
+17. [~] **Texture/material correctness** — 82 real `.m32` materials load; near-white materials capped.
 18. [ ] **Detail/effects surfaces** — open.
 
 ## D. Weapon and combat
 
 19. [~] **Weapon presence** — pistol ammo in HUD; server does not expose/grant weapon object correctly.
 20. [~] **Local fire loop** — ammo/sound/flash/attack bit work locally; not authoritative.
-21. [ ] **Server-side ammo decrement** — attack bit and `weaponselect 3` reach server but stats[2] stays 18.
+21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3` and `use weapon_pistol` all tested; stats[2] stays 18.
 22. [ ] **Weapon pickup** — real pickup must authoritatively change weapon, ammo and reserve.
 23. [ ] **Reload** — local reload exists; server-authoritative reload needed.
 24. [ ] **Shot traces / hit detection** — server traces against players and world.

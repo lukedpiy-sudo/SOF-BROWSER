@@ -1,19 +1,56 @@
 /*
  * server_watchdog.js - keep the real SoF server connectable.
  *
- * The stock server never fully releases dead client slots.  We query RCON
- * status every 30 s and kick clients whose lastmsg is older than 120 s, so a
- * fresh browser always has a free slot.
+ * The stock server never fully releases dead client slots, and in this
+ * environment it occasionally exits.  Every 10 s we check the UDP challenge;
+ * if it does not answer we relaunch the dedicated server.  Every 30 s we also
+ * kick clients idle for more than 120 s so a fresh browser always has a slot.
  */
 "use strict";
 const dgram = require("dgram");
+const child = require("child_process");
+const path = require("path");
 
 const HOST = "127.0.0.1";
 const PORT = 29000;
 const PASSWORD = process.env.SOF_RCON || "sofbrowser";
 const MAX_IDLE = parseInt(process.env.SOF_MAX_IDLE || "120", 10);
-const PERIOD = parseInt(process.env.SOF_WATCHDOG_MS || "30000", 10);
+const ROOT = path.resolve(__dirname, "..");
+const SOC_DIR = path.join(ROOT, "Soldier of Fortune");
+const LOG = "/tmp/opencode/sof-server.log";
 const sock = dgram.createSocket("udp4");
+let restarting = false;
+
+function alive(cb) {
+	const s = dgram.createSocket("udp4");
+	let done = false;
+	const finish = (v) => { if (!done) { done = true; try { s.close(); } catch (e) { } cb(v); } };
+	s.on("message", () => finish(true));
+	s.on("error", () => finish(false));
+	s.send(Buffer.from("\xff\xff\xff\xffgetchallenge 1\n", "latin1"), PORT, HOST);
+	setTimeout(() => finish(false), 1500);
+}
+
+function restartServer(reason) {
+	if (restarting) return;
+	restarting = true;
+	console.log("[watchdog] restarting server: " + reason);
+	const env = Object.assign({}, process.env, {
+		WINEPREFIX: process.env.WINEPREFIX || (process.env.HOME + "/.wine-sof"),
+		WINEDEBUG: "-all",
+		WINEDLLOVERRIDES: "mscoree,mshtml="
+	});
+	let out;
+	try { out = require("fs").openSync(LOG, "a"); } catch (e) { out = "ignore"; }
+	try {
+		const p = child.spawn("wine", [
+			"SoF.exe", "+set", "dedicated", "1", "+set", "port", "29000",
+			"+set", "rcon_password", PASSWORD, "+map", "dm/nycdm1"
+		], { cwd: SOC_DIR, env: env, detached: true, stdio: ["ignore", out, out] });
+		p.unref();
+	} catch (e) { console.log("[watchdog] launch failed: " + e.message); }
+	setTimeout(() => { restarting = false; }, 12000);
+}
 
 function rcon(cmd, cb) {
 	const body = Buffer.from("\xff\xff\xff\xffrcon " + PASSWORD + " " + cmd + "\n", "latin1");
@@ -27,16 +64,13 @@ function rcon(cmd, cb) {
 	sock.send(body, PORT, HOST);
 }
 
-function check() {
+function checkIdleClients() {
 	rcon("status", function (text) {
 		if (!text) return;
-		const lines = text.split("\n");
-		for (const line of lines) {
-			/* num score ping name lastmsg address qport */
+		for (const line of text.split("\n")) {
 			const m = line.match(/^\s*(\d+)\s+(-?\d+)\s+(\d+)\s+(\S+)\s+(\d+)\s+/);
 			if (!m) continue;
-			const num = parseInt(m[1], 10);
-			const idle = parseInt(m[5], 10);
+			const num = parseInt(m[1], 10), idle = parseInt(m[5], 10);
 			if (idle > MAX_IDLE) {
 				console.log("[watchdog] kicking idle client " + num + " (lastmsg " + idle + ")");
 				rcon("kick " + num, function () { });
@@ -45,6 +79,11 @@ function check() {
 	});
 }
 
-sock.on("error", function () { /* the server may be restarting */ });
-setInterval(check, PERIOD);
-console.log("[watchdog] watching " + HOST + ":" + PORT + " every " + PERIOD + " ms");
+sock.on("error", function () { });
+setInterval(function () {
+	alive(function (ok) {
+		if (!ok) restartServer("UDP challenge timed out");
+		else checkIdleClients();
+	});
+}, 10000);
+console.log("[watchdog] supervising " + HOST + ":" + PORT);

@@ -357,7 +357,7 @@
 			ctx.uniform1i(loc.tex, 0);
 			/* The shipped sky layers are daylight-bright; the level's own fog
 			 * and the reference look are a dark night scene. */
-			ctx.uniform3f(loc.tint, 0.28, 0.32, 0.40);
+			ctx.uniform3f(loc.tint, 0.35, 0.40, 0.48);
 			ctx.bindBuffer(ctx.ARRAY_BUFFER, vbo);
 			ctx.enableVertexAttribArray(attrBase + 0);
 			ctx.vertexAttribPointer(attrBase + 0, 3, ctx.FLOAT, false, 20, 0);
