@@ -80,6 +80,15 @@
 		loadingEl.classList.toggle("hidden", !show);
 		if (text && loadingSub) loadingSub.textContent = text;
 	}
+	function rejoinForSpawn(reason) {
+		if (state.rescuing) return;
+		state.rescuing = true;
+		note(reason);
+		setTimeout(function () {
+			window.sofapp.connect(serverHost, serverPort, relayHost, playerName);
+			state.rescuing = false;
+		}, 600);
+	}
 
 	/* Per-entity Ghoul animation.  The wire snapshot does not carry the AI
 	 * state code, so each character starts on an idle clip and keeps its own
@@ -490,6 +499,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				case "connected": state.connected = true; state.status = "connected"; setLoading(true, "connected - downloading map and assets..."); break;
 				case "spawned":
 					state.spawned = true; state.status = "spawned";
+					state.eyeInit = false;  /* snap to the new spawn, do not lerp from old view */
+					state.initialOrigin = null;  /* re-arm the bad-spawn rescue */
+					state.moveAttemptAt = 0;
 					if (handshakeTimer) { clearTimeout(handshakeTimer); handshakeTimer = null; }
 					/* the server owns the game: once it spawns us, get the menu
 					 * out of the way so the player is actually in the map */
@@ -563,23 +575,44 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 								x: po[0], y: po[1], z: po[2], at: -1,
 								authoritative: true
 							};
+							if (!state.initialOrigin) {
+								state.initialOrigin = { x: po[0], y: po[1], z: po[2] };
+							}
 							/* A fresh spawn faces yaw 0 (-Y), which at several
-							 * deathmatch points looks straight out of the level.
-							 * Aim once at the nearest real weapon pickup so the
-							 * player starts looking into the map. */
-							if (!state.spawnAimed && mapItemList.length) {
-								let aim = null, bestD = 1e9;
-								for (const m of mapItemList) {
-									if (!/item_weapon/i.test(m.classname || "")) continue;
-									const d = Math.hypot(m.origin[0] - po[0], m.origin[1] - po[1]);
-									if (d < bestD) { bestD = d; aim = m; }
+							 * deathmatch points looks out of the level or into a
+							 * wall.  Aim once at the map centre instead of a
+							 * pickup: several pickups sit behind walls or drops. */
+							if (!state.spawnAimed && state.mapBounds) {
+								let yaw = 0, best = -1;
+								const P = window.sofpredict;
+								const ready = P && P.info && P.info().ready && P.trace;
+								if (ready) {
+									/* Pick the direction with the longest clear, grounded
+									 * path.  A fixed spawn yaw can face a wall or a hole. */
+									const from = [po[0], po[1], po[2] + 4];
+									for (let i = 0; i < 16; i++) {
+										const a = i * 22.5 * Math.PI / 180;
+										const dx = Math.sin(a), dy = -Math.cos(a);
+										const to = [from[0] + dx * 320, from[1] + dy * 320, from[2]];
+										const hit = P.trace(from, to);
+										const d = hit.frac * 320;
+										if (d <= best || d < 30) continue;
+										/* reject a direction that ends over a drop */
+										const end = hit.end;
+										const down = P.trace([end[0], end[1], end[2] + 10],
+											[end[0], end[1], end[2] - 90]);
+										if (down.frac >= 0.999) continue;
+										best = d; yaw = i * 22.5;
+									}
 								}
-								if (aim) {
-									client.view.yaw = Math.atan2(aim.origin[0] - po[0],
-										-(aim.origin[1] - po[1])) * 180 / Math.PI;
-									client.view.pitch = 0;
-									state.spawnAimed = true;
+								if (best < 0) {
+									const c = state.mapBounds;
+									yaw = Math.atan2((c.min[0] + c.max[0]) / 2 - po[0],
+										-((c.min[1] + c.max[1]) / 2 - po[1])) * 180 / Math.PI;
 								}
+								client.view.yaw = yaw;
+								client.view.pitch = 0;
+								state.spawnAimed = true;
 							}
 						}
 					}
@@ -635,6 +668,16 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 								break;
 							}
 						}
+					}
+					/* Once the local entity is identified, its origin field is the
+					 * authoritative camera anchor.  The raw player-state search can
+					 * latch onto a different falling client, which used to put the
+					 * camera above/outside the level. */
+					const selfEnt = data.entities.get(state.self);
+					if (selfEnt && !selfEnt.removed && selfEnt.state) {
+						const o = rawOrigin(selfEnt);
+						state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: -2,
+							authoritative: true };
 					}
 					break;
 				case "frameError": note("frame error: " + (data && data.message ? data.message : data)); break;
@@ -1021,19 +1064,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		 * match failed the free-fly overview stayed above the level, which
 		 * looked like the player was not in the map at all. */
 		if (!params.get("nofollow") && state.playerOrigin) {
-			let po = state.playerOrigin;
-			/* Use the local prediction for the camera so movement is instant;
-			 * the server origin remains the fallback and the sanity check. */
-			try {
-				if (window.sofpredict && window.sofpredict.info &&
-					window.sofpredict.info().ready) {
-					const p = window.sofpredict.origin();
-					if (p && p.length >= 3 &&
-						Math.hypot(p[0] - po.x, p[1] - po.y, p[2] - po.z) < 200) {
-						po = { x: p[0], y: p[1], z: p[2] };
-					}
-				}
-			} catch (e) { /* keep the authoritative origin */ }
+			/* The prediction module can drift badly (its brush set and input
+			 * clock do not match the dedicated server).  It must never lift
+			 * the camera out of the map: the authoritative origin is the only
+			 * safe anchor. */
+			const po = state.playerOrigin;
 			state.hasSelf = true;
 			const va = viewAngles();
 			const yaw = va.yaw * Math.PI / 180;
@@ -1132,13 +1167,27 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		/* The DM map has open drops.  When the authoritative origin falls out
 		 * of the world, rejoin: `kill`/`suicide` are not accepted by this
 		 * dedicated server, and a fresh connection gives a real spawn point. */
-		if (state.playerOrigin && state.playerOrigin.z < -110 && !state.rescuing) {
-			state.rescuing = true;
-			note("fell out of the map - respawning");
-			setTimeout(function () {
-				window.sofapp.connect(serverHost, serverPort, relayHost, playerName);
-				state.rescuing = false;
-			}, 700);
+		const fellFromSpawn = state.playerOrigin && state.initialOrigin &&
+			state.playerOrigin.z < state.initialOrigin.z - 35;
+		if (state.playerOrigin && (fellFromSpawn || state.playerOrigin.z < -110)) {
+			rejoinForSpawn("bad spawn / fall detected - rejoining");
+		}
+		/* Some deathmatch points drop the player inside solid geometry: the
+		 * server accepts the input but the origin barely moves.  Reconnect so
+		 * the server picks another spawn instead of leaving the player stuck. */
+		const tryingToMove = client.view.forwardmove !== 0 || client.view.sidemove !== 0;
+		if (state.spawned && state.playerOrigin && tryingToMove) {
+			if (!state.moveAttemptAt) {
+				state.moveAttemptAt = performance.now();
+				state.moveAttemptFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+			} else if (performance.now() - state.moveAttemptAt > 2600 &&
+				Math.hypot(state.playerOrigin.x - state.moveAttemptFrom.x,
+					state.playerOrigin.y - state.moveAttemptFrom.y) < 8) {
+				state.moveAttemptAt = 0;
+				rejoinForSpawn("stuck spawn - rejoining");
+			}
+		} else {
+			state.moveAttemptAt = 0;
 		}
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
@@ -1319,13 +1368,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				look: { yaw: va2.yaw, pitch: va2.pitch },
 				move: { origin: state.playerOrigin },
 				fov: state.fov || 90,
+				frame: params.has("vmframe") ? parseInt(params.get("vmframe"), 10) : undefined,
 				/* The shipped INVIEW mesh is centred near the eye: its grip is
 				 * behind the near plane until it is pushed forward.  The muzzle
 				 * is at engine +X, which the corrected mapping puts at -Z. */
 				x: state.testModel ? 0 : 10,
 				y: state.testModel ? -12 : -12,
 				z: state.testModel ? -90 : -38,
-				scale: state.testModel ? 1 : 0.75
+				scale: state.testModel ? 1 : 0.65
 			});
 		}
 		drawGameHud();

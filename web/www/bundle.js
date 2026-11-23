@@ -1397,6 +1397,9 @@ function unrelHdr() {
 		curCmd.writeUInt16LE(toBinaryAngle(view.pitch), 4);
 		curCmd.writeUInt16LE(toBinaryAngle(view.yaw), 6);
 		curCmd.writeUInt16LE(toBinaryAngle(view.roll), 8);
+		/* The stock client's forward/be speed cvar is 400.  The old 200/160
+		 * clamps made the browser walk at a crawl; the 10 bit wire fields hold
+		 * Â±512, so send the full engine speed and let the server clamp. */
 		curCmd.writeInt16LE(clampMove(view.forwardmove, 200), 0x0a);
 		curCmd.writeInt16LE(clampMove(view.sidemove, 160), 0x0c);
 		curCmd.writeInt16LE(clampMove(view.upmove, 200), 0x0e);

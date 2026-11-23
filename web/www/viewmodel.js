@@ -167,6 +167,7 @@
 			/* the 5th argument of drawModel is the animation frame (the
 			 * shader has no point size, so the old value was a mistake) */
 			var frame = o.frame;
+			if (st.forceFrame !== undefined && st.forceFrame !== null) frame = st.forceFrame;
 			if (frame === undefined) {
 				var sm = SM();
 				frame = (sm && sm.worldFrame) ? sm.worldFrame() : 0;
@@ -242,6 +243,7 @@
 		draw: draw,
 		fire: fire,
 		animate: animate,
+		setFrame: function (n) { st.forceFrame = n; return n; },
 		/* the weapon of the local player: the player state does not carry
 		 * the weapon index (the module sends only the ammunition), so the
 		 * client keeps it itself - the weaponselect command and the
