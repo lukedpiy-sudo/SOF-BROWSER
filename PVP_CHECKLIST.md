@@ -49,7 +49,7 @@ dedicated server, not a simulated client.
 
 ## E. Characters and world entities
 
-30. [ ] **Remote player models** — real Ghoul `.ghb` characters, not boxes/point clouds.
+30. [~] **Remote player models** — two real clients connect and stream entities; most remote entity model indices are 0, so character-path correlation is still unresolved.
 31. [ ] **Skins and orientation** — correct team/player skin, facing and animation state.
 32. [ ] **Animation sync** — idle, walk, jump, fire, hit, death driven by server state.
 33. [ ] **Dropped items / pickups** — visible, identifiable, synchronised.
