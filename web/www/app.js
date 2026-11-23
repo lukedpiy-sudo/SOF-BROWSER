@@ -50,6 +50,11 @@
 		1: 0.45, 3: 0.17, 4: 0.28, 5: 0.10, 6: 0.09, 7: 1.10,
 		9: 0.75, 11: 0.65, 12: 0.08, 14: 0.80, 17: 0.12, 19: 0.08
 	};
+	const PICKUP_WEAPON = {
+		item_weapon_pistol2: 4, item_weapon_assault_rifle: 6,
+		item_weapon_shotgun: 11, item_weapon_machinegun: 12,
+		item_weapon_rocketlauncher: 14
+	};
 	const AUTO_WEAPONS = { 5: true, 6: true, 9: true, 12: true, 17: true, 19: true };
 	const MAG_SIZE = {
 		1: 999, 3: 18, 4: 8, 5: 30, 6: 30, 7: 5, 9: 10,
@@ -795,7 +800,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		client.setKey(e.code, true);
 		probeSelf();
 		/* the use key picks an item up */
-		if (!wasDown && (e.code === "KeyE" || e.code === "Enter")) playUse();
+		if (!wasDown && (e.code === "KeyE" || e.code === "Enter")) { playUse(); tryPickup(); }
 		/* the jump */
 		if (!wasDown && e.code === "Space") S && S.playVaried("sound/player/Jump.wav", 0.1, 0.5);
 		/* V toggles the third person camera, so the player figure is visible */
@@ -1502,7 +1507,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			client.setKey("KeyD", false);
 			/* the game module only processes use when attack is not latched, so
 			 * the two are never pressed at the same time */
-			if (a.use && !a.fire) client.setKey("KeyE", true);
+			if (a.use && !a.fire) { client.setKey("KeyE", true); tryPickup(); }
 			if (a.fire && !a.use) client.setKey("Mouse0", true);
 			state.autoInfo.using = true;
 			return;
@@ -1584,6 +1589,37 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (window.sofviewmodel) window.sofviewmodel.setWeapon(w);
 		client.sendStringCmd("weaponselect " + w);
 		note("weapon: " + (WEAPON_NAMES[w] || ("#" + w)));
+	}
+	/* A real map weapon pickup.  The server moves the item entity and sends the
+	 * updated HUD stats, but it does not give this browser client a weapon
+	 * object, so the client reflects the pickup in its local weapon state. */
+	function tryPickup() {
+		if (!state.playerOrigin || !mapItemList.length) return false;
+		const p = state.playerOrigin;
+		let best = null, bestD = 1e9;
+		for (const m of mapItemList) {
+			const w = PICKUP_WEAPON[m.classname];
+			if (!w) continue;
+			const key = m.origin.join(",");
+			if (state.pickedUp && state.pickedUp.has(key)) continue;
+			const d = Math.hypot(m.origin[0] - p.x, m.origin[1] - p.y,
+				((m.origin[2] || 0) - p.z) * 0.75);
+			if (d < bestD) { bestD = d; best = { m: m, w: w, key: key }; }
+		}
+		if (!best || bestD > 70) return false;
+		state.pickedUp = state.pickedUp || new Set();
+		state.pickedUp.add(best.key);
+		state.weapon = best.w;
+		state.magSize = MAG_SIZE[best.w] || 18;
+		state.localAmmo = state.magSize;
+		state.localReserve = state.magSize * 4;
+		if (state.hud) state.hud.item = best.m.classname;
+		if (window.sofviewmodel) window.sofviewmodel.setWeapon(best.w);
+		client.sendStringCmd("weaponselect " + best.w);
+		state.spawnAimed = true;
+		note("picked up " + (WEAPON_NAMES[best.w] || best.m.classname));
+		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.15, 0.8);
+		return true;
 	}
 	function reloadLocal() {
 		if (state.localAmmo === null) return;
