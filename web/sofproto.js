@@ -437,7 +437,10 @@ function unrelHdr() {
 		 * (the "commandMsec underflow" drop in SV_ExecuteClientMessage).
 		 * `keepAliveInterval` lets a probe pick its own cadence; 0 disables it
 		 * so a probe can be the only sender. */
-		const every = o.keepAliveInterval === undefined ? 50 : o.keepAliveInterval;
+		/* Three commands of msec=33 add up to one 99 ms sv_fps frame.  Sending
+		 * that every 50 ms underflows the server's per-client msec budget and
+		 * makes it drop most commands, which is why walking crawled. */
+		const every = o.keepAliveInterval === undefined ? 100 : o.keepAliveInterval;
 		if (!every) return;
 		keepAlive = setInterval(() => {
 			try { sendUserCmd(); } catch (e) { /* not connected yet */ }

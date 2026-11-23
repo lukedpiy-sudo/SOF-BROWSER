@@ -11,6 +11,14 @@
 	#hud { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 	#bar { position: absolute; left: 0; bottom: 0; width: 100%; padding: 6px 10px;
 		background: rgba(0,0,0,0.55); font-size: 12px; }
+	#sof-loading { position: absolute; inset: 0; display: flex; align-items: center;
+		justify-content: center; flex-direction: column; gap: 10px; pointer-events: none;
+		background: radial-gradient(circle at center, rgba(5,8,12,0.78), rgba(2,3,5,0.96));
+		color: #d8d8d8; font-family: monospace; z-index: 5; }
+	#sof-loading.hidden { display: none; }
+	#sof-loading .title { font-size: 24px; font-weight: bold; color: #d9a441;
+		letter-spacing: 2px; }
+	#sof-loading .sub { font-size: 13px; color: #9aa0a8; }
 	a { color: #6cf; }
 	#console { position: absolute; left: 0; right: 0; bottom: 34px; display: none;
 		background: rgba(5,8,10,0.94); border-top: 1px solid #2a3a2f; padding: 8px 10px; }
@@ -20,36 +28,40 @@
 	#consoleInput { width: 100%; background: #0f1216; color: #d8d8d8; border: 1px solid #2a3a2f;
 		font-family: monospace; font-size: 12px; padding: 3px 5px; margin-top: 6px; }
 </style>
-<link rel="stylesheet" href="menu.css?v=20261123o">
+<link rel="stylesheet" href="menu.css?v=20261123u">
 </head>
 <body>
 <div id="wrap">
 	<canvas id="gl"></canvas>
 	<canvas id="hud" width="640" height="330"></canvas>
+	<div id="sof-loading">
+		<div class="title">CONNECTING TO SERVER</div>
+		<div class="sub" id="sof-loading-sub">starting handshake&hellip;</div>
+	</div>
 	<div id="console">
 		<div id="consoleLog"></div>
 		<input id="consoleInput" type="text" autocomplete="off" spellcheck="false"
 			placeholder="type a command and press enter (help)">
 	</div>
 	<div id="bar">
-		Soldier of Fortune browser client [build 20261123o] &mdash; <b>Esc</b> menu, <b>Tab</b> scoreboard,
+		Soldier of Fortune browser client [build 20261123u] &mdash; <b>Esc</b> menu, <b>Tab</b> scoreboard,
 		<b>`</b> console, <b>V</b> camera, WASD to move &mdash;
 		<a href="content.html">content &amp; mods</a>
 	</div>
 </div>
-<script src="bundle.js?v=20261123o"></script>
-<script src="sof.js?v=20261123o"></script>
-<script src="sofmodel.js?v=20261123o"></script>
-<script src="app.js?v=20261123o"></script>
-<script src="viewmodel.js?v=20261123o"></script>
-<script src="sofgl.js?v=20261123o"></script>
-<script src="soflight.js?v=20261123o"></script>
-<script src="sofsurface.js?v=20261123o"></script>
-<script src="sofpredict.js?v=20261123o"></script>
-<script src="sofmusic.js?v=20261123o"></script>
-<script src="eft.js?v=20261123o"></script>
-<script src="effects.js?v=20261123o"></script>
+<script src="bundle.js?v=20261123u"></script>
+<script src="sof.js?v=20261123u"></script>
+<script src="sofmodel.js?v=20261123u"></script>
+<script src="app.js?v=20261123u"></script>
+<script src="viewmodel.js?v=20261123u"></script>
+<script src="sofgl.js?v=20261123u"></script>
+<script src="soflight.js?v=20261123u"></script>
+<script src="sofsurface.js?v=20261123u"></script>
+<script src="sofpredict.js?v=20261123u"></script>
+<script src="sofmusic.js?v=20261123u"></script>
+<script src="eft.js?v=20261123u"></script>
+<script src="effects.js?v=20261123u"></script>
 <!-- the menu runs last so it can apply settings to every renderer/audio module -->
-<script src="menu.js?v=20261123o"></script>
+<script src="menu.js?v=20261123u"></script>
 </body>
 </html>

@@ -21,8 +21,8 @@
 		moveSpeed: 200,
 		volume: 0.6,
 		drawDistance: 40000,
-		fogStart: 800,
-		fogEnd: 4000,
+		fogStart: 300,
+		fogEnd: 3000,
 		thirdPerson: false,
 		showDebug: false,
 		lastServer: null
@@ -53,7 +53,7 @@
 		window.sofapp.setSetting("fogEnd", settings.fogEnd);
 		/* the engine's fog cvars are unset in the shipped build; these are the
 		 * city-map colours from the level's sky/ambience */
-		if (window.sofFog) window.sofFog.set(settings.fogStart, settings.fogEnd, 0.06, 0.08, 0.10);
+		if (window.sofFog) window.sofFog.set(settings.fogStart, settings.fogEnd, 0.035, 0.045, 0.055);
 		window.sofapp.setSetting("thirdPerson", settings.thirdPerson);
 		window.sofapp.setSetting("showDebug", settings.showDebug);
 		window.sofapp.setSetting("master", settings.master);

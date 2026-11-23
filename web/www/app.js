@@ -73,6 +73,13 @@
 	window.sofstate = state;
 	window.sofconsole = state.console;
 	const note = function (m) { state.console.push(String(m)); if (state.console.length > 40) state.console.shift(); say(m); };
+	const loadingEl = document.getElementById("sof-loading");
+	const loadingSub = document.getElementById("sof-loading-sub");
+	function setLoading(show, text) {
+		if (!loadingEl) return;
+		loadingEl.classList.toggle("hidden", !show);
+		if (text && loadingSub) loadingSub.textContent = text;
+	}
 
 	/* Per-entity Ghoul animation.  The wire snapshot does not carry the AI
 	 * state code, so each character starts on an idle clip and keeps its own
@@ -480,13 +487,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		onEvent: (ev, data) => {
 			switch (ev) {
 				case "oob": state.log.push(String(data).slice(0, 70)); if (state.log.length > 8) state.log.shift(); break;
-				case "connected": state.connected = true; state.status = "connected"; break;
+				case "connected": state.connected = true; state.status = "connected"; setLoading(true, "connected - downloading map and assets..."); break;
 				case "spawned":
 					state.spawned = true; state.status = "spawned";
 					if (handshakeTimer) { clearTimeout(handshakeTimer); handshakeTimer = null; }
 					/* the server owns the game: once it spawns us, get the menu
 					 * out of the way so the player is actually in the map */
 					if (window.sofmenu && window.sofmenu.close) window.sofmenu.close();
+					setLoading(false);
 					publishServer();
 					break;
 				case "predresync":
@@ -497,7 +505,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 						if (o) window.sofpredict.resync(o);
 					}
 					break;
-				case "ask": state.log.push("ask " + data); if (state.log.length > 8) state.log.shift(); break;
+				case "ask":
+					state.log.push("ask " + data); if (state.log.length > 8) state.log.shift();
+					setLoading(true, "handshake: " + data);
+					break;
 				case "sound":
 					if (window.sofmusic) window.sofmusic.onSound(data);
 					break;
@@ -639,6 +650,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (state.ws && (state.ws.readyState === 0 || state.ws.readyState === 1)) return;
 		wantConnect = true;
 		state.status = "connecting";
+		setLoading(true, "connecting to " + serverHost + ":" + serverPort + "...");
 		if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
 		const wsUrl = "ws://" + relayHost + "/relay";
 		note("connecting to " + relayHost + " -> " + serverHost + ":" + serverPort);
@@ -672,6 +684,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			state.connected = false;
 			state.spawned = false;
 			state.ws = null;
+			setLoading(true, "connection lost - reconnecting...");
 			if (window.sofmenu) window.sofmenu.onDisconnect();
 			if (wantConnect) reconnectTimer = setTimeout(connect, 2000);
 		};
@@ -689,6 +702,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.connected = false;
 		state.spawned = false;
 		state.status = "disconnected";
+		setLoading(true, "disconnected");
 	}
 
 	/* The public API used by menu.js.  It deliberately avoids exposing the
@@ -1007,7 +1021,19 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		 * match failed the free-fly overview stayed above the level, which
 		 * looked like the player was not in the map at all. */
 		if (!params.get("nofollow") && state.playerOrigin) {
-			const po = state.playerOrigin;
+			let po = state.playerOrigin;
+			/* Use the local prediction for the camera so movement is instant;
+			 * the server origin remains the fallback and the sanity check. */
+			try {
+				if (window.sofpredict && window.sofpredict.info &&
+					window.sofpredict.info().ready) {
+					const p = window.sofpredict.origin();
+					if (p && p.length >= 3 &&
+						Math.hypot(p[0] - po.x, p[1] - po.y, p[2] - po.z) < 200) {
+						po = { x: p[0], y: p[1], z: p[2] };
+					}
+				}
+			} catch (e) { /* keep the authoritative origin */ }
 			state.hasSelf = true;
 			const va = viewAngles();
 			const yaw = va.yaw * Math.PI / 180;
@@ -1297,9 +1323,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				 * behind the near plane until it is pushed forward.  The muzzle
 				 * is at engine +X, which the corrected mapping puts at -Z. */
 				x: state.testModel ? 0 : 10,
-				y: state.testModel ? -12 : -10,
+				y: state.testModel ? -12 : -12,
 				z: state.testModel ? -90 : -38,
-				scale: state.testModel ? 1 : 0.65
+				scale: state.testModel ? 1 : 0.75
 			});
 		}
 		drawGameHud();

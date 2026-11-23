@@ -76,7 +76,8 @@
 		"#endif",
 		"varying vec2 vUV;",
 		"uniform sampler2D uTex;",
-		"void main(){ gl_FragColor = vec4(texture2D(uTex, vUV).rgb, 1.0); }"
+		"uniform vec3 uTint;",
+		"void main(){ gl_FragColor = vec4(texture2D(uTex, vUV).rgb * uTint, 1.0); }"
 	].join("\n");
 
 	/* The sky is at infinity: the engine moves the sky faces with the view
@@ -316,7 +317,8 @@
 			loc = {
 				mvp: ctx.getUniformLocation(prog, "uMVP"),
 				eye: ctx.getUniformLocation(prog, "uEye"),
-				tex: ctx.getUniformLocation(prog, "uTex")
+				tex: ctx.getUniformLocation(prog, "uTex"),
+				tint: ctx.getUniformLocation(prog, "uTint")
 			};
 			vbo = ctx.createBuffer();
 			ctx.bindBuffer(ctx.ARRAY_BUFFER, vbo);
@@ -353,6 +355,9 @@
 			ctx.uniformMatrix4fv(loc.mvp, false, skyMatrix(mvp, e));
 			ctx.uniform3f(loc.eye, e[0], e[1], e[2]);
 			ctx.uniform1i(loc.tex, 0);
+			/* The shipped sky layers are daylight-bright; the level's own fog
+			 * and the reference look are a dark night scene. */
+			ctx.uniform3f(loc.tint, 0.28, 0.32, 0.40);
 			ctx.bindBuffer(ctx.ARRAY_BUFFER, vbo);
 			ctx.enableVertexAttribArray(attrBase + 0);
 			ctx.vertexAttribPointer(attrBase + 0, 3, ctx.FLOAT, false, 20, 0);
