@@ -1226,6 +1226,10 @@ function createClient(opts) {
 	let keepAlive = null;   // the keep alive timer (see startKeepAlive)
 	let beginSent = false;
 	let baselinesSent = false;
+	/* A dropped reliable handshake answer stalls the cursor.  Resend the last
+	 * answer until the server asks for a different cursor. */
+	let lastAskKey = "";
+	let askTimers = [];
 	let seed = seedDefault; // echoed in every frame
 	let msec = 0;
 	let prevCmd = Buffer.alloc(24);
@@ -1666,6 +1670,17 @@ function unrelHdr() {
 			if (d) setTimeout(() => sendStringCmd(text), d);
 			else sendStringCmd(text);
 		}
+		function answerWithRetry(text, key) {
+			answer(text);
+			if (key === lastAskKey) return;  /* duplicate request */
+			lastAskKey = key;
+			askTimers.forEach(clearTimeout);
+			askTimers = [500, 1600].map(function (ms) {
+				return setTimeout(function () {
+					if (lastAskKey === key && !spawnDone) sendStringCmd(text);
+				}, ms);
+			});
+		}
 
 		/* The server keeps its outgoing reliable message in a queue until the
 		 * client acknowledges it, and the acknowledgement only advances when the
@@ -1686,7 +1701,7 @@ function unrelHdr() {
 			if (m) {
 				const verb = m[1], a = m[2], b = m[3] || "0";
 				onEvent("ask", verb + " " + a + " " + b);
-				answer(verb + " " + a + " " + b);
+				answerWithRetry(verb + " " + a + " " + b, verb + ":" + a + ":" + b);
 				/* The gamestate chain is
 				 *   configstrings -> ghoulstrings -> baselines -> precache
 				 *   -> begin
@@ -1705,7 +1720,7 @@ function unrelHdr() {
 			m = cmd.match(/^precache\s+(\S+)/);
 			if (m) {
 				onEvent("ask", "precache " + m[1]);
-				answer("precache " + m[1]);
+				answerWithRetry("precache " + m[1], "precache:" + m[1]);
 				if (!beginSent) {
 					beginSent = true;
 					setTimeout(() => {
@@ -1719,7 +1734,7 @@ function unrelHdr() {
 			m = cmd.match(/^cmd\s+begin\s+(\S+)/);
 			if (m) {
 				onEvent("ask", "begin " + m[1]);
-				answer("begin " + m[1]);
+				answerWithRetry("begin " + m[1], "begin:" + m[1]);
 				spawnDone = true;
 				onEvent("spawned");
 				continue;

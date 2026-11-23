@@ -713,6 +713,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				if (!state.spawned) {
 					note("no response from " + serverHost + ":" + serverPort);
 					state.status = "no server response";
+					setLoading(true, "server stalled - restart it with ./run-local.sh restart");
 					disconnect();
 				}
 			}, 45000);
