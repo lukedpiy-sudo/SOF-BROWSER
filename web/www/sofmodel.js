@@ -419,6 +419,9 @@
 			m.animated = geom ? !geom.staticPositions : true;
 			m.frameCount = model.frameCount;
 			m.meshes = model.meshes;
+			/* The header's named clips (FIRE1_A, RELOAD_A, IDLE_A, ...) are
+			 * needed to pick a stable view-model pose. */
+			m.clips = model.clips || [];
 			/* the animation: the bit packed vertex positions */
 			m.anim = geom ? decodeAnimation(buf, geom.comp) : null;
 			m.animFrames = m.anim ? m.anim.frames : 0;

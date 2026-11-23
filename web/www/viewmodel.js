@@ -53,7 +53,8 @@
 		bobPhase: 0,
 		recoil: 0,
 		flash: 0,
-		moving: false
+		moving: false,
+		fireT: 0, reloadT: 0
 	};
 
 	function pathFor(weapon) {
@@ -132,12 +133,18 @@
 		/* the recoil decays */
 		st.recoil *= Math.pow(0.02, dt);
 		if (st.flash > 0) st.flash = Math.max(0, st.flash - dt * 12);
+		if (st.fireT > 0) st.fireT = Math.max(0, st.fireT - dt);
+		if (st.reloadT > 0) st.reloadT = Math.max(0, st.reloadT - dt);
 	}
 
 	/* the muzzle flash: the engine lights the scene with it */
 	function fire() {
 		st.recoil = 1;
 		st.flash = 1;
+		st.fireT = 0.35;
+	}
+	function reload() {
+		st.reloadT = 0.85;
 	}
 
 	/* draw the view model: the view model lives in the eye space (the eye at
@@ -169,8 +176,30 @@
 			var frame = o.frame;
 			if (st.forceFrame !== undefined && st.forceFrame !== null) frame = st.forceFrame;
 			if (frame === undefined) {
-				var sm = SM();
-				frame = (sm && sm.worldFrame) ? sm.worldFrame() : 0;
+				/* Frame 0 is FIRE1_A, not an idle pose.  Use the named clips
+				 * from the GHB header so the gun holds still between shots. */
+				var clips = (m && m.clips) || [];
+				var clip = null;
+				var pick = function (re) {
+					for (var i = 0; i < clips.length; i++)
+						if (re.test(clips[i].name || "")) return clips[i];
+					return null;
+				};
+				var progress = 0;
+				if (st.reloadT > 0) {
+					clip = pick(/^RELOAD_A$/i); progress = 1 - st.reloadT / 0.85;
+				} else if (st.fireT > 0) {
+					clip = pick(/^FIRE1_A$/i); progress = 1 - st.fireT / 0.35;
+				} else {
+					clip = pick(/^IDLE_A$/i); progress = (Date.now() % 4000) / 4000;
+				}
+				if (clip && clip.frameCount) {
+					frame = clip.firstFrame + Math.min(clip.frameCount - 1,
+						Math.floor(progress * clip.frameCount));
+				} else {
+					var sm = SM();
+					frame = (sm && sm.worldFrame) ? sm.worldFrame() : 0;
+				}
 			}
 			SM().drawModel(gl, m, mvp, s, frame);
 			if (depth && gl.enable) gl.enable(gl.DEPTH_TEST);
@@ -242,6 +271,7 @@
 		ensure: ensure,
 		draw: draw,
 		fire: fire,
+		reload: reload,
 		animate: animate,
 		setFrame: function (n) { st.forceFrame = n; return n; },
 		/* the weapon of the local player: the player state does not carry

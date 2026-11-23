@@ -1397,10 +1397,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				/* The shipped INVIEW mesh is centred near the eye: its grip is
 				 * behind the near plane until it is pushed forward.  The muzzle
 				 * is at engine +X, which the corrected mapping puts at -Z. */
-				x: state.testModel ? 0 : 10,
-				y: state.testModel ? -12 : -12,
-				z: state.testModel ? -90 : -38,
-				scale: state.testModel ? 1 : 0.65
+				x: state.testModel ? 0 : 18,
+				y: state.testModel ? -12 : -24,
+				z: state.testModel ? -90 : -34,
+				scale: state.testModel ? 1 : 0.8
 			});
 		}
 		drawGameHud();
@@ -1732,6 +1732,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.localReserve -= take;
 		state.lastShotAt = performance.now() / 1000;
 		note("reload: " + state.localAmmo + "/" + state.localReserve);
+		if (window.sofviewmodel && window.sofviewmodel.reload) window.sofviewmodel.reload();
 		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.12, 0.7);
 	}
 	function playFire(alt) {

@@ -44,7 +44,7 @@ dedicated server, not a simulated client.
 25. [ ] **Damage and armour** — server `T_Damage` path reduces HP/armour.
 26. [ ] **Death and respawn** — death state, penalty, respawn point and weapon reset.
 27. [ ] **Scoring / frags** — kills/deaths/scoreboard update on both clients.
-28. [ ] **Weapon switching** — number keys, `weaponselect`, correct viewmodel per owned weapon.
+28. [~] **Weapon switching** — number keys and `weaponselect` wired; viewmodel now uses real GHB clips (`IDLE_A`, `FIRE1_A`, `RELOAD_A`) instead of frame 0.
 29. [ ] **Fire modes** — primary/alt, heat, overheat, per-weapon behaviour.
 
 ## E. Characters and world entities
