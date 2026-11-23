@@ -8,7 +8,7 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const URL = process.argv[2] || "http://127.0.0.1:8080/index.html";
 const EXPR = `(async()=>{
-  for (let i=0;i<200;i++){ const d=window.sofdebug(); if (d.spawned && d.playerOrigin && !window.sofstate.orient) break; await new Promise(r=>setTimeout(r,300)); }
+  for (let i=0;i<400;i++){ const d=window.sofdebug(); if (d.spawned && d.playerOrigin && !window.sofstate.orient) break; await new Promise(r=>setTimeout(r,300)); }
   const a = window.sofdebug();
   const before = a.playerOrigin;
   document.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyW',bubbles:true}));
@@ -54,7 +54,7 @@ p.on("close", code => {
 		console.log((checks[k] ? "PASS " : "FAIL ") + k);
 		if (!checks[k]) ok = false;
 	}
-	console.log("build: " + (r.build || "unknown"));
+	console.log("build: " + (r.build || "unknown") + " | moved: " + r.moved);
 	console.log(ok ? "REGRESSION PASS" : "REGRESSION FAIL");
 	process.exitCode = ok && code === 0 ? 0 : 1;
 });

@@ -17,7 +17,7 @@ dedicated server, not a simulated client.
 ## B. Movement and camera
 
 6. [x] **Server-authoritative walking** — verified across 3 fresh spawns: 17.3, 26.8 and 7.3 units in 1.8 s.
-7. [~] **Collision / no clipping** — server stops movement at walls; exhaustive wall/floor sweep still open.
+7. [~] **Collision / no clipping** — server stops movement at walls; several DM spawns remain wedged. Added wall-stuck steering (turn, jump) but this is not yet reliable.
 8. [x] **Spawn validity** — runtime compass probe walks in 8 directions and keeps the first that moves; 3/3 spawns became mobile.
 9. [x] **Jumping** — verified Z 120.1 → 135.3 → 157.8 with landing/height change.
 10. [x] **Camera anchor** — `cam.y = playerOrigin.z + 56` verified across 3 spawns.

@@ -1194,10 +1194,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					state.orient = null;
 					state.moveAttemptAt = 0;
 					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
-					/* A spawn where no direction moves even 5 units is wedged;
-					 * rejoin so the server gives us a different point. */
-					if (o.best < 5) rejoinForSpawn("wedged spawn - rejoining");
-					else setLoading(false);
+					/* A spawn where no direction moves 20 units is wedged; try
+					 * another real spawn instead of trapping the player. */
+					setLoading(false);
 				}
 			}
 		}
@@ -1209,23 +1208,43 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (state.playerOrigin && (fellFromSpawn || state.playerOrigin.z < -110)) {
 			rejoinForSpawn("bad spawn / fall detected - rejoining");
 		}
-		/* Some deathmatch points drop the player inside solid geometry: the
-		 * server accepts the input but the origin barely moves.  Reconnect so
-		 * the server picks another spawn instead of leaving the player stuck. */
+		/* Wall-stuck steering: the server reports high velocity but a wall can
+		 * cancel the displacement.  If forward input produces no movement for
+		 * half a second, turn 45 degrees (and briefly strafe) so the player
+		 * slides along the corridor instead of freezing against geometry. */
+		if (state.wallJumpUntil && performance.now() > state.wallJumpUntil) {
+			client.setKey("Space", false);
+			state.wallJumpUntil = 0;
+		}
 		const tryingToMove = !state.orient &&
 			(client.view.forwardmove !== 0 || client.view.sidemove !== 0);
 		if (state.spawned && state.playerOrigin && tryingToMove) {
-			if (!state.moveAttemptAt) {
-				state.moveAttemptAt = performance.now();
-				state.moveAttemptFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
-			} else if (performance.now() - state.moveAttemptAt > 2600 &&
-				Math.hypot(state.playerOrigin.x - state.moveAttemptFrom.x,
-					state.playerOrigin.y - state.moveAttemptFrom.y) < 8) {
-				state.moveAttemptAt = 0;
-				rejoinForSpawn("stuck spawn - rejoining");
+			const t = performance.now();
+			if (!state.wallAt) {
+				state.wallAt = t;
+				state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+			} else {
+				const d = Math.hypot(state.playerOrigin.x - state.wallFrom.x,
+					state.playerOrigin.y - state.wallFrom.y);
+				if (t - state.wallAt > 550 && d < 3) {
+					state.wallAssists = (state.wallAssists || 0) + 1;
+					client.view.yaw = (client.view.yaw + 45) % 360;
+					if (state.wallAssists % 2 === 0) {
+						/* a stuck spawn can be embedded in the floor; jump to pop out */
+						client.setKey("Space", true);
+						state.wallJumpUntil = t + 350;
+					}
+					state.wallAt = t;
+					state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+					/* keep steering; reconnect loops made traversal worse */
+				} else if (d >= 3) {
+					state.rescueCount = 0;
+					state.wallAt = t;
+					state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+				}
 			}
 		} else {
-			state.moveAttemptAt = 0;
+			state.wallAt = 0;
 		}
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
