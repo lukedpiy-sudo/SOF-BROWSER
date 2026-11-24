@@ -141,6 +141,19 @@
 	let walkPhase = 0;
 	let lastSelfPos = null;
 
+	/* CTF flag: a pole and a cloth rectangle at the real flag origin. */
+	function drawFlag(x, y, z, color) {
+		translate(model, x, y + 22, z);
+		multiply(tmp, model, scale(mat4(), 2, 44, 2));
+		gl.uniformMatrix4fv(uModel, false, tmp);
+		gl.uniform3f(uColor, 0.6, 0.6, 0.65);
+		gl.drawArrays(gl.TRIANGLES, 0, 36);
+		translate(model, x + 9, y + 36, z);
+		multiply(tmp, model, scale(mat4(), 16, 10, 2));
+		gl.uniformMatrix4fv(uModel, false, tmp);
+		gl.uniform3f(uColor, color[0], color[1], color[2]);
+		gl.drawArrays(gl.TRIANGLES, 0, 36);
+	}
 	function drawFigure(x, y, z, yaw, moving, sz) {
 		/* the figure is drawn in the renderer's Y up space */
 		const s = sz || 1;
@@ -1334,6 +1347,16 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 						drawFigure(o.x, o.y, o.z, client.view.yaw, moving, 1);
 						drawn++;
 					}
+					return;
+				}
+				const flag = mapItemList.find(function (m) {
+					return m.classname === "item_ctf_flag" && m.origin &&
+						Math.hypot(m.origin[0] - o.x, m.origin[1] - o.z, m.origin[2] - o.y) < 40;
+				});
+				if (flag) {
+					drawFlag(o.x, o.y, o.z,
+						flag.origin[1] < 1000 ? [1, 0.18, 0.18] : [0.2, 0.45, 1]);
+					drawn++;
 					return;
 				}
 				if (isItemEntity(e, o)) {
