@@ -74,7 +74,7 @@ dedicated server, not a simulated client.
 
 ## H. Verification and release
 
-46. [ ] **Two-client PVP smoke test** — connect, see, move, shoot, damage, score, respawn.
+46. [~] **Two-client PVP smoke test** — both real clients connect, spawn, stream entities and appear in server status (`web/pvp_smoke.js` passes). Damage/score/respawn still open.
 47. [ ] **Four-to-eight client stress test** — no handshake stalls, stale-slot lockouts or desync.
 48. [x] **Headless regression + playthrough** — `node web/regression.js` and `node web/playtest.js` both pass spawn/walk/look/fire/reload/jump/third-person/menu checks.
 49. [ ] **Performance** — stable frame rate, load target, no memory growth over 10 min.

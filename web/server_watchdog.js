@@ -14,7 +14,9 @@ const path = require("path");
 const HOST = "127.0.0.1";
 const PORT = 29000;
 const PASSWORD = process.env.SOF_RCON || "sofbrowser";
-const MAX_IDLE = parseInt(process.env.SOF_MAX_IDLE || "120", 10);
+/* lastmsg is not small seconds in this build (active clients report values
+ * like 10003), so only kick slots that are unmistakably ancient. */
+const MAX_IDLE = parseInt(process.env.SOF_MAX_IDLE || "3600", 10);
 const ROOT = path.resolve(__dirname, "..");
 const SOC_DIR = path.join(ROOT, "Soldier of Fortune");
 const LOG = "/tmp/opencode/sof-server.log";
