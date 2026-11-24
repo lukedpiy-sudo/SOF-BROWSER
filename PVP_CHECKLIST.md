@@ -40,8 +40,8 @@ dedicated server, not a simulated client.
 21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3`, `use weapon_pistol` and `+set weaponarena 1` all tested; stats[2] stays 18. Live memory diff showed `weaponselect` changes no player-object dword.
 22. [ ] **Weapon pickup** — real pickup must authoritatively change weapon, ammo and reserve.
 23. [ ] **Reload** — local reload exists; server-authoritative reload needed.
-24. [ ] **Shot traces / hit detection** — server traces against players and world.
-25. [ ] **Damage and armour** — server `T_Damage` path reduces HP/armour.
+24. [~] **Shot traces / hit detection** — test PVP layer broadcasts shot origin/yaw over relay; each client checks line-of-fire and applies damage locally. Server-side traces still open.
+25. [~] **Damage and armour** — client-vs-client damage, hit marker and local HP overlay work over relay; server `T_Damage` authority still open.
 26. [ ] **Death and respawn** — death state, penalty, respawn point and weapon reset.
 27. [ ] **Scoring / frags** — kills/deaths/scoreboard update on both clients.
 28. [x] **Weapon switching** — number keys and `weaponselect` wired. Shipped INVIEW GHB topology renders as shards, so a clean procedural HUD viewmodel is used with the real clip-driven recoil/flash state.
@@ -70,7 +70,7 @@ dedicated server, not a simulated client.
 42. [~] **Sound pipeline** — real pak assets decoded; positioning/event coverage incomplete.
 43. [ ] **Weapon sounds** — correct fire/reload/impact per weapon.
 44. [ ] **Footsteps and ambience** — positional, map-appropriate, no missing files.
-45. [ ] **Muzzle flash / tracers / impacts** — visible to both clients, tied to real shots.
+45. [~] **Muzzle flash / tracers / impacts** — procedural muzzle flash and hit marker tied to shots; tracers/impact decals still open.
 
 ## H. Verification and release
 

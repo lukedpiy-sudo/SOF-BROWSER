@@ -165,9 +165,11 @@ function encodeFrame(payload, opcode) {
 
 // ------------------------------------------------------------- session
 let sessionId = 0;
+const sessions = new Set();   /* for test-only PVP combat broadcasts */
 
 function handleSession(ws, req) {
 	const id = ++sessionId;
+	sessions.add(ws);
 	const sock = dgram.createSocket("udp4");
 	let target = args.server ? parseTarget(args.server) : null;
 	let closed = false;
@@ -207,6 +209,13 @@ function handleSession(ws, req) {
 						log("session", id, "target", target.host + ":" + target.port);
 						ws.send(Buffer.from(JSON.stringify(
 							{ type: "connected", localPort: sock.address().port }), "utf8"), 0x1);
+					} else if (msg.type === "combat") {
+						/* test-only PVP damage sync between real browser clients */
+						const out = Buffer.from(JSON.stringify(msg), "utf8");
+						for (const other of sessions) {
+							if (other === ws) continue;
+							try { other.send(out, 0x1); } catch (e) { }
+						}
 					}
 				} catch (e) {
 					log("session", id, "bad json", JSON.stringify(txt.slice(0, 60)));
@@ -230,6 +239,7 @@ function handleSession(ws, req) {
 	function close() {
 		if (closed) return;
 		closed = true;
+		sessions.delete(ws);
 		log("session", id, "close");
 		try { sock.close(); } catch (e) { /* already closed */ }
 		try { ws.destroy(); } catch (e) { /* already gone */ }

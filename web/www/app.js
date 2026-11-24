@@ -737,6 +737,8 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.orient = null;
 		state.eyeInit = false;
 		state.console.length = 0;
+		state.localHealth = null;
+		state.hitAt = 0;
 		wantConnect = true;
 		state.status = "connecting";
 		setLoading(true, "connecting to " + serverHost + ":" + serverPort + "...");
@@ -765,7 +767,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			}, 60000);
 		};
 		ws.onmessage = function (ev) {
-			if (typeof ev.data === "string") return;      // the relay's JSON control
+			if (typeof ev.data === "string") {
+				/* relay control and test PVP combat broadcasts */
+				try {
+					const msg = JSON.parse(ev.data);
+					if (msg.type === "combat" && msg.from !== playerName) applyRemoteHit(msg);
+				} catch (e) { }
+				return;
+			}
 			const b = new Uint8Array(ev.data);
 			client.onDatagram(Buffer.from(b));
 		};
@@ -1403,6 +1412,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			hctx.moveTo(cx, cy + 3); hctx.lineTo(cx, cy + 7);
 			hctx.stroke();
 		}
+		if (state.hitAt && performance.now() - state.hitAt < 350) {
+			hctx.strokeStyle = "rgba(255,60,50,0.9)";
+			hctx.lineWidth = 2;
+			const cx2 = hud.width / 2, cy2 = hud.height / 2;
+			hctx.beginPath();
+			hctx.moveTo(cx2 - 16, cy2 - 16); hctx.lineTo(cx2 + 16, cy2 + 16);
+			hctx.moveTo(cx2 + 16, cy2 - 16); hctx.lineTo(cx2 - 16, cy2 + 16);
+			hctx.stroke();
+		}
 		/* A muzzle flash at the view-model muzzle.  The Ghoul model has its own
 		 * flash animation, but a short screen-space bloom makes every shot
 		 * readable even before the effect asset is wired in. */
@@ -1551,6 +1569,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	function drawGameHud() {
 		if (!state.hud) return;
 		const h = Object.assign({}, state.hud, {
+			health: state.localHealth === null ? state.hud.health : state.localHealth,
 			ammo: state.localAmmo === null ? state.hud.ammo : state.localAmmo,
 			ammo2: state.localReserve === null ? state.hud.ammo2 : state.localReserve
 		});
@@ -1860,6 +1879,33 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (window.sofviewmodel && window.sofviewmodel.reload) window.sofviewmodel.reload();
 		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.12, 0.7);
 	}
+	function sendCombatShot() {
+		if (!state.ws || state.ws.readyState !== 1 || !state.playerOrigin) return;
+		const p = state.playerOrigin;
+		const row = weaponRow();
+		try {
+			state.ws.send(JSON.stringify({
+				type: "combat", from: playerName,
+				x: p.x, y: p.y, z: p.z,
+				yaw: client.view.yaw || 0,
+				damage: Math.max(1, parseFloat(row && row.damage) || 20)
+			}));
+		} catch (e) { }
+	}
+	function applyRemoteHit(msg) {
+		if (!state.playerOrigin) return;
+		const p = state.playerOrigin;
+		const dx = p.x - msg.x, dy = p.y - msg.y, dz = p.z - msg.z;
+		const a = (msg.yaw || 0) * Math.PI / 180;
+		const fx = Math.sin(a), fy = -Math.cos(a);
+		const along = dx * fx + dy * fy;
+		const side = Math.abs(dx * fy - dy * fx);
+		if (along < 0 || along > 640 || side > 28 || Math.abs(dz) > 72) return;
+		const base = state.localHealth === null ? (state.hud ? state.hud.health : 100) : state.localHealth;
+		state.localHealth = Math.max(0, base - (msg.damage || 20));
+		state.hitAt = performance.now();
+		note("hit by " + msg.from + " (" + state.localHealth + " HP)");
+	}
 	function playFire(alt) {
 		const now = performance.now() / 1000;
 		if (now < state.nextFire || state.heatLock > 0) return;
@@ -1877,6 +1923,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.lastShotAt = now;
 		if (!addHeat(!!alt)) return;
 		if (state.localAmmo !== null) state.localAmmo--;
+		sendCombatShot();
 		if (window.sofviewmodel) window.sofviewmodel.fire();
 		if (!S) return;
 		const name = WEAPON_NAMES[state.weapon] || "SHOTGUN";
