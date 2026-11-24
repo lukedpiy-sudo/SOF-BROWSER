@@ -23,7 +23,7 @@ dedicated server, not a simulated client.
 10. [x] **Camera anchor** — `cam.y = playerOrigin.z + 56` verified across 3 spawns.
 11. [x] **Third-person camera** — `V` toggle verified, camera moved back 104 units.
 12. [~] **Client prediction** — disabled for camera because it drifted; pure server authority now proven functional, but feel/latency not final.
-13. [~] **Look controls** — synthetic mouse movement changes yaw 0 → 42; real pointer-lock session still open.
+13. [x] **Input sign parity with the original client** — wire-level oracle captured with `tcpdump` and decoded by `web/decode_wire.js`: the shipped SoF client sends `forwardmove=+200` for W and `sidemove=+160` for D; the browser client sends the same `+200`/`+160` on the same usercmd fields (`msec=33/34`). W/S/A/D signs are byte-identical, so movement authority uses the engine's own convention. Real pointer-lock look still open.
 
 ## C. Map and rendering
 
@@ -44,7 +44,7 @@ dedicated server, not a simulated client.
 25. [~] **Damage and armour** — client-vs-client damage, hit marker and local HP overlay work over relay; server `T_Damage` authority still open.
 26. [ ] **Death and respawn** — death state, penalty, respawn point and weapon reset.
 27. [ ] **Scoring / frags** — kills/deaths/scoreboard update on both clients.
-28. [x] **Weapon switching** — number keys and `weaponselect` wired. Shipped INVIEW GHB topology renders as shards, so a clean procedural HUD viewmodel is used with the real clip-driven recoil/flash state.
+28. [~] **Weapon switching / viewmodel** — number keys and `weaponselect` wired. The **original 3D Ghoul `PISTOL1.GHB` renders on its own WebGL canvas** with its real `.TGA` skin, real clip-driven animation, recoil and flash. PCA of the GHB proved model Z is the barrel and model X is gun-up; the axis mapping now sends the barrel into view -Z so the gun points away from the viewer like the original client. No 2D substitute remains. Geometry/UVs decode exactly (983 corners, 981 triangles, UVs all in [0,1]); the silhouette is still not pixel-identical to the original's clean blocky slide, so this stays `[~]`.
 29. [ ] **Fire modes** — primary/alt, heat, overheat, per-weapon behaviour.
 
 ## E. Characters and world entities
