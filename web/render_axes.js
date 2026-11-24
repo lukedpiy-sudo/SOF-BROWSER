@@ -12,7 +12,7 @@ const m = model === "box"
   : b.slice(19145984, 19145984 + 257912);
 const g = GH.parseGeometry(m, GH.parseGhoul(m));
 const a = GH.decodeAnimation(m, g.comp);
-const FR = 120, F = a ? a.frames : 1;
+const FR = parseInt(process.argv[3] || "120", 10), F = a ? a.frames : 1;
 const pos = [];
 if (g.staticPositions) {
   for (const c of g.corners) pos.push(c.pos || [0, 0, 0]);
