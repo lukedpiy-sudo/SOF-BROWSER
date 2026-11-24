@@ -1493,12 +1493,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				fov: state.fov || 90,
 				frame: params.has("vmframe") ? parseInt(params.get("vmframe"), 10) : undefined,
 				/* The shipped INVIEW mesh is centred near the eye: its grip is
-				 * behind the near plane until it is pushed forward.  The muzzle
-				 * is at engine +X, which the corrected mapping puts at -Z. */
-				x: state.testModel ? 0 : 12,
-				y: state.testModel ? -12 : -20,
-				z: state.testModel ? -90 : -50,
-				scale: state.testModel ? 1 : 1.8
+				 * behind the near plane until it is pushed forward.  The barrel
+				 * (model Z) maps to view -Z, so the gun points into the screen. */
+				x: state.testModel ? 0 : (params.has("vmx") ? parseFloat(params.get("vmx")) : 30),
+				y: state.testModel ? -12 : (params.has("vmy") ? parseFloat(params.get("vmy")) : -18),
+				z: state.testModel ? -90 : (params.has("vmz") ? parseFloat(params.get("vmz")) : -60),
+				scale: state.testModel ? 1 : (params.has("vms") ? parseFloat(params.get("vms")) : 2.4)
 			});
 		}
 		drawGameHud();

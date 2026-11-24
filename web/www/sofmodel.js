@@ -544,7 +544,7 @@
 			let nn = nrm ? nrm[i] : (c.nrmIndex < 0 ? c.nrm : null);
 			/* normals must follow the same eye-space axis swap as the
 			 * vertices, or a flipped view model renders almost black */
-			if (m.space === "view" && nn) nn = [-nn[1], nn[2], -nn[0]];
+			if (m.space === "view" && nn) nn = [nn[1], nn[0], -nn[2]];
 			const uv = c.texIndex < 0 ? c.uv : null;
 			/* The world models are Z up and the matrix turns them into the
 			 * renderer's Y up.  View models are already in the engine's eye
@@ -558,7 +558,9 @@
 			 * so engine -Z is up in the renderer: +X -> -Z, +Z -> -Y.
 			 * Keeping X = -Y puts the gun in the right hand. */
 			let x, y, z;
-			if (m.space === "view") { x = -p[1]; y = p[2]; z = -p[0]; }
+			/* Ghoul view models: model Z is the barrel (the principal axis),
+			 * model X is gun-up.  Rotate barrel -> view -Z and up -> view +Y. */
+			if (m.space === "view") { x = p[1]; y = p[0]; z = -p[2]; }
 			else { x = p[0]; y = p[1]; z = p[2]; }
 			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
 			data[i * 8 + 3] = nn ? nn[0] : 0;
@@ -740,7 +742,7 @@
 				pz = mat[2] * x + mat[6] * y + mat[10] * z + mat[14];
 			}
 			let x, y, z;
-			if (m.space === "view") { x = -py; y = pz; z = -px; }
+			if (m.space === "view") { x = py; y = px; z = -pz; }
 			else { x = px; y = py; z = pz; }
 			data[i * 8 + 0] = x; data[i * 8 + 1] = y; data[i * 8 + 2] = z;
 			/* normals from the palette, animated per frame (static corners
@@ -756,7 +758,7 @@
 				} else {
 					nx = na[0]; ny = na[1]; nz = na[2];
 				}
-				if (m.space === "view") { const t = nx; nx = -ny; ny = nz; nz = -t; }
+				if (m.space === "view") { const t = nx; nx = ny; ny = t; nz = -nz; }
 				data[i * 8 + 3] = nx; data[i * 8 + 4] = ny; data[i * 8 + 5] = nz;
 			}
 		}
@@ -866,6 +868,10 @@
 		gl.enableVertexAttribArray(mesh.uv);
 		gl.vertexAttribPointer(mesh.uv, 2, gl.FLOAT, false, 32, 24);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.ibo);
+		/* Cull interior faces: without this the gun's back faces show through
+		 * the front and the model looks like a pile of shards. */
+		gl.enable(gl.CULL_FACE);
+		gl.cullFace(gl.BACK);
 		gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
 		return true;
 	}

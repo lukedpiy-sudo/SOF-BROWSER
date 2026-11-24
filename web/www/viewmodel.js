@@ -167,6 +167,7 @@
 			var aspect = o.aspect || (window.innerWidth / Math.max(1, window.innerHeight));
 			var proj = perspective((o.fov || 90) * Math.PI / 180, aspect, 1, 2000);
 			var mvp = mul(proj, compose(sx, sy, sz, st.recoil));
+			st.lastMvp = mvp;
 			/* the view model is drawn over the world: the depth test is off
 			 * and the points are bigger than the world's */
 			var depth = gl.isEnabled ? gl.isEnabled(gl.DEPTH_TEST) : false;
