@@ -83,17 +83,19 @@
 	function rejoinForSpawn(reason) {
 		if (state.rescuing) return;
 		state.rescueCount = (state.rescueCount || 0) + 1;
-		if (state.rescueCount > 2) {
+		if (state.rescueCount > 3 || state.spawnGiveUp) {
+			state.spawnGiveUp = true;
 			note(reason + " (giving up after 3 retries)");
 			setLoading(false);
 			return;
 		}
 		state.rescuing = true;
+		state.silentReconnect = true;
 		note(reason);
 		setTimeout(function () {
 			window.sofapp.connect(serverHost, serverPort, relayHost, playerName);
 			state.rescuing = false;
-		}, 600);
+		}, 300);
 	}
 
 	/* Per-entity Ghoul animation.  The wire snapshot does not carry the AI
@@ -681,29 +683,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 						state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: -2,
 							authoritative: true };
 					}
-					/* Aim once at spawn using a static brush trace — no walking
-					 * probe, so the player is not marched around on load. */
-					if (!state.spawnAimed && state.playerOrigin) {
-						let yaw = 0, best = -1;
-						const P = window.sofpredict;
-						if (P && P.info && P.info().ready && P.trace) {
-							const p = state.playerOrigin;
-							const from = [p.x, p.y, p.z + 4];
-							for (let i = 0; i < 8; i++) {
-								const a = i * 45 * Math.PI / 180;
-								const to = [from[0] + Math.sin(a) * 160, from[1] - Math.cos(a) * 160, from[2]];
-								const d = P.trace(from, to).frac * 160;
-								if (d > best) { best = d; yaw = i * 45; }
-							}
-						} else if (state.mapBounds) {
-							const c = state.mapBounds;
-							yaw = Math.atan2((c.min[0] + c.max[0]) / 2 - state.playerOrigin.x,
-								-((c.min[1] + c.max[1]) / 2 - state.playerOrigin.y)) * 180 / Math.PI;
-						}
-						client.view.yaw = yaw;
-						client.view.pitch = 0;
-						state.spawnAimed = true;
-						setLoading(false);
+					/* Pick a spawn direction by asking the server which way it
+					 * actually lets us walk.  This runs behind the loading screen,
+					 * so the player never sees a walking probe. */
+					if (!state.spawnAimed && !state.orient && state.playerOrigin) {
+						state.orient = {
+							i: 0, yaws: [0, 45, 90, 135, 180, 225, 270, 315],
+							best: -1, yaw: client.view.yaw || 0, dirAt: 0
+						};
+						setLoading(true, "finding a clear direction...");
 					}
 					break;
 				case "servercmd": {
@@ -783,8 +771,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 			state.connected = false;
 			state.spawned = false;
 			state.ws = null;
-			setLoading(true, "connection lost - reconnecting...");
-			if (window.sofmenu) window.sofmenu.onDisconnect();
+			if (state.silentReconnect) {
+				setLoading(true, "server chose a blocked spawn - retrying...");
+			} else {
+				setLoading(true, "connection lost - reconnecting...");
+				if (window.sofmenu) window.sofmenu.onDisconnect();
+			}
 			if (wantConnect) reconnectTimer = setTimeout(connect, 2000);
 		};
 		ws.onerror = function () {
@@ -1237,11 +1229,42 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		frameEntities();
 		updateCamera(dt);
 
-		/* Do NOT auto-rejoin on a fall or a stuck step: that threw the player
-		 * back to the menu mid-walk.  The server owns respawns. */
-		/* Camera and yaw belong to the player only.  Automatic steering used
-		 * to rotate client.view.yaw when the player hit a wall, which fought
-		 * mouse look and felt like losing control.  Do not do that. */
+		/* A spawn below the world can never be walked on.  Retry silently
+		 * behind the loading screen; never bounce to the menu. */
+		if (!state.spawnGiveUp && state.playerOrigin && state.playerOrigin.z < -60) {
+			rejoinForSpawn("fell out of world - retrying silently");
+		}
+		/* Spawn-only direction probe.  The loading screen hides it; after it
+		 * finishes, yaw belongs to the player and is never auto-rotated. */
+		if (state.orient && state.playerOrigin) {
+			const o = state.orient;
+			const t = performance.now();
+			if (!o.dirAt) {
+				o.dirAt = t;
+				o.from = { x: state.playerOrigin.x, y: state.playerOrigin.y };
+				client.view.yaw = o.yaws[o.i];
+				client.setKey("KeyW", true);
+			} else if (t - o.dirAt > 450) {
+				const d = Math.hypot(state.playerOrigin.x - o.from.x,
+					state.playerOrigin.y - o.from.y);
+				if (d > o.best) { o.best = d; o.yaw = o.yaws[o.i]; }
+				client.setKey("KeyW", false);
+				o.i++; o.dirAt = 0;
+				if (o.i >= o.yaws.length) {
+					client.view.yaw = o.yaw;
+					state.orient = null;
+					state.wallAt = 0;
+					if (o.best < 8) {
+						rejoinForSpawn("blocked spawn - retrying silently");
+					} else {
+						state.spawnAimed = true;
+						state.silentReconnect = false;
+						setLoading(false);
+						note("spawn direction: " + o.yaw + " deg (" + o.best.toFixed(1) + " units)");
+					}
+				}
+			}
+		}
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
 		state.clipPlayers.forEach(function (p, num) {
@@ -1288,6 +1311,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					mapDrawn += g.count / 3;
 				}
 			}
+			/* CTF flags are static map objectives; the server currently reports
+			 * Team DM, so draw them from the BSP entity list ourselves. */
+			bindEntityState(mvp);
+			for (const f of mapItemList) {
+				if (f.classname !== "item_ctf_flag" || !f.origin) continue;
+				drawFlag(f.origin[0], f.origin[2], f.origin[1],
+					f.origin[1] < 1000 ? [1, 0.18, 0.18] : [0.2, 0.45, 1]);
+				drawn++;
+			}
 			/* then the live entities */
 			bindEntityState(mvp);
 			state.entities.forEach(function (e) {
@@ -1304,16 +1336,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 					}
 					return;
 				}
-				const flag = mapItemList.find(function (m) {
-					return m.classname === "item_ctf_flag" && m.origin &&
-						Math.hypot(m.origin[0] - o.x, m.origin[1] - o.z, m.origin[2] - o.y) < 40;
-				});
-				if (flag) {
-					drawFlag(o.x, o.y, o.z,
-						flag.origin[1] < 1000 ? [1, 0.18, 0.18] : [0.2, 0.45, 1]);
-					drawn++;
-					return;
-				}
+
 				if (isItemEntity(e, o)) {
 					/* a dropped item: a small marker */
 					const h = 12;

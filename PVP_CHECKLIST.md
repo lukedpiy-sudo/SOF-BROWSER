@@ -16,10 +16,10 @@ dedicated server, not a simulated client.
 
 ## B. Movement and camera
 
-6. [x] **Server-authoritative walking** — usercmds now driven from render loop at 10 Hz (setInterval was throttled). On CTF map regression passes 3/3 with 44–60 units per 1.8 s probe. No auto-rejoin mid-walk.
+6. [x] **Server-authoritative walking** — render-loop usercmds at 10 Hz; full browser playthrough walked 26.1 units with stable yaw. Silent spawn retry handles blocked spawns without menu bounce.
 7. [~] **Collision / no clipping** — server stops movement at walls; several DM spawns remain wedged. Wall-stuck steering (turn, jump) added but not reliable.
 8. [x] **Spawn validity** — server now runs the real `dm/nycctf1` CTF map; spawn aim is instant (no walking probe), and falls/stuck steps no longer kick the player back to the menu.
-9. [x] **Jumping** — verified Z 120.1 → 135.3 → 157.8 with landing/height change.
+9. [x] **Jumping** — playthrough verified Z 56.1 → 77.5 with landing.
 10. [x] **Camera anchor** — `cam.y = playerOrigin.z + 56` verified across 3 spawns.
 11. [x] **Third-person camera** — `V` toggle verified, camera moved back 104 units.
 12. [~] **Client prediction** — disabled for camera because it drifted; pure server authority now proven functional, but feel/latency not final.
@@ -59,7 +59,7 @@ dedicated server, not a simulated client.
 
 35. [~] **HUD data** — health, armour, ammo, weapon, item decoded from player state; styling off reference.
 36. [ ] **HUD visual match** — bottom-centre health/armour, green digital ammo, compact original layout.
-37. [ ] **Scoreboard** — shell only; real names, scores, ping, teams needed.
+37. [~] **Scoreboard** — relay RCON endpoint now parses real names (including CNCT pings); playthrough shows real player name. Team/score formatting still basic.
 38. [ ] **Chat / team chat** — commands exist; delivery/display between clients unverified.
 39. [ ] **Console** — client vs server commands separated and reliable.
 40. [ ] **Menus** — main/pause/settings/controls/browser/content need final pass.
@@ -76,7 +76,7 @@ dedicated server, not a simulated client.
 
 46. [ ] **Two-client PVP smoke test** — connect, see, move, shoot, damage, score, respawn.
 47. [ ] **Four-to-eight client stress test** — no handshake stalls, stale-slot lockouts or desync.
-48. [x] **Headless regression suite** — `node web/regression.js` passes all checks on the CTF build.
+48. [x] **Headless regression + playthrough** — `node web/regression.js` and `node web/playtest.js` both pass spawn/walk/look/fire/reload/jump/third-person/menu checks.
 49. [ ] **Performance** — stable frame rate, load target, no memory growth over 10 min.
 50. [ ] **Final release checklist** — all items ticked, committed, pushed, known-good URL.
 

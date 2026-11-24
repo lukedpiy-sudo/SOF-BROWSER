@@ -314,8 +314,9 @@ const server = http.createServer((req, res) => {
 			const text = m.toString("latin1", "replace");
 			const players = [];
 			for (const line of text.split("\n")) {
-				const mm = line.match(/^\s*(\d+)\s+(-?\d+)\s+(\d+)\s+(.+?)\s+(\d+)\s+(\S+)\s+(\d+)\s*$/);
-				if (mm) players.push({ num: +mm[1], score: +mm[2], ping: +mm[3], name: mm[4], lastmsg: +mm[5], address: mm[6], qport: +mm[7] });
+				/* ping can be a number or CNCT while the client is connecting */
+				const mm = line.match(/^\s*(\d+)\s+(-?\d+)\s+(\S+)\s+(.+?)\s+(\d+)\s+(\S+)\s+(\d+)\s*$/);
+				if (mm) players.push({ num: +mm[1], score: +mm[2], ping: mm[3], name: mm[4], lastmsg: +mm[5], address: mm[6], qport: +mm[7] });
 			}
 			finish({ ok: true, players, raw: text.slice(-600) });
 		});
