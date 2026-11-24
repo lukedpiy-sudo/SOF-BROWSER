@@ -10,6 +10,7 @@ const URL = process.argv[2] || "http://127.0.0.1:8080/index.html";
 const EXPR = `(async()=>{
   for (let i=0;i<400;i++){ const d=window.sofdebug(); if (d.spawned && d.playerOrigin && !window.sofstate.orient) break; await new Promise(r=>setTimeout(r,300)); }
   const a = window.sofdebug();
+  const before = a.playerOrigin;
   /* Use the protocol probe: it drives the same usercmd path the real client
    * uses, without depending on DOM focus or the wall-assist timing. */
   window.sofprobe(a.yaw||0, 1800, 200);

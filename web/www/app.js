@@ -497,6 +497,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	}
 	const client = window.sofproto.createClient({
 		userinfo: buildUserinfo(),
+		/* The render loop drives usercmds; setInterval is throttled in some
+		 * browsers and starves the server's per-client msec budget. */
+		keepAliveInterval: 0,
 		send: (buf) => {
 			if (state.ws && state.ws.readyState === 1) {
 				const bin = toBinary(buf);
@@ -661,16 +664,39 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 						state.playerOrigin = { x: o.x, y: o.y, z: o.z, at: -2,
 							authoritative: true };
 					}
-					/* Find a direction the server actually lets us walk in.
-					 * Static brush traces were unreliable at real DM spawns. */
-					if (!state.spawnAimed && !state.orient && state.playerOrigin) {
-						state.orient = {
-							i: 0, yaws: [0, 45, 90, 135, 180, 225, 270, 315],
-							best: -1, yaw: 0, dirAt: 0
-						};
-						setLoading(true, "finding a clear direction...");
+					/* Aim once at spawn using a static brush trace — no walking
+					 * probe, so the player is not marched around on load. */
+					if (!state.spawnAimed && state.playerOrigin) {
+						let yaw = 0, best = -1;
+						const P = window.sofpredict;
+						if (P && P.info && P.info().ready && P.trace) {
+							const p = state.playerOrigin;
+							const from = [p.x, p.y, p.z + 4];
+							for (let i = 0; i < 8; i++) {
+								const a = i * 45 * Math.PI / 180;
+								const to = [from[0] + Math.sin(a) * 160, from[1] - Math.cos(a) * 160, from[2]];
+								const d = P.trace(from, to).frac * 160;
+								if (d > best) { best = d; yaw = i * 45; }
+							}
+						} else if (state.mapBounds) {
+							const c = state.mapBounds;
+							yaw = Math.atan2((c.min[0] + c.max[0]) / 2 - state.playerOrigin.x,
+								-((c.min[1] + c.max[1]) / 2 - state.playerOrigin.y)) * 180 / Math.PI;
+						}
+						client.view.yaw = yaw;
+						client.view.pitch = 0;
+						state.spawnAimed = true;
+						setLoading(false);
 					}
 					break;
+				case "servercmd": {
+					const text = String(data).replace(/^(print|chat)\s*/, "").trim();
+					if (text) {
+						note(text);
+						if (window.sofmenu && window.sofmenu.addChat) window.sofmenu.addChat(text);
+					}
+					break;
+				}
 				case "frameError": note("frame error: " + (data && data.message ? data.message : data)); break;
 			}
 		}
@@ -1166,6 +1192,15 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	function frameInner(now) {
 		const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
 		last = now;
+		/* Drive usercmds from the render loop at the server's 10 Hz frame rate.
+		 * setInterval is throttled in some browsers and starves movement. */
+		if (state.connected && client.spawnDone) {
+			state.cmdAcc = (state.cmdAcc || 0) + dt;
+			while (state.cmdAcc >= 0.1) {
+				state.cmdAcc -= 0.1;
+				try { client.sendUserCmd(); } catch (e) { }
+			}
+		}
 		coolHeat(dt);
 		/* the browser owns the local magazine loop until the server sends a
 		 * weapon-object update; AUTO weapons keep firing while held */
@@ -1175,43 +1210,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		resize();
 		frameEntities();
 		updateCamera(dt);
-		/* Probe the eight compass directions with the real server and keep the
-		 * one that actually moves us.  Brush-based tracing was unreliable at
-		 * real DM spawns, so this is the only test that matters. */
-		if (state.orient && state.playerOrigin) {
-			const o = state.orient;
-			const t = performance.now();
-			if (!o.dirAt) {
-				o.dirAt = t;
-				o.from = { x: state.playerOrigin.x, y: state.playerOrigin.y };
-				client.view.yaw = o.yaws[o.i];
-				client.setKey("KeyW", true);
-			} else if (t - o.dirAt > 700) {
-				const d = Math.hypot(state.playerOrigin.x - o.from.x,
-					state.playerOrigin.y - o.from.y);
-				if (d > o.best) { o.best = d; o.yaw = o.yaws[o.i]; }
-				client.setKey("KeyW", false);
-				o.i++; o.dirAt = 0;
-				if (o.i >= o.yaws.length) {
-					client.view.yaw = o.yaw;
-					state.spawnAimed = true;
-					state.orient = null;
-					state.moveAttemptAt = 0;
-					state.wallAt = 0;
-					state.wallAssists = 0;
-					note("spawn oriented: yaw " + o.yaw + ", best " + o.best.toFixed(1));
-					setLoading(false);
-				}
-			}
-		}
-		/* The DM map has open drops.  When the authoritative origin falls out
-		 * of the world, rejoin: `kill`/`suicide` are not accepted by this
-		 * dedicated server, and a fresh connection gives a real spawn point. */
-		const fellFromSpawn = !state.orient && state.playerOrigin && state.initialOrigin &&
-			state.playerOrigin.z < state.initialOrigin.z - 35;
-		if (state.playerOrigin && (fellFromSpawn || state.playerOrigin.z < -110)) {
-			rejoinForSpawn("bad spawn / fall detected - rejoining");
-		}
+
+		/* Do NOT auto-rejoin on a fall or a stuck step: that threw the player
+		 * back to the menu mid-walk.  The server owns respawns. */
 		/* Wall-stuck steering: the server reports high velocity but a wall can
 		 * cancel the displacement.  If forward input produces no movement for
 		 * half a second, turn 45 degrees (and briefly strafe) so the player
@@ -1479,50 +1480,40 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const bottom = H - 46;
 		hctx.save();
 
-		/* a dark strip along the bottom, like the original */
-		hctx.fillStyle = "rgba(8,10,12,0.55)";
-		hctx.fillRect(0, bottom - 14, W, H - bottom + 14);
-
-		/* the health bar (red) and the armor bar (grey blue) */
-		const barW = 190, barH = 11;
-		const drawBar = function (x, y, value, fill, label) {
+		/* Reference layout: compact centred health/armour bars, green digital
+		 * ammunition at the right, weapon name above the bars. */
+		const barW = 220, barH = 9;
+		const bx = W / 2 - barW / 2;
+		const drawBar = function (y, value, fill) {
 			const p = Math.max(0, Math.min(1, value / 100));
-			hctx.fillStyle = "rgba(0,0,0,0.6)";
-			hctx.fillRect(x - 1, y - 1, barW + 2, barH + 2);
-			hctx.fillStyle = "rgba(40,44,48,0.9)";
-			hctx.fillRect(x, y, barW, barH);
+			hctx.fillStyle = "rgba(0,0,0,0.65)";
+			hctx.fillRect(bx - 1, y - 1, barW + 2, barH + 2);
+			hctx.fillStyle = "rgba(30,34,38,0.9)";
+			hctx.fillRect(bx, y, barW, barH);
 			hctx.fillStyle = fill;
-			hctx.fillRect(x, y, Math.round(barW * p), barH);
-			hctx.strokeStyle = "rgba(180,190,200,0.55)";
-			hctx.lineWidth = 1;
-			hctx.strokeRect(x + 0.5, y + 0.5, barW - 1, barH - 1);
-			hctx.fillStyle = "#e6e6e6";
-			hctx.font = "12px monospace";
-			hctx.fillText(label + " " + value, x + barW + 8, y + barH - 1);
+			hctx.fillRect(bx, y, Math.round(barW * p), barH);
 		};
-		drawBar(18, bottom + 2, h.health, "#c03028", "HP");
-		drawBar(18, bottom + 18, h.armor, "#8892a0", "AP");
+		drawBar(bottom + 8, h.health, "#c03028");
+		drawBar(bottom + 22, h.armor, "#7f9fd0");
 
-		/* the selected weapon and the heat meter (row +0x118/+0x11C) */
 		const wn = WEAPON_NAMES[state.weapon] || ("WEAPON " + state.weapon);
 		hctx.textAlign = "center";
-		hctx.font = "12px monospace";
+		hctx.font = "11px monospace";
 		hctx.fillStyle = state.heatLock > 0 ? "#ff7040" : "#c8c8a0";
-		hctx.fillText(wn + (state.heatLock > 0 ? "  OVERHEATED" : ""), W / 2, bottom + 10);
-		const hw = 150, hx = W / 2 - hw / 2, hy = bottom + 16;
-		hctx.fillStyle = "rgba(0,0,0,0.6)"; hctx.fillRect(hx - 1, hy - 1, hw + 2, 7);
-		hctx.fillStyle = "rgba(40,44,48,0.9)"; hctx.fillRect(hx, hy, hw, 5);
+		hctx.fillText(wn + (state.heatLock > 0 ? "  OVERHEATED" : ""), W / 2, bottom + 2);
+		const hw = 150, hx = W / 2 - hw / 2, hy = bottom + 34;
+		hctx.fillStyle = "rgba(0,0,0,0.6)"; hctx.fillRect(hx - 1, hy - 1, hw + 2, 5);
 		hctx.fillStyle = state.heat > 0.75 ? "#e0613a" : "#d9a441";
-		hctx.fillRect(hx, hy, Math.round(hw * Math.max(0, Math.min(1, state.heat))), 5);
+		hctx.fillRect(hx, hy, Math.round(hw * Math.max(0, Math.min(1, state.heat))), 3);
 
-		/* the ammunition, in the bottom right, as in the original */
+		/* green digital ammunition, bottom right */
 		hctx.textAlign = "right";
-		hctx.font = "bold 30px monospace";
-		hctx.fillStyle = h.ammo2 <= 1 ? "#ff7040" : "#e8e8e8";
-		hctx.fillText(String(h.ammo), W - 96, bottom + 30);
-		hctx.font = "15px monospace";
-		hctx.fillStyle = "#b8b8b8";
-		hctx.fillText("/ " + h.ammo2, W - 18, bottom + 30);
+		hctx.font = "bold 34px monospace";
+		hctx.fillStyle = h.ammo <= 2 ? "#ff5040" : "#48e060";
+		hctx.fillText(String(h.ammo).padStart(2, "0"), W - 70, bottom + 30);
+		hctx.font = "14px monospace";
+		hctx.fillStyle = "#3aa050";
+		hctx.fillText("/ " + h.ammo2, W - 16, bottom + 30);
 
 		/* the carried item */
 		if (h.item) {
@@ -1916,7 +1907,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	// the acknowledgement to advance), so nothing to do here
 	applyMods();
 	initWhiteTexture();
-	loadMap("map_nycdm1.json");
+	loadMap("map_nycctf1.json");
 	fetch("map_entities.json").then(function (r) { return r.json(); }).then(function (list) {
 		mapItemList = list;
 		mapItems = list.filter(function (e) { return e.origin && /item_/.test(e.classname); })

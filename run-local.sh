@@ -19,7 +19,7 @@ start() {
 		WINEPREFIX="$HOME/.wine-sof" WINEDEBUG=-all \
 		WINEDLLOVERRIDES='mscoree,mshtml=' wine SoF.exe \
 		+set dedicated 1 +set port 29000 +set rcon_password sofbrowser \
-		+map dm/nycdm1 >"$LOGDIR/sof-server.log" 2>&1 < /dev/null & )
+		+set deathmatch 0 +set ctf 1 +set teamplay 1 +map dm/nycctf1 >"$LOGDIR/sof-server.log" 2>&1 < /dev/null & )
 
 	nohup setsid env PATH="$HOME/.local/node/bin:$PATH" \
 		node "$ROOT/web/relay.js" --http 8080 --www "$ROOT/web/www" \

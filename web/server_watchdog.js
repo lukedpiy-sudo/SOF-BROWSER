@@ -46,7 +46,8 @@ function restartServer(reason) {
 	try {
 		const p = child.spawn("wine", [
 			"SoF.exe", "+set", "dedicated", "1", "+set", "port", "29000",
-			"+set", "rcon_password", PASSWORD, "+map", "dm/nycdm1"
+			"+set", "rcon_password", PASSWORD, "+set", "deathmatch", "0",
+			"+set", "ctf", "1", "+set", "teamplay", "1", "+map", "dm/nycctf1"
 		], { cwd: SOC_DIR, env: env, detached: true, stdio: ["ignore", out, out] });
 		p.unref();
 	} catch (e) { console.log("[watchdog] launch failed: " + e.message); }

@@ -286,6 +286,35 @@ function pakIndex() {
 const server = http.createServer((req, res) => {
 	const p = decodeURIComponent(url.parse(req.url).pathname);
 
+	/* real server status for the scoreboard: the browser cannot send UDP, so
+	 * the relay queries RCON and returns parsed player rows. */
+	if (p === "/api/status") {
+		const target = (args.server || "127.0.0.1:29000").split(":");
+		const host = target[0], port = parseInt(target[1] || "29000", 10);
+		const pass = process.env.SOF_RCON || "sofbrowser";
+		const sock = dgram.createSocket("udp4");
+		let done = false;
+		const finish = (obj) => {
+			if (done) return; done = true;
+			try { sock.close(); } catch (e) { }
+			res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+			res.end(JSON.stringify(obj));
+		};
+		sock.on("message", (m) => {
+			const text = m.toString("latin1", "replace");
+			const players = [];
+			for (const line of text.split("\n")) {
+				const mm = line.match(/^\s*(\d+)\s+(-?\d+)\s+(\d+)\s+(.+?)\s+(\d+)\s+(\S+)\s+(\d+)\s*$/);
+				if (mm) players.push({ num: +mm[1], score: +mm[2], ping: +mm[3], name: mm[4], lastmsg: +mm[5], address: mm[6], qport: +mm[7] });
+			}
+			finish({ ok: true, players, raw: text.slice(-600) });
+		});
+		sock.on("error", () => finish({ ok: false, players: [] }));
+		sock.send(Buffer.from("\xff\xff\xff\xffrcon " + pass + " status\n", "latin1"), port, host);
+		setTimeout(() => finish({ ok: false, players: [] }), 2000);
+		return;
+	}
+
 	/* an asset out of the pak */
 	if (p.startsWith("/pak/")) {
 		const want = p.slice(5).toLowerCase();

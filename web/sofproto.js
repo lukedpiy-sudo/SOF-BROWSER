@@ -604,6 +604,8 @@ function unrelHdr() {
 				onEvent("spawned");
 				continue;
 			}
+			/* chat / server prints: only forward readable text commands */
+			if (/^(print|chat|say)\b/.test(cmd)) onEvent("servercmd", cmd);
 		}
 	}
 

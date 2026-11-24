@@ -177,6 +177,12 @@
 		input.focus();
 	}
 	function closeChat() { chat.classList.remove("visible"); }
+	function addChatLine(text) {
+		const line = document.createElement("div");
+		line.textContent = text;
+		chatLog.appendChild(line);
+		while (chatLog.childNodes.length > 8) chatLog.removeChild(chatLog.firstChild);
+	}
 	function sendChat() {
 		const input = $("sof-chat-input");
 		const text = input.value.trim();
@@ -330,18 +336,27 @@
 			clearInterval(scoreTimer); scoreTimer = null;
 		}
 	}
-	function updateScoreboard() {
-		if (!window.sofapp) return;
-		const s = window.sofapp.getState();
+	function renderScoreRows(rows) {
 		const body = $("sof-score-rows");
 		if (!body) return;
 		body.innerHTML = "";
-		s.entities.forEach(function (e) {
+		rows.forEach(function (e) {
 			const tr = document.createElement("tr");
-			[e.number, e.name, e.team, e.score, e.ping].forEach(function (v) {
+			[e.num !== undefined ? e.num : e.number, e.name, e.team || "-", e.score, e.ping].forEach(function (v) {
 				const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
 			});
 			body.appendChild(tr);
+		});
+	}
+	function updateScoreboard() {
+		if (!window.sofapp) return;
+		/* real names/scores/ping come from the server via the relay's RCON
+		 * status endpoint; the entity stream is only a fallback. */
+		fetch("/api/status").then(function (r) { return r.json(); }).then(function (j) {
+			if (j && j.ok && j.players && j.players.length) renderScoreRows(j.players);
+			else renderScoreRows(window.sofapp.getState().entities);
+		}).catch(function () {
+			renderScoreRows(window.sofapp.getState().entities);
 		});
 	}
 
@@ -385,6 +400,7 @@
 			else setVisible(false);
 		},
 		showScoreboard: showScoreboard,
+		addChat: addChatLine,
 		onDisconnect: function () {
 			/* never leave the user staring at a server-less world preview */
 			showScreen("main");
