@@ -1475,10 +1475,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				/* The shipped INVIEW mesh is centred near the eye: its grip is
 				 * behind the near plane until it is pushed forward.  The muzzle
 				 * is at engine +X, which the corrected mapping puts at -Z. */
-				x: state.testModel ? 0 : 10,
-				y: state.testModel ? -12 : -12,
-				z: state.testModel ? -90 : -38,
-				scale: state.testModel ? 1 : 0.8
+				x: state.testModel ? 0 : 12,
+				y: state.testModel ? -12 : -20,
+				z: state.testModel ? -90 : -50,
+				scale: state.testModel ? 1 : 1.8
 			});
 		}
 		drawGameHud();
