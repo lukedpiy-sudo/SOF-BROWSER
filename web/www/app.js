@@ -1889,7 +1889,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		client.sendStringCmd("weaponselect " + best.w);
 		state.spawnAimed = true;
 		note("picked up " + (WEAPON_NAMES[best.w] || best.m.classname));
-		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.15, 0.8);
+		if (S) S.playVaried("sound/weapons/gpistol/reloadin.wav", 0.15, 0.8);
 		return true;
 	}
 	function reloadLocal() {
@@ -1903,7 +1903,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		state.lastShotAt = performance.now() / 1000;
 		note("reload: " + state.localAmmo + "/" + state.localReserve);
 		if (window.sofviewmodel && window.sofviewmodel.reload) window.sofviewmodel.reload();
-		if (S) S.playVaried("sound/weapons/Pistol/reload.wav", 0.12, 0.7);
+		if (S) S.playVaried("sound/weapons/gpistol/reloadin.wav", 0.12, 0.7);
 	}
 	function sendCombatShot() {
 		if (!state.ws || state.ws.readyState !== 1 || !state.playerOrigin) return;
@@ -1954,12 +1954,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (!S) return;
 		const name = WEAPON_NAMES[state.weapon] || "SHOTGUN";
 		const file = name === "SHOTGUN" ? "sound/weapons/shotgun/Fire.wav" :
-			name === "9MM PISTOL" ? "sound/weapons/Glock/fire.wav" :
+			name === "9MM PISTOL" ? "sound/weapons/gpistol/fire.wav" :
 			name === "ASSAULT RIFLE" ? "sound/weapons/assault/fire.wav" :
 			name === "MACHINE GUN" ? "sound/weapons/mgun/fire.wav" :
-			name === "FLAMETHROWER" ? "sound/weapons/flamegun/Fire1.wav" :
+			name === "FLAMETHROWER" ? "sound/weapons/flamegun/fire.wav" :
 			name === "ROCKET LAUNCHER" ? "sound/weapons/Rocket/Fire.wav" :
-			"sound/weapons/Glock/fire.wav";
+			"sound/weapons/gpistol/fire.wav";
 		S.playVaried(file, 0.06, 0.85);
 	}
 	function playUse() {
