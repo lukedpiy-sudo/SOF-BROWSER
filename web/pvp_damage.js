@@ -30,8 +30,10 @@ const val = r => r && r.result && r.result.result ? r.result.result.value : null
   for (let i = 0; i < 80; i++) { try { list = await (await fetch("http://127.0.0.1:" + port + "/json/list")).json(); if (list.find(t => t.type === "page")) break; } catch (e) { } await sleep(200); }
   const a = await tab(URL + "?name=Alpha&build=dmga");
   const b = await tab(URL + "?name=Bravo&build=dmga");
-  const waitSpawn = async t => t.ev("(async()=>{for(let i=0;i<400;i++){const d=sofdebug();if(d.spawned&&d.playerOrigin&&!sofstate.orient)break;await new Promise(r=>setTimeout(r,300));}return 'ok'})()");
-  await Promise.all([waitSpawn(a), waitSpawn(b)]);
+  const waitSpawn = async t => t.ev("(async()=>{for(let i=0;i<100;i++){const d=sofdebug&&sofdebug();if(d&&d.spawned&&d.playerOrigin)break;await new Promise(r=>setTimeout(r,300));}return 'ok'})()");
+  console.log("tabs created");
+  const sa = await waitSpawn(a), sb = await waitSpawn(b);
+  console.log("spawn waits", val(sa), val(sb));
   await sleep(1500);
   const st = async t => JSON.parse(val(await t.ev("JSON.stringify({hp:sofstate.localHealth,armor:sofstate.hud&&sofstate.hud.armor,ammo:sofdebug().ammo,origin:sofdebug().playerOrigin,self:sofdebug().self,fm:sofdebug().fm,sm:sofdebug().sm})")));
   const a0 = await st(a), b0 = await st(b);
