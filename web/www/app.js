@@ -1500,11 +1500,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const W = hud.width, H = hud.height;
 		const recoil = vm ? vm.recoil : 0;
 		const sway = vm ? vm.sway[0] : 0;
-		const x = W - 310 + sway * 12;
-		const y = H - 275 + recoil * 14;
+		const x = W - 400 + sway * 12;
+		const y = H - 360 + recoil * 14;
 		hctx.save();
 		hctx.translate(x, y);
-		hctx.scale(1.35, 1.35);
+		hctx.scale(2.0, 2.0);
 		hctx.rotate(-0.12 + recoil * 0.05);
 		/* slide */
 		hctx.fillStyle = "#20262a";
