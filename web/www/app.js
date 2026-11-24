@@ -1520,6 +1520,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	 * the real animation/recoil state still drives it. */
 	function drawHudWeapon() {
 		const vm = window.sofviewmodel && window.sofviewmodel.state;
+		const w = state.weapon;
+		const longGun = w === 4 || w === 5 || w === 6 || w === 7 || w === 12;
+		const shotgun = w === 9 || w === 11;
+		const rocket = w === 14;
 		const W = hud.width, H = hud.height;
 		const recoil = vm ? vm.recoil : 0;
 		const sway = vm ? vm.sway[0] : 0;
@@ -1554,6 +1558,28 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		/* slide serrations */
 		hctx.fillStyle = "#4a5459";
 		for (let i = 0; i < 5; i++) hctx.fillRect(118 + i * 6, 2, 2, 18);
+		if (longGun) {
+			/* rifle / machine gun: long barrel and stock */
+			hctx.fillStyle = "#1c2226";
+			hctx.fillRect(-96, 0, 96, 13);
+			hctx.fillStyle = "#0b0e10";
+			hctx.fillRect(-102, 2, 8, 9);
+			hctx.fillStyle = "#2d3539";
+			hctx.fillRect(132, -4, 56, 20);
+			hctx.fillStyle = "#3b4449";
+			hctx.fillRect(20, -8, 70, 6);
+		} else if (shotgun) {
+			/* double barrel */
+			hctx.fillStyle = "#1a2024";
+			hctx.fillRect(-70, 0, 72, 9);
+			hctx.fillRect(-70, 12, 72, 9);
+		} else if (rocket) {
+			/* launcher tube */
+			hctx.fillStyle = "#2a2f26";
+			hctx.fillRect(-104, -8, 110, 34);
+			hctx.fillStyle = "#111410";
+			hctx.fillRect(-108, -4, 8, 26);
+		}
 		/* muzzle flash */
 		if (vm && vm.flash > 0.05) {
 			const g = hctx.createRadialGradient(-28, 10, 0, -28, 10, 46 * vm.flash);
