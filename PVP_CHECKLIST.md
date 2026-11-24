@@ -23,7 +23,7 @@ dedicated server, not a simulated client.
 10. [x] **Camera anchor** — `cam.y = playerOrigin.z + 56` verified across 3 spawns.
 11. [x] **Third-person camera** — `V` toggle verified, camera moved back 104 units.
 12. [~] **Client prediction** — disabled for camera because it drifted; pure server authority now proven functional, but feel/latency not final.
-13. [x] **Input sign parity with the original client** — wire-level oracle captured with `tcpdump` and decoded by `web/decode_wire.js`: the shipped SoF client sends `forwardmove=+200` for W and `sidemove=+160` for D; the browser client sends the same `+200`/`+160` on the same usercmd fields (`msec=33/34`). W/S/A/D signs are byte-identical, so movement authority uses the engine's own convention. Real pointer-lock look still open.
+13. [x] **Input sign parity with the original client** — wire-level oracle captured with `tcpdump` and decoded by `web/decode_wire.js`: the shipped SoF client sends `forwardmove=+200` for W and `sidemove=+160` for D; the browser client sends the same `+200`/`+160` on the same usercmd fields (`msec=33/34`). W/S/A/D signs are byte-identical, so movement authority uses the engine's own convention. The reported inversion was in RENDERING: the engine-to-browser coordinate swap `[x,z,y]` mirrors the world, so the view matrix's right axis is now negated in `app.js lookAt()`, which fixes strafe/look direction and mirrored in-world text. A live player check is still the final confirmation.
 
 ## C. Map and rendering
 
