@@ -53,12 +53,19 @@ function save() {
 	try { fs.writeFileSync(args.store, JSON.stringify({ servers }, null, 1)); } catch (e) { }
 }
 
+/* expire entries that have not been published/renewed recently */
+function activeServers() {
+	const cutoff = Date.now() - 120000;
+	servers = servers.filter(s => !s.seen || s.seen >= cutoff);
+	return servers;
+}
+
 /* the engine's list format (the classic Quake II master line) */
 function listLines() {
-	return servers.map(s => `${s.ip} ${s.port} ${s.hostname} ${s.mapname} ${s.protocol} ${s.dedicated} ${s.players} ${s.maxplayers}`).join("\n");
+	return activeServers().map(s => `${s.ip} ${s.port} ${s.hostname} ${s.mapname} ${s.protocol} ${s.dedicated} ${s.players} ${s.maxplayers}`).join("\n");
 }
 function listGs() {
-	return servers.map(s =>
+	return activeServers().map(s =>
 		`\\server\\${s.ip}\\port\\${s.port}\\hostname\\${s.hostname}` +
 		`\\mapname\\${s.mapname}\\protocol\\${s.protocol}\\dedicated\\${s.dedicated}` +
 		`\\players\\${s.players}\\maxplayers\\${s.maxplayers}\\final\\`
@@ -137,12 +144,12 @@ const server = http.createServer((req, res) => {
 					}
 				} catch (e) { }
 				res.writeHead(200, Object.assign({ "content-type": "application/json" }, cors));
-				res.end(JSON.stringify({ servers: servers }));
+				res.end(JSON.stringify({ servers: activeServers() }));
 			});
 			return;
 		}
 		res.writeHead(200, Object.assign({ "content-type": "application/json" }, cors));
-		res.end(JSON.stringify({ servers: servers }, null, 1));
+		res.end(JSON.stringify({ servers: activeServers() }, null, 1));
 		return;
 	}
 	if (req.url === "/api/servers.txt") {
@@ -155,4 +162,4 @@ const server = http.createServer((req, res) => {
 
 udp.bind(args.udp, "0.0.0.0", () => say("[gs] udp on", args.udp, "(the heartbeat channel)"));
 tcp.listen(args.tcp, "0.0.0.0", () => say("[gs] tcp on", args.tcp, "(the list channel)"));
-server.listen(args.http, "127.0.0.1", () => say("[gs] http api on http://127.0.0.1:" + args.http + "/api/servers"));
+server.listen(args.http, "0.0.0.0", () => say("[gs] http api on http://0.0.0.0:" + args.http + "/api/servers"));

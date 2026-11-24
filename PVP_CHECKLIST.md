@@ -63,7 +63,7 @@ dedicated server, not a simulated client.
 38. [ ] **Chat / team chat** — commands exist; delivery/display between clients unverified.
 39. [ ] **Console** — client vs server commands separated and reliable.
 40. [ ] **Menus** — main/pause/settings/controls/browser/content need final pass.
-41. [ ] **Server browser** — real local server only, no fake/duplicate entries.
+41. [x] **Server browser** — master binds 0.0.0.0, publishes LAN-reachable IP, expires stale entries, and manual join to an arbitrary host/port verified.
 
 ## G. Audio and effects
 

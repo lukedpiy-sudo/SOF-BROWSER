@@ -24,7 +24,7 @@ const chrome = spawn(CHROME, [
 	"--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage",
 	"--enable-unsafe-swiftshader", "--use-angle=swiftshader",
 	"--remote-debugging-port=" + port, "--user-data-dir=" + profile,
-	"--window-size=1280,800", "--no-first-run", "--disable-extensions",
+	"--window-size=1280,800", "--no-first-run", "--disable-extensions", "--no-proxy-server",
 	"about:blank"
 ], { stdio: ["ignore", "pipe", "pipe"] });
 let chromeErr = "";

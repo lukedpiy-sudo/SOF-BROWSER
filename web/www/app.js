@@ -878,8 +878,12 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
-					ip: serverHost, port: serverPort,
-					hostname: "SoF browser server", mapname: state.cs[0] || ""
+					/* advertise the address OTHER players can reach: the page
+					 * host, not the relay's localhost game-server address */
+					ip: location.hostname || serverHost,
+					port: serverPort,
+					hostname: "SoF browser server", mapname: state.cs[0] || "",
+					players: state.entities.size, maxplayers: 8
 				})
 			}).then(loadServerList).catch(function () { });
 		} catch (e) { }
