@@ -54,7 +54,9 @@ for (let vi = 0; vi < views.length; vi++) {
   };
   const pts = (cornerPos || pos).map(proj);
   // triangles
+  const gfilter = process.argv[4] ? process.argv[4].split(",").map(Number) : null;
   for (const t of g.tris) {
+    if (gfilter && gfilter.indexOf(t.group) < 0) continue;
     const A = pts[t.i[0]], B = pts[t.i[1]], C = pts[t.i[2]];
     if (!A || !B || !C) continue;
     const minx = Math.max(0, Math.floor(Math.min(A.x, B.x, C.x)));

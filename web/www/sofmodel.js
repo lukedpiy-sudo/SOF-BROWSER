@@ -570,11 +570,15 @@
 			data[i * 8 + 7] = uv ? uv[1] : 0;
 		}
 		/* the index buffer: the expanded triangles */
-		const idx = new Uint16Array(g.tris.length * 3);
-		for (let i = 0; i < g.tris.length; i++) {
-			idx[i * 3 + 0] = g.tris[i].i[0];
-			idx[i * 3 + 1] = g.tris[i].i[1];
-			idx[i * 3 + 2] = g.tris[i].i[2];
+		/* diagnostic: ?vmgroups=0,1,.. restricts which mesh groups draw */
+		var gf = null;
+		try { var gs = new URLSearchParams(location.search).get("vmgroups"); if (gs) gf = gs.split(",").map(Number); } catch (e) { }
+		var drawn = g.tris.filter(function (t) { return !gf || gf.indexOf(t.group) >= 0; });
+		const idx = new Uint16Array(drawn.length * 3);
+		for (let i = 0; i < drawn.length; i++) {
+			idx[i * 3 + 0] = drawn[i].i[0];
+			idx[i * 3 + 1] = drawn[i].i[1];
+			idx[i * 3 + 2] = drawn[i].i[2];
 		}
 		const p = gl.createProgram();
 		gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, VS));
