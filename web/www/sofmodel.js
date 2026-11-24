@@ -494,9 +494,9 @@
 		"uniform sampler2D uTex;",
 		"uniform float uTexOn;",
 		"void main(){",
-		"  vec3 c = vec3(0.7,0.7,0.7);",
-		"  if (uTexOn > 0.5) c = texture2D(uTex, vUV).rgb;",
-		"  float l = 0.55 + 0.45 * abs(normalize(vNrm).z);",
+		"  vec3 c = vec3(0.45,0.47,0.5);",
+		"  if (uTexOn > 0.5) { vec3 t = texture2D(uTex, vUV).rgb; c = max(t, vec3(0.14,0.15,0.17)); }",
+		"  float l = 0.78 + 0.22 * abs(normalize(vNrm).z);",
 		"  gl_FragColor = vec4(c * l, 1.0);",
 		"}"
 	].join("\n");

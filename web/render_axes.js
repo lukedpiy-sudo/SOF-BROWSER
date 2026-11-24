@@ -23,7 +23,9 @@ if (g.staticPositions) {
   }
 }
 // triangles index the CORNER array; for static models corner -> shared pos
-const cornerPos = g.staticPositions ? g.corners.map(c => c.pos || [0, 0, 0]) : null;
+const cornerPos = g.staticPositions
+  ? g.corners.map(c => c.pos || [0, 0, 0])
+  : g.corners.map(c => c.posIndex < 0 ? (c.pos || [0, 0, 0]) : pos[c.posIndex]);
 const W = 240, H = 240, views = [
   { n: "+X (look -X)", d: [1, 0, 0], u: [0, 0, 1] },
   { n: "-X (look +X)", d: [-1, 0, 0], u: [0, 0, 1] },
