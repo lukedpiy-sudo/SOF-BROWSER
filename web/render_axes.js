@@ -6,15 +6,24 @@
 "use strict";
 const fs = require("fs"), GH = require("./ghb.js");
 const b = fs.readFileSync("Soldier of Fortune/Base/pak0.pak");
-const m = b.slice(19145984, 19145984 + 257912);
+const model = process.argv[2] || "pistol";
+const m = model === "box"
+  ? b.slice(51784824, 51784824 + 1998)
+  : b.slice(19145984, 19145984 + 257912);
 const g = GH.parseGeometry(m, GH.parseGhoul(m));
 const a = GH.decodeAnimation(m, g.comp);
-const FR = 120, F = a.frames;
+const FR = 120, F = a ? a.frames : 1;
 const pos = [];
-for (let i = 0; i < a.verts; i++) {
-  const o = (i * F + FR) * 3;
-  pos.push([a.pos[o], a.pos[o + 1], a.pos[o + 2]]);
+if (g.staticPositions) {
+  for (const c of g.corners) pos.push(c.pos || [0, 0, 0]);
+} else {
+  for (let i = 0; i < a.verts; i++) {
+    const o = (i * F + FR) * 3;
+    pos.push([a.pos[o], a.pos[o + 1], a.pos[o + 2]]);
+  }
 }
+// triangles index the CORNER array; for static models corner -> shared pos
+const cornerPos = g.staticPositions ? g.corners.map(c => c.pos || [0, 0, 0]) : null;
 const W = 240, H = 240, views = [
   { n: "+X (look -X)", d: [1, 0, 0], u: [0, 0, 1] },
   { n: "-X (look +X)", d: [-1, 0, 0], u: [0, 0, 1] },
@@ -41,7 +50,7 @@ for (let vi = 0; vi < views.length; vi++) {
     const z = p[0] * d[0] + p[1] * d[1] + p[2] * d[2];
     return { x: W / 2 + x * S, y: H / 2 - y * S, z };
   };
-  const pts = pos.map(proj);
+  const pts = (cornerPos || pos).map(proj);
   // triangles
   for (const t of g.tris) {
     const A = pts[t.i[0]], B = pts[t.i[1]], C = pts[t.i[2]];
@@ -58,7 +67,7 @@ for (let vi = 0; vi < views.length; vi++) {
       const w1 = ((C.x - B.x) * (y + 0.5 - B.y) - (C.y - B.y) * (x + 0.5 - B.x)) / area;
       const w2 = 1 - w0 - w1;
       if (w0 < -0.001 || w1 < -0.001 || w2 < -0.001) continue;
-      const z = w2 * A.z + w0 * B.z + w1 * C.z;
+      const z = w1 * A.z + w2 * B.z + w0 * C.z;
       const o = y * W + x;
       if (z < im.z[o]) { im.z[o] = z; const q = o * 3; im.buf[q] = shade; im.buf[q + 1] = shade; im.buf[q + 2] = shade; }
     }

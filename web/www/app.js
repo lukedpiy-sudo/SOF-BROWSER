@@ -456,10 +456,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		let xx = zz, xy = 0, xz = -zx;            // up (0,0,1) x z
 		l = Math.hypot(xx, xy, xz) || 1; xx /= l; xy /= l; xz /= l;
 		const yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
-		o[0] = xx; o[1] = yx; o[2] = zx; o[3] = 0;
-		o[4] = xy; o[5] = yy; o[6] = zy; o[7] = 0;
-		o[8] = xz; o[9] = yz; o[10] = zz; o[11] = 0;
-		o[12] = -(xx * ex + xy * ey + xz * ez);
+		/* The engine is left-handed Z-up and the map is converted with a bare
+		 * Y/Z swap ([x,z,y]), which is a reflection, not a rotation.  Mirror
+		 * the view's right axis back so text, the weapon side and strafing
+		 * match the original client (D must move the view to the right). */
+		o[0] = -xx; o[1] = yx; o[2] = zx; o[3] = 0;
+		o[4] = -xy; o[5] = yy; o[6] = zy; o[7] = 0;
+		o[8] = -xz; o[9] = yz; o[10] = zz; o[11] = 0;
+		o[12] = (xx * ex + xy * ey + xz * ez);
 		o[13] = -(yx * ex + yy * ey + yz * ez);
 		o[14] = -(zx * ex + zy * ey + zz * ez);
 		o[15] = 1;
@@ -1632,14 +1636,14 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 
 	/* a movement probe: hold a movement key for a while at a given view yaw
 	 * and record how far the player travelled and in which direction. */
-	window.sofprobe = function (yaw, ms, speed) {
-		state.probe2 = { yaw: yaw, until: performance.now() + (ms || 2000), from: null, res: null };
+	window.sofprobe = function (yaw, ms, speed, key) {
+		state.probe2 = { yaw: yaw, until: performance.now() + (ms || 2000), from: null, res: null, key: key || "KeyW" };
 		state.probeResult = null;
 		client.view.yaw = yaw;
 		client.view.pitch = 0;
 		if (speed) client.setMoveSpeed(speed);
-		client.setKey("KeyW", true);
-		return "probe yaw=" + yaw + " speed=" + (speed || client.view.forwardmove);
+		client.setKey(state.probe2.key, true);
+		return "probe yaw=" + yaw + " speed=" + (speed || client.view.forwardmove) + " key=" + state.probe2.key;
 	};
 	function runProbe() {
 		const p = state.probe2;
@@ -1657,7 +1661,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		};
 		state.probeResult = p.res;
 		state.probe2 = null;
-		client.setKey("KeyW", false);
+		client.setKey(p.key || "KeyW", false);
 	}
 
 	function autopilot() {
