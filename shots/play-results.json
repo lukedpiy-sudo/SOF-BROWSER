@@ -1,19 +1,19 @@
 [
   {
     "step": "spawn",
-    "state": "{\"status\":\"spawned\",\"connected\":true,\"spawned\":true,\"frames\":76,\"frame\":3603,\"time\":360.5,\"entities\":14,\"seed\":3,\"seq\":56,\"srvSeq\":129,\"gl\":\"webgl\",\"log\":[\"ask configstrings 42 2240\",\"ask configstrings 42 2261\",\"ask configstrings 42 2281\",\"ask configstrings 42 2305\",\"ask configstrings 42 2329\",\"ask ghoulstrings 42 0\",\"ask ghoulstrings 42 1\",\"ask precache 42\"],\"map\":\"NYCCTF1\",\"configstrings\":1315,\"mapStatus\":\"6601 faces, 8849 vertices, 80 textures\",\"mapTris\":16679,\"mapBounds\":{\"min\":[-1920,-768,-128],\"max\":[1152,2368,512]},\"self\":2,\"ents\":[2,33,35,61,62,63,64,65,67,106,119,120,121,123],\"playerOrigin\":{\"x\":-1044.375,\"y\":297.25,\"z\":56.125,\"at\":-2,\"authoritative\":true},\"dbg\":{\"selfNum\":1,\"found\":false,\"removed\":null,\"hasState\":null,\"keys\":\"\",\"size\":0,\"third\":false},\"err\":null,\"psSeen\":0,\"psOk\":0,\"items\":81,\"fm\":0,\"sm\":0,\"btns\":0,\"yaw\":315,\"vel\":0,\"velMax\":30.2,\"auto\":null,\"probe\":null,\"ammo\":18,\"reserve\":132,\"cam\":{\"x\":-1042,\"y\":112,\"z\":292}}"
+    "state": "{\"status\":\"connected\",\"connected\":true,\"spawned\":false,\"frames\":179,\"frame\":1198,\"time\":120,\"entities\":19,\"seed\":3,\"seq\":24,\"srvSeq\":25,\"gl\":\"webgl\",\"log\":[\"ask configstrings 42 2128\",\"ask configstrings 42 2145\",\"ask configstrings 42 2163\",\"ask configstrings 42 2187\",\"ask configstrings 42 2206\",\"ask configstrings 42 2224\",\"ask configstrings 42 2242\",\"ask configstrings 42 2264\"],\"map\":\"NYCCTF1\",\"configstrings\":1315,\"mapStatus\":\"6601 faces, 8849 vertices, 91 textures\",\"mapTris\":17669,\"mapBounds\":{\"min\":[-1920,-768,-128],\"max\":[1152,2368,512]},\"self\":2,\"ents\":[2,39,40,43,51,58,61,62,63,64,65,84,85,88,109,110,113,114,131],\"playerOrigin\":null,\"dbg\":{\"selfNum\":2,\"found\":true,\"removed\":false,\"hasState\":true,\"keys\":\"2,39,40,43,51,58,61,62\",\"size\":19,\"third\":false},\"err\":null,\"psSeen\":0,\"psOk\":0,\"items\":81,\"fm\":0,\"sm\":0,\"btns\":0,\"yaw\":0,\"vel\":0,\"velMax\":50.7,\"auto\":null,\"probe\":null,\"ammo\":18,\"reserve\":132,\"cam\":{\"x\":-631,\"y\":211,\"z\":-403}}"
   },
   {
     "step": "walk",
-    "result": "{\"from\":{\"x\":-1051.5,\"y\":311.25,\"z\":56.125,\"at\":-2,\"authoritative\":true},\"to\":{\"x\":-1069.375,\"y\":330.25,\"z\":56.125,\"at\":-2,\"authoritative\":true},\"dist\":\"26.1\",\"yaw\":[315,315]}"
+    "result": "{\"from\":null,\"to\":null,\"dist\":null,\"yaw\":[0,0]}"
   },
   {
     "step": "look",
-    "result": "{\"yaw\":[315,18],\"cam\":[{\"x\":-1087,\"y\":112,\"z\":349},{\"x\":-1091,\"y\":112,\"z\":352}]}"
+    "result": "{\"yaw\":[0,45],\"cam\":[{\"x\":-208,\"y\":88,\"z\":-240},{\"x\":-208,\"y\":81,\"z\":-240}]}"
   },
   {
     "step": "fire",
-    "result": "{\"ammo\":[18,17],\"flash\":1}"
+    "result": "{\"ammo\":[18,17],\"flash\":0}"
   },
   {
     "step": "reload",
@@ -21,11 +21,11 @@
   },
   {
     "step": "jump",
-    "result": "{\"z\":[56.125,56.125,77.5]}"
+    "result": "{\"z\":[24.125,24.125,45.5]}"
   },
   {
     "step": "third",
-    "result": "{\"cam\":[{\"x\":-1092,\"y\":134,\"z\":353},{\"x\":-1126,\"y\":140,\"z\":458}],\"third\":true}"
+    "result": "{\"cam\":[{\"x\":-199,\"y\":118,\"z\":-213},{\"x\":-120,\"y\":126,\"z\":-133}],\"third\":true}"
   },
   {
     "step": "thirdback",
@@ -33,7 +33,7 @@
   },
   {
     "step": "score",
-    "result": "{\"rows\":\"0ScoreTest-0CNCT\"}"
+    "result": "{\"rows\":\"0webclient-02605\"}"
   },
   {
     "step": "menu",
@@ -44,6 +44,6 @@
     "result": "{\"menu\":\"\"}"
   },
   {
-    "final": "{\"status\":\"spawned\",\"connected\":true,\"spawned\":true,\"frames\":203,\"frame\":3786,\"time\":378.79998779296875,\"entities\":16,\"seed\":3,\"seq\":138,\"srvSeq\":261,\"gl\":\"webgl\",\"log\":[\"ask configstrings 42 2240\",\"ask configstrings 42 2261\",\"ask configstrings 42 2281\",\"ask configstrings 42 2305\",\"ask configstrings 42 2329\",\"ask ghoulstrings 42 0\",\"ask ghoulstrings 42 1\",\"ask precache 42\"],\"map\":\"NYCCTF1\",\"configstrings\":1315,\"mapStatus\":\"6601 faces, 8849 vertices, 80 textures\",\"mapTris\":16679,\"mapBounds\":{\"min\":[-1920,-768,-128],\"max\":[1152,2368,512]},\"self\":2,\"ents\":[2,33,35,61,62,63,64,65,67,106,119,120,121,123,24,107],\"playerOrigin\":{\"x\":-1092.125,\"y\":353.375,\"z\":77.5,\"at\":-2,\"authoritative\":true},\"dbg\":{\"selfNum\":1,\"found\":false,\"removed\":null,\"hasState\":null,\"keys\":\"\",\"size\":0,\"third\":false},\"err\":null,\"psSeen\":0,\"psOk\":0,\"items\":81,\"fm\":0,\"sm\":0,\"btns\":0,\"yaw\":18,\"vel\":0,\"velMax\":64.5,\"auto\":null,\"probe\":null,\"ammo\":18,\"reserve\":131,\"cam\":{\"x\":-1092,\"y\":134,\"z\":353}}"
+    "final": "{\"status\":\"spawned\",\"connected\":true,\"spawned\":true,\"frames\":457,\"frame\":1877,\"time\":187.89999389648438,\"entities\":20,\"seed\":3,\"seq\":98,\"srvSeq\":338,\"gl\":\"webgl\",\"log\":[\"ask configstrings 42 2242\",\"ask configstrings 42 2264\",\"ask configstrings 42 2284\",\"ask configstrings 42 2308\",\"ask configstrings 42 2331\",\"ask ghoulstrings 42 0\",\"ask ghoulstrings 42 1\",\"ask precache 42\"],\"map\":\"NYCCTF1\",\"configstrings\":1315,\"mapStatus\":\"6601 faces, 8849 vertices, 91 textures\",\"mapTris\":17669,\"mapBounds\":{\"min\":[-1920,-768,-128],\"max\":[1152,2368,512]},\"self\":1,\"ents\":[1,40,43,44,51,61,62,63,64,65,84,85,95,97,109,110,116,130,32,88],\"playerOrigin\":{\"x\":-172.5,\"y\":-176.75,\"z\":24.125,\"at\":-2,\"authoritative\":true},\"dbg\":{\"selfNum\":2,\"found\":true,\"removed\":false,\"hasState\":true,\"keys\":\"2,39,40,43,51,58,61,62\",\"size\":19,\"third\":false},\"err\":null,\"psSeen\":0,\"psOk\":0,\"items\":81,\"fm\":200,\"sm\":0,\"btns\":0,\"yaw\":315,\"vel\":0,\"velMax\":50.7,\"auto\":null,\"probe\":null,\"ammo\":18,\"reserve\":131,\"cam\":{\"x\":-171,\"y\":80,\"z\":-174}}"
   }
 ]
