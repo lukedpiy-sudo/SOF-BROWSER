@@ -279,7 +279,6 @@
 			 * incoming (offset,count) is built WITHOUT them, so our group
 			 * ranges must be built without them too or every material after
 			 * the first sky face maps to the wrong geometry. */
-			if (f0.mat === SKY_MAT || f0.mat === NODRAW_MAT) continue;
 			var key0 = f0.mat || "";
 			if (!groups[key0]) { groups[key0] = { start: renderIdx, count: 0 }; order.push(key0); }
 			var n0 = (f0.v.length - 2) * 3;
@@ -305,8 +304,6 @@
 		for (var i = 0; i < faces.length; i++) {
 			var f = faces[i];
 			if (!f.v || f.v.length < 3) continue;
-			/* the sky and the no_draw surfaces are not drawn as geometry */
-			if (f.mat === SKY_MAT || f.mat === NODRAW_MAT) continue;
 			var base = pos.length / 3;
 			for (var k = 0; k < f.v.length; k++) {
 				var p = m.vertices[f.v[k]];

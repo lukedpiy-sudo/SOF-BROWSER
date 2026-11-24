@@ -295,13 +295,19 @@
 
 	/* a 1x1 texture for the faces whose material has no image: the game's sky
 	 * faces have no material at all, so they read as the sky colour */
-	let mapWhite = null;
+	let mapWhite = null, mapDark = null;
 	function initWhiteTexture() {
 		if (!gl) return;
 		mapWhite = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, mapWhite);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
 			new Uint8Array([70, 82, 98, 255]));
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		mapDark = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, mapDark);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+			new Uint8Array([12, 16, 22, 255]));
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 	}
@@ -317,15 +323,12 @@
 		const byMat = new Map();
 		for (const f of m.faces) {
 			if (!f.v || f.v.length < 3) continue;
-			/* sky and nodraw are drawn by sofsurface.js, not here.  Drawing
-			 * them as opaque textured geometry leaves black slivers standing
-			 * through the corridors. */
-			/* Must match soflight.js exactly: \bsky\b does NOT match
-			 * "subway/sky2", so the renderer was drawing the near-white sky
-			 * material as solid slabs while the lightmap pass skipped it. */
-			if (f.mat === "subway/sky2" || f.mat === "subway/no_draw") continue;
 			const key = f.mat || "";
-			if (!byMat.has(key)) { byMat.set(key, { name: key, start: idx.length, count: 0, tex: null }); groups.push(byMat.get(key)); }
+			const skyFace = key === "subway/sky2" || key === "subway/no_draw";
+			if (!byMat.has(key)) {
+				byMat.set(key, { name: key, start: idx.length, count: 0, tex: null, dark: skyFace });
+				groups.push(byMat.get(key));
+			}
 			const g = byMat.get(key);
 			const n = sop(f.n);
 			const base = pos.length / 3;
@@ -369,6 +372,7 @@
 		let texCount = 0;
 		const tex = (m.textures || {});
 		for (const g of groups) {
+			if (g.dark) { g.tex = mapDark; continue; }
 			const t = tex[g.name];
 			if (!t) continue;
 			const bin = atob(t.data);
@@ -1954,6 +1958,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	// the protocol core keeps the netchan alive by itself (the server needs
 	// the acknowledgement to advance), so nothing to do here
 	applyMods();
+	initWhiteTexture();
 	initWhiteTexture();
 	loadMap("map_nycctf1.json");
 	fetch("map_entities.json").then(function (r) { return r.json(); }).then(function (list) {
