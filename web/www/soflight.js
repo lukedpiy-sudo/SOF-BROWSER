@@ -240,7 +240,7 @@
 		/* The shipped lightmap/sun sum is much brighter than the reference's
 		 * night interior; a single exposure factor keeps bright fixtures while
 		 * bringing walls and ceilings back into a dark, readable range. */
-		"  gl_FragColor = vec4(mix(c * lit * 0.72, uFogColor, ff), 1.0);",
+		"  gl_FragColor = vec4(mix(c * lit * 1.05, uFogColor, ff), 1.0);",
 		"}"
 	].join("\n");
 
