@@ -663,7 +663,9 @@ function unrelHdr() {
 		 * 400 for a normal run and the 0x20 run bit doubles it server side */
 		const speed = moveSpeed;
 		view.forwardmove = (keys["KeyW"] || keys["ArrowUp"] ? speed : 0) - (keys["KeyS"] || keys["ArrowDown"] ? speed : 0);
-		view.sidemove = (keys["KeyD"] ? speed : 0) - (keys["KeyA"] ? speed : 0);
+		/* SoF's sidemove is inverted relative to world +X: at yaw 0 a positive
+		 * sidemove moves -X.  D must be right (+X), so D sends -speed. */
+		view.sidemove = (keys["KeyA"] ? speed : 0) - (keys["KeyD"] ? speed : 0);
 		view.upmove = (keys["Space"] ? speed : 0) - (keys["KeyC"] || keys["ControlLeft"] ? speed : 0);
 	}
 	function look(dx, dy) {

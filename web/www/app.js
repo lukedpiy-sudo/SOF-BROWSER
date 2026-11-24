@@ -1459,7 +1459,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		if (window.sofviewmodel && sofviewmodel.ensure && !state.testModel) {
 			if (sofviewmodel.state.weapon !== state.weapon) sofviewmodel.ensure(gl, state.weapon);
 		}
-		if (window.sofviewmodel && sofviewmodel.draw && state.testModel) {
+		if (window.sofviewmodel && sofviewmodel.draw) {
 			const va2 = viewAngles();
 			sofviewmodel.draw({
 				gl: gl,
@@ -1471,10 +1471,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 				/* The shipped INVIEW mesh is centred near the eye: its grip is
 				 * behind the near plane until it is pushed forward.  The muzzle
 				 * is at engine +X, which the corrected mapping puts at -Z. */
-				x: state.testModel ? 0 : 16,
-				y: state.testModel ? -12 : -18,
-				z: state.testModel ? -90 : -30,
-				scale: state.testModel ? 1 : 1.25
+				x: state.testModel ? 0 : 10,
+				y: state.testModel ? -12 : -12,
+				z: state.testModel ? -90 : -38,
+				scale: state.testModel ? 1 : 0.8
 			});
 		}
 		drawGameHud();
@@ -1488,84 +1488,6 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 	 * the carried item as an icon.  The numbers come from the authoritative
 	 * client state block (the engine's stats array).
 	 * ------------------------------------------------------------------- */
-	/* The shipped INVIEW GHB has unreliable triangle topology.  This clean
-	 * procedural pistol is drawn on the HUD so the weapon is readable while
-	 * the real animation/recoil state still drives it. */
-	function drawHudWeapon() {
-		const vm = window.sofviewmodel && window.sofviewmodel.state;
-		const w = state.weapon;
-		const longGun = w === 4 || w === 5 || w === 6 || w === 7 || w === 12;
-		const shotgun = w === 9 || w === 11;
-		const rocket = w === 14;
-		const W = hud.width, H = hud.height;
-		const recoil = vm ? vm.recoil : 0;
-		const sway = vm ? vm.sway[0] : 0;
-		const x = W - 400 + sway * 12;
-		const y = H - 360 + recoil * 14;
-		hctx.save();
-		hctx.translate(x, y);
-		hctx.scale(2.0, 2.0);
-		hctx.rotate(-0.12 + recoil * 0.05);
-		/* slide */
-		hctx.fillStyle = "#20262a";
-		hctx.fillRect(0, 0, 156, 22);
-		hctx.fillStyle = "#343c40";
-		hctx.fillRect(4, 3, 148, 6);
-		/* barrel / muzzle */
-		hctx.fillStyle = "#15191c";
-		hctx.fillRect(-22, 4, 28, 13);
-		hctx.fillStyle = "#0a0c0d";
-		hctx.fillRect(-24, 6, 5, 9);
-		/* frame under the slide */
-		hctx.fillStyle = "#2b3236";
-		hctx.fillRect(24, 20, 96, 16);
-		/* grip */
-		hctx.fillStyle = "#171c1f";
-		hctx.beginPath();
-		hctx.moveTo(88, 32); hctx.lineTo(134, 32);
-		hctx.lineTo(122, 104); hctx.lineTo(70, 104);
-		hctx.closePath(); hctx.fill();
-		/* trigger guard */
-		hctx.strokeStyle = "#3a4348"; hctx.lineWidth = 5;
-		hctx.beginPath(); hctx.moveTo(58, 34); hctx.lineTo(58, 62);
-		hctx.lineTo(92, 62); hctx.lineTo(92, 34); hctx.stroke();
-		/* slide serrations */
-		hctx.fillStyle = "#4a5459";
-		for (let i = 0; i < 5; i++) hctx.fillRect(118 + i * 6, 2, 2, 18);
-		if (longGun) {
-			/* rifle / machine gun: long barrel and stock */
-			hctx.fillStyle = "#1c2226";
-			hctx.fillRect(-96, 0, 96, 13);
-			hctx.fillStyle = "#0b0e10";
-			hctx.fillRect(-102, 2, 8, 9);
-			hctx.fillStyle = "#2d3539";
-			hctx.fillRect(132, -4, 56, 20);
-			hctx.fillStyle = "#3b4449";
-			hctx.fillRect(20, -8, 70, 6);
-		} else if (shotgun) {
-			/* double barrel */
-			hctx.fillStyle = "#1a2024";
-			hctx.fillRect(-70, 0, 72, 9);
-			hctx.fillRect(-70, 12, 72, 9);
-		} else if (rocket) {
-			/* launcher tube */
-			hctx.fillStyle = "#2a2f26";
-			hctx.fillRect(-104, -8, 110, 34);
-			hctx.fillStyle = "#111410";
-			hctx.fillRect(-108, -4, 8, 26);
-		}
-		/* muzzle flash */
-		if (vm && vm.flash > 0.05) {
-			const g = hctx.createRadialGradient(-28, 10, 0, -28, 10, 46 * vm.flash);
-			g.addColorStop(0, "rgba(255,250,210,0.95)");
-			g.addColorStop(0.4, "rgba(255,180,60,0.6)");
-			g.addColorStop(1, "rgba(255,100,20,0)");
-			hctx.fillStyle = g;
-			hctx.beginPath(); hctx.arc(-28, 10, 46 * vm.flash, 0, Math.PI * 2); hctx.fill();
-		}
-		hctx.restore();
-	}
-
 	function drawGameHud() {
 		if (!state.hud) return;
 		const h = Object.assign({}, state.hud, {
@@ -1576,7 +1498,7 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const W = hud.width, H = hud.height;
 		const bottom = H - 46;
 		hctx.save();
-		if (!state.thirdPerson) drawHudWeapon();
+
 
 		/* Reference layout: compact centred health/armour bars, green digital
 		 * ammunition at the right, weapon name above the bars. */
