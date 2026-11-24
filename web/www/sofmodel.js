@@ -401,10 +401,15 @@
 		return map[p] || null;
 	}
 
+	let glSeq = 1;
 	function loadModel(path, gl) {
-		if (models[path]) return models[path];
-		var m = { path: path, state: "loading", vertices: null, geometry: null };
-		models[path] = m;
+		/* GL objects are context-specific: a mesh built on the map canvas
+		 * cannot be drawn on the viewmodel canvas. */
+		if (!gl.__sofId) gl.__sofId = glSeq++;
+		const key = path + "@" + gl.__sofId;
+		if (models[key]) return models[key];
+		var m = { path: path, gl: gl, state: "loading", vertices: null, geometry: null };
+		models[key] = m;
 		fetch(pakPath(path)).then(function (r) {
 			if (!r.ok) throw new Error("http " + r.status);
 			return r.arrayBuffer();

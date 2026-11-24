@@ -31,6 +31,14 @@
 			canvas.getContext("experimental-webgl");
 		if (!gl) throw new Error("no WebGL");
 	} catch (e) { glError = String(e.message || e); }
+	/* Separate canvas/context for the first-person weapon, so its buffers and
+	 * attribute state cannot be disturbed by the lightmapped map renderer. */
+	const vmCanvas = document.getElementById("vmgl");
+	let vmGl = null;
+	try {
+		vmGl = vmCanvas && (vmCanvas.getContext("webgl", { alpha: true, antialias: true }) ||
+			vmCanvas.getContext("experimental-webgl", { alpha: true }));
+	} catch (e) { }
 
 	const say = function (m) { console.log(m); };
 	const state = {
@@ -1049,6 +1057,10 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		}
 		const hw = Math.floor(window.innerWidth * dpr), hh = Math.floor(window.innerHeight * dpr);
 		if (hud.width !== hw || hud.height !== hh) { hud.width = hw; hud.height = hh; }
+		if (vmGl && vmCanvas && (vmCanvas.width !== w || vmCanvas.height !== h)) {
+			vmCanvas.width = w; vmCanvas.height = h;
+			vmGl.viewport(0, 0, w, h);
+		}
 	}
 	/* the map's item spawn positions, so a dropped item can be told apart from
 	 * a player */
@@ -1460,13 +1472,21 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		/* the first person weapon: the Ghoul view model.  app.js runs before
 		 * viewmodel.js, so the initial weapon has to be pushed on the first
 		 * rendered frame rather than from the module init. */
-		if (window.sofviewmodel && sofviewmodel.ensure && !state.testModel) {
-			if (sofviewmodel.state.weapon !== state.weapon) sofviewmodel.ensure(gl, state.weapon);
+		if (window.sofviewmodel && sofviewmodel.ensure && !state.testModel && vmGl) {
+			if (sofviewmodel.state.weapon !== state.weapon || vmGl !== sofviewmodel.state.gl) {
+				sofviewmodel.state.gl = vmGl;
+				sofviewmodel.state.model = null;
+				sofviewmodel.ensure(vmGl, state.weapon);
+			}
 		}
-		if (window.sofviewmodel && sofviewmodel.draw) {
+		if (vmGl) {
+			vmGl.clearColor(0, 0, 0, 0);
+			vmGl.clear(vmGl.COLOR_BUFFER_BIT | vmGl.DEPTH_BUFFER_BIT);
+		}
+		if (window.sofviewmodel && sofviewmodel.draw && vmGl) {
 			const va2 = viewAngles();
 			sofviewmodel.draw({
-				gl: gl,
+				gl: vmGl,
 				dt: dt,
 				look: { yaw: va2.yaw, pitch: va2.pitch },
 				move: { origin: state.playerOrigin },

@@ -8,6 +8,7 @@
 		font-family: monospace; color: #d0d0d0; }
 	#wrap { position: relative; width: 100vw; height: 100vh; }
 	#gl { display: block; width: 100%; height: 100%; }
+	#vmgl { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 	#hud { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 	#bar { position: absolute; left: 0; bottom: 0; width: 100%; padding: 6px 10px;
 		background: rgba(0,0,0,0.55); font-size: 12px; }
@@ -33,6 +34,7 @@
 <body>
 <div id="wrap">
 	<canvas id="gl"></canvas>
+	<canvas id="vmgl"></canvas>
 	<canvas id="hud" width="640" height="330"></canvas>
 	<div id="sof-loading">
 		<div class="title">CONNECTING TO SERVER</div>
