@@ -1239,63 +1239,9 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 
 		/* Do NOT auto-rejoin on a fall or a stuck step: that threw the player
 		 * back to the menu mid-walk.  The server owns respawns. */
-		/* Wall-stuck steering: the server reports high velocity but a wall can
-		 * cancel the displacement.  If forward input produces no movement for
-		 * half a second, turn 45 degrees (and briefly strafe) so the player
-		 * slides along the corridor instead of freezing against geometry. */
-		if (state.wallJumpUntil && performance.now() > state.wallJumpUntil) {
-			client.setKey("Space", false);
-			state.wallJumpUntil = 0;
-		}
-		const tryingToMove = !state.orient &&
-			(client.view.forwardmove !== 0 || client.view.sidemove !== 0);
-		/* Predictive steering: if a wall is within 64 units ahead, turn toward
-		 * the clearer side before the server stops the player. */
-		if (tryingToMove && state.playerOrigin && window.sofpredict &&
-			window.sofpredict.info && window.sofpredict.info().ready) {
-			const P = window.sofpredict;
-			const p = state.playerOrigin;
-			const from = [p.x, p.y, p.z + 4];
-			const probe = function (yawDeg) {
-				const a = yawDeg * Math.PI / 180;
-				const to = [from[0] + Math.sin(a) * 64, from[1] - Math.cos(a) * 64, from[2]];
-				return P.trace(from, to).frac;
-			};
-			const fwd = probe(client.view.yaw);
-			if (fwd < 0.95) {
-				const l = probe(client.view.yaw - 35), r = probe(client.view.yaw + 35);
-				if (l > r && l > fwd) client.view.yaw -= 20;
-				else if (r > fwd) client.view.yaw += 20;
-			}
-		}
-		if (state.spawned && state.playerOrigin && tryingToMove) {
-			const t = performance.now();
-			if (!state.wallAt) {
-				state.wallAt = t;
-				state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
-			} else {
-				const d = Math.hypot(state.playerOrigin.x - state.wallFrom.x,
-					state.playerOrigin.y - state.wallFrom.y);
-				if (t - state.wallAt > 550 && d < 3) {
-					state.wallAssists = (state.wallAssists || 0) + 1;
-					client.view.yaw = (client.view.yaw + 45) % 360;
-					if (state.wallAssists % 2 === 0) {
-						/* a stuck spawn can be embedded in the floor; jump to pop out */
-						client.setKey("Space", true);
-						state.wallJumpUntil = t + 350;
-					}
-					state.wallAt = t;
-					state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
-					/* keep steering; reconnect loops made traversal worse */
-				} else if (d >= 3) {
-					state.rescueCount = 0;
-					state.wallAt = t;
-					state.wallFrom = { x: state.playerOrigin.x, y: state.playerOrigin.y };
-				}
-			}
-		} else {
-			state.wallAt = 0;
-		}
+		/* Camera and yaw belong to the player only.  Automatic steering used
+		 * to rotate client.view.yaw when the player hit a wall, which fought
+		 * mouse look and felt like losing control.  Do not do that. */
 		/* the Ghoul animation clock of the world models */
 		if (window.sofmodel && sofmodel.tickFrames) sofmodel.tickFrames(dt);
 		state.clipPlayers.forEach(function (p, num) {
@@ -1527,10 +1473,11 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		const W = hud.width, H = hud.height;
 		const recoil = vm ? vm.recoil : 0;
 		const sway = vm ? vm.sway[0] : 0;
-		const x = W - 250 + sway * 12;
-		const y = H - 210 + recoil * 14;
+		const x = W - 310 + sway * 12;
+		const y = H - 275 + recoil * 14;
 		hctx.save();
 		hctx.translate(x, y);
+		hctx.scale(1.35, 1.35);
 		hctx.rotate(-0.12 + recoil * 0.05);
 		/* slide */
 		hctx.fillStyle = "#20262a";
