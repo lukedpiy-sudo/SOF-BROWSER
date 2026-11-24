@@ -56,11 +56,18 @@ function readPak(name) {
  */
 function decodeM32(buf) {
 	if (!buf || buf.length < 700) return null;
+	/* +516 is the mip WIDTH array, +580 the mip HEIGHT array.  Most textures
+	 * are 64x32, not 64x64; reading both from +516 made every pixel offset
+	 * wrong and decoded them as rainbow noise. */
 	const sizes = [];
-	for (let i = 0; i < 7; i++) sizes.push(buf.readInt32LE(516 + i * 4));
+	const heights = [];
+	for (let i = 0; i < 7; i++) {
+		sizes.push(buf.readInt32LE(516 + i * 4));
+		heights.push(buf.readInt32LE(580 + i * 4));
+	}
 	const dataOff = buf.readInt32LE(644);
 	const mipOff = buf.readInt32LE(648);
-	const w = sizes[0], h = sizes[0];
+	const w = sizes[0], h = heights[0] || sizes[0];
 	if (!w || !h) return null;
 	let bpp = 4;
 	if (mipOff > dataOff) {
