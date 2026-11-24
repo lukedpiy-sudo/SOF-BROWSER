@@ -25,6 +25,11 @@
 	const canvas = document.getElementById("gl");
 	const hud = document.getElementById("hud");
 	const hctx = hud.getContext("2d");
+	/* The original HUD artwork, extracted from pak0.pak (pics/interface2). */
+	const hudArt = {};
+	["frame_health", "health", "armor", "frame_top", "frame_bottom"].forEach(function (n) {
+		const im = new Image(); im.src = "hud-" + n + ".png"; hudArt[n] = im;
+	});
 	let gl = null, glError = "";
 	try {
 		gl = canvas.getContext("webgl", { antialias: true }) ||
@@ -1532,17 +1537,31 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		 * ammunition at the right, weapon name above the bars. */
 		const barW = 220, barH = 9;
 		const bx = W / 2 - barW / 2;
-		const drawBar = function (y, value, fill) {
-			const p = Math.max(0, Math.min(1, value / 100));
-			hctx.fillStyle = "rgba(0,0,0,0.65)";
-			hctx.fillRect(bx - 1, y - 1, barW + 2, barH + 2);
-			hctx.fillStyle = "rgba(30,34,38,0.9)";
-			hctx.fillRect(bx, y, barW, barH);
-			hctx.fillStyle = fill;
-			hctx.fillRect(bx, y, Math.round(barW * p), barH);
-		};
-		drawBar(bottom + 8, h.health, "#c03028");
-		drawBar(bottom + 22, h.armor, "#7f9fd0");
+		/* original health/armor artwork: the frame is 256x256 with the bar
+		 * slot at y 150..175, x 20..225 in the source image */
+		const fh = hudArt.frame_health;
+		if (fh && fh.complete && fh.naturalWidth) {
+			const hw = 300, hh = 46, hy = bottom + 2;
+			/* artwork content is only the top strip of the 256x256 m32 */
+			hctx.drawImage(fh, 3, 1, 184, 28, W / 2 - hw / 2, hy, hw, hh);
+			const p = Math.max(0, Math.min(1, h.health / 100));
+			const hbar = hudArt.health;
+			if (hbar && hbar.complete && hbar.naturalWidth) {
+				/* the black bar slot inside the frame */
+				const sx = 20, sy = 8, sw = 150, sh = 14;
+				const dx = W / 2 - hw / 2 + sx * hw / 184;
+				const dy = hy + sy * hh / 28;
+				const dw = sw * hw / 184, dh = sh * hh / 28;
+				hctx.save();
+				hctx.beginPath(); hctx.rect(dx, dy, dw * p, dh); hctx.clip();
+				hctx.drawImage(hbar, 2, 3, 124, 10 * 0 + 10, dx, dy, dw, dh);
+				hctx.restore();
+			}
+		} else {
+			const p = Math.max(0, Math.min(1, h.health / 100));
+			hctx.fillStyle = "rgba(0,0,0,0.65)"; hctx.fillRect(bx - 1, bottom + 7, barW + 2, barH + 2);
+			hctx.fillStyle = "#c03028"; hctx.fillRect(bx, bottom + 8, Math.round(barW * p), barH);
+		}
 
 		const wn = WEAPON_NAMES[state.weapon] || ("WEAPON " + state.weapon);
 		hctx.textAlign = "center";
@@ -1554,14 +1573,18 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		hctx.fillStyle = state.heat > 0.75 ? "#e0613a" : "#d9a441";
 		hctx.fillRect(hx, hy, Math.round(hw * Math.max(0, Math.min(1, state.heat))), 3);
 
-		/* green digital ammunition, bottom right */
+		/* green digital ammunition, bottom right, in the original frame */
+		const ft = hudArt.frame_top;
+		if (ft && ft.complete && ft.naturalWidth) {
+			hctx.drawImage(ft, 23, 2, 94, 51, W - 132, bottom - 8, 130, 62);
+		}
 		hctx.textAlign = "right";
 		hctx.font = "bold 34px monospace";
 		hctx.fillStyle = h.ammo <= 2 ? "#ff5040" : "#48e060";
-		hctx.fillText(String(h.ammo).padStart(2, "0"), W - 70, bottom + 30);
+		hctx.fillText(String(h.ammo).padStart(2, "0"), W - 62, bottom + 28);
 		hctx.font = "14px monospace";
 		hctx.fillStyle = "#3aa050";
-		hctx.fillText("/ " + h.ammo2, W - 16, bottom + 30);
+		hctx.fillText("/ " + h.ammo2, W - 20, bottom + 44);
 
 		/* the carried item */
 		if (h.item) {
