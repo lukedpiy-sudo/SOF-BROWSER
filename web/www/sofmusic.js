@@ -1246,8 +1246,11 @@
 	function update() {
 		if (!overlay) {
 			overlay = document.createElement("div");
+			/* a development overlay: keep it off the default HUD so the
+			 * original's team indicator is visible.  ?musicdebug=1 restores it. */
 			overlay.style.cssText = "position:absolute;right:8px;top:8px;pointer-events:none;" +
-				"font:11px monospace;color:#9fe8a0;background:rgba(0,0,0,0.55);padding:3px 6px;white-space:pre;text-align:right";
+				"font:11px monospace;color:#9fe8a0;background:rgba(0,0,0,0.55);padding:3px 6px;white-space:pre;text-align:right;" +
+				(new URLSearchParams(location.search).has("musicdebug") ? "" : "display:none");
 			document.body.appendChild(overlay);
 		}
 		const lines = [];

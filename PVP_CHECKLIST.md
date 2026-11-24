@@ -29,7 +29,7 @@ dedicated server, not a simulated client.
 
 14. [x] **Missing walls / see-through map** — fixed: `app.js` filter `/\bsky\b/` did not match `subway/sky2`, so the near-white sky material was drawn as solid geometry while `soflight.js` skipped it. Both filters now exact; renderer/lightmap material ranges verified 92/92 with zero missing keys; corridor renders solid.
 15. [x] **Sky slabs** — same root cause as #14; sky is now drawn only by `sofsurface.js` with its real dark textures.
-16. [~] **Lighting parity** — exposure 0.72, light cap 1.25 and texture cap 0.72; much closer to reference but not exact.
+16. [~] **Lighting parity** — exposure raised from 0.72 to 1.05 after a side-by-side oracle capture; walls and ceilings now read as the original's warm lit stone instead of near-black. Light cap stays 1.25, texture cap 0.72. Still not pixel-exact.
 17. [x] **Texture/material correctness** — 82 real `.m32` materials load and all 92 material draw ranges match between renderer and lightmap pass.
 18. [ ] **Detail/effects surfaces** — open.
 
@@ -58,7 +58,7 @@ dedicated server, not a simulated client.
 ## F. HUD and front-end
 
 35. [~] **HUD data** — health, armour, ammo, weapon, item decoded from player state; styling off reference.
-36. [ ] **HUD visual match** — bottom-centre health/armour, green digital ammo, compact original layout.
+36. [~] **HUD visual match** — the real HUD artwork is now extracted from `pak0.pak` (`pics/interface2/frame_health.m32`, `health.m32`, `frame_top.m32`) into `web/www/hud-*.png` and drawn in the HUD canvas: ornate green health frame with red fill and the original ammo frame around the green digits. Side-by-side verified. Still smaller than the original at 1280x800 and no inventory/team panels yet.
 37. [~] **Scoreboard** — relay RCON endpoint now parses real names (including CNCT pings); playthrough shows real player name. Team/score formatting still basic.
 38. [ ] **Chat / team chat** — commands exist; delivery/display between clients unverified.
 39. [ ] **Console** — client vs server commands separated and reliable.

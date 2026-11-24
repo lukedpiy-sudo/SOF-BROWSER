@@ -1594,6 +1594,24 @@ function rotZ(o, a) { identity(o); const c = Math.cos(a), s = Math.sin(a); o[0] 
 		}
 		hctx.textAlign = "left";
 
+		/* the original's team indicator in the top right: green chevrons and
+		 * the live frag / team-capture counters */
+		const ts = 26, tx = W - 44, ty = 14;
+		hctx.fillStyle = "#4cff4c";
+		for (let i = 0; i < 2; i++) {
+			const y = ty + i * 14;
+			hctx.beginPath();
+			hctx.moveTo(tx - ts, y + 9); hctx.lineTo(tx, y); hctx.lineTo(tx + ts, y + 9);
+			hctx.lineTo(tx + ts - 7, y + 9); hctx.lineTo(tx, y + 4); hctx.lineTo(tx - ts + 7, y + 9);
+			hctx.closePath(); hctx.fill();
+		}
+		hctx.textAlign = "center";
+		hctx.font = "bold 15px monospace";
+		hctx.fillText(String(state.frags || 0), tx, ty + 40);
+		hctx.font = "12px monospace";
+		hctx.fillText((state.teamCaptures || 0) + "/2", tx, ty + 58);
+		hctx.textAlign = "left";
+
 		/* weapon waypoint: a fresh DM spawn has no weapon, so point at the
 		 * nearest real weapon pickup until the player has one */
 		const it = h.item || "";
