@@ -472,12 +472,14 @@
 		"attribute vec2 aUV;",
 		"uniform mat4 uMVP;",
 		"uniform float uScale;",
+		"uniform float uPointSize;",
 		"varying vec2 vUV;",
 		"varying vec3 vNrm;",
 		"void main(){",
 		"  vUV = aUV;",
 		"  vNrm = aNrm;",
 		"  gl_Position = uMVP * vec4(aPos * uScale,1.0);",
+		"  gl_PointSize = uPointSize;",
 		"}"
 	].join("\n");
 	var FS = [
@@ -588,6 +590,7 @@
 			dynamic: !!m.anim,
 			mvp: gl.getUniformLocation(p, "uMVP"),
 			scale: gl.getUniformLocation(p, "uScale"),
+			pointSize: gl.getUniformLocation(p, "uPointSize"),
 			tex: gl.getUniformLocation(p, "uTex"),
 			texOn: gl.getUniformLocation(p, "uTexOn"),
 			pos: gl.getAttribLocation(p, "aPos"),
@@ -836,6 +839,7 @@
 		gl.useProgram(mesh.program);
 		gl.uniformMatrix4fv(mesh.mvp, false, mvp);
 		gl.uniform1f(mesh.scale, s);
+		if (mesh.pointSize) gl.uniform1f(mesh.pointSize, 1);
 		gl.uniform1i(mesh.tex, 0);
 		gl.uniform1f(mesh.texOn, m.texture ? 1 : 0);
 		gl.activeTexture(gl.TEXTURE0);
@@ -849,6 +853,33 @@
 		gl.vertexAttribPointer(mesh.uv, 2, gl.FLOAT, false, 32, 24);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.ibo);
 		gl.drawElements(gl.TRIANGLES, mesh.count, gl.UNSIGNED_SHORT, 0);
+		return true;
+	}
+
+	/* Draw the decoded corner positions as points.  The shipped INVIEW GHB's
+	 * triangle topology is unreliable (it renders as black shards); the raw
+	 * vertex cloud still has the weapon's silhouette. */
+	function drawPoints(gl, m, mvp, scale, frame, blend, pointSize) {
+		if (!m || m.state !== "ready") return false;
+		const mesh = buildMesh(gl, m);
+		if (!mesh) return false;
+		if (mesh.dynamic) updateFrame(gl, m, frame === undefined ? worldFrame : frame, blend);
+		const s = scale === undefined ? 1 : scale;
+		gl.useProgram(mesh.program);
+		gl.uniformMatrix4fv(mesh.mvp, false, mvp);
+		gl.uniform1f(mesh.scale, s);
+		if (mesh.pointSize) gl.uniform1f(mesh.pointSize, pointSize || 3);
+		gl.uniform1i(mesh.tex, 0);
+		gl.uniform1f(mesh.texOn, 0);
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vbo);
+		gl.enableVertexAttribArray(mesh.pos);
+		gl.vertexAttribPointer(mesh.pos, 3, gl.FLOAT, false, 32, 0);
+		gl.enableVertexAttribArray(mesh.nrm);
+		gl.vertexAttribPointer(mesh.nrm, 3, gl.FLOAT, false, 32, 12);
+		gl.enableVertexAttribArray(mesh.uv);
+		gl.vertexAttribPointer(mesh.uv, 2, gl.FLOAT, false, 32, 24);
+		gl.drawArrays(gl.POINTS, 0, mesh.vertices);
 		return true;
 	}
 
@@ -982,6 +1013,7 @@
 		state: state,
 		load: loadModel,
 		drawModel: drawModel,
+		drawPoints: drawPoints,
 		drawEntity: drawEntity,
 		/* the loaded model of an entity, so a caller can attach a per-entity
 		 * clip player before drawing it */

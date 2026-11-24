@@ -201,7 +201,10 @@
 					frame = (sm && sm.worldFrame) ? sm.worldFrame() : 0;
 				}
 			}
-			SM().drawModel(gl, m, mvp, s, frame);
+			/* The triangle topology of the shipped INVIEW models is broken;
+			 * the point cloud is the readable weapon silhouette. */
+			if (SM().drawPoints) SM().drawPoints(gl, m, mvp, s, frame, null, 3.5);
+			else SM().drawModel(gl, m, mvp, s, frame);
 			if (depth && gl.enable) gl.enable(gl.DEPTH_TEST);
 			st.drawn = (st.drawn || 0) + 1;
 			return true;

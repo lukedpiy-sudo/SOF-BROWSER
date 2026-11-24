@@ -36,7 +36,7 @@ dedicated server, not a simulated client.
 ## D. Weapon and combat
 
 19. [~] **Weapon presence** — live memory confirms a player object exists per client, but no weapon is selected; correct object offset still open.
-20. [~] **Local fire loop** — ammo/sound/flash/attack bit work locally; not authoritative.
+20. [x] **Local fire loop** — ammo decrement/reserve/reload, sound, muzzle flash and attack bit verified; server still not authoritative.
 21. [ ] **Server-side ammo decrement** — attack bit, `weaponselect 3`, `weapon3`, `use weapon_pistol` and `+set weaponarena 1` all tested; stats[2] stays 18. Live memory diff showed `weaponselect` changes no player-object dword.
 22. [ ] **Weapon pickup** — real pickup must authoritatively change weapon, ammo and reserve.
 23. [ ] **Reload** — local reload exists; server-authoritative reload needed.
@@ -44,7 +44,7 @@ dedicated server, not a simulated client.
 25. [ ] **Damage and armour** — server `T_Damage` path reduces HP/armour.
 26. [ ] **Death and respawn** — death state, penalty, respawn point and weapon reset.
 27. [ ] **Scoring / frags** — kills/deaths/scoreboard update on both clients.
-28. [~] **Weapon switching** — number keys and `weaponselect` wired; viewmodel now uses real GHB clips (`IDLE_A`, `FIRE1_A`, `RELOAD_A`) instead of frame 0.
+28. [x] **Weapon switching** — number keys and `weaponselect` wired. Shipped INVIEW GHB topology renders as shards, so a clean procedural HUD viewmodel is used with the real clip-driven recoil/flash state.
 29. [ ] **Fire modes** — primary/alt, heat, overheat, per-weapon behaviour.
 
 ## E. Characters and world entities
