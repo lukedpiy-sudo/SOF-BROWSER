@@ -844,6 +844,15 @@
 		gl.uniform1f(mesh.texOn, m.texture ? 1 : 0);
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, m.texture || null);
+		/* The map/lightmap renderer leaves attribute arrays 3 and 4 enabled.
+		 * WebGL rejects a draw when any enabled array is too short, so turn
+		 * off everything except the three this program actually uses. */
+		try {
+			const maxAttr = gl.getParameter(gl.MAX_VERTEX_ATTRIBS) || 8;
+			for (let a = 0; a < maxAttr; a++) {
+				if (a !== mesh.pos && a !== mesh.nrm && a !== mesh.uv) gl.disableVertexAttribArray(a);
+			}
+		} catch (e) { }
 		gl.bindBuffer(gl.ARRAY_BUFFER, mesh.vbo);
 		gl.enableVertexAttribArray(mesh.pos);
 		gl.vertexAttribPointer(mesh.pos, 3, gl.FLOAT, false, 32, 0);
