@@ -293,7 +293,6 @@
 			gq.myCount = 0;
 			for (var j = 0; j < faces.length; j++) {
 				if ((faces[j].mat || "") !== order[q] || !faces[j].v || faces[j].v.length < 3) continue;
-				if (order[q] === SKY_MAT || order[q] === NODRAW_MAT) continue;
 				gq.myCount += (faces[j].v.length - 2) * 3;
 			}
 			myAt += gq.myCount;
@@ -558,10 +557,9 @@
 					updatePVS([e[0], e[2], e[1]]);
 				}
 				/* the sky: the engine's sky faces, moved with the view */
-				if (window.sofsurface && window.sofsurface.draw &&
-					!/[?&]nosky=1/.test(window.location.search)) {
-					skies += window.sofsurface.draw(ctx, mvp, e) || 0;
-				}
+				/* Sky faces are now drawn as dark solid geometry in the map
+				 * pass.  The old sky-polygon pass uses a stale index buffer
+				 * and raises GL_INVALID_OPERATION, so it is disabled. */
 				/* the draw */
 				ctx.useProgram(prog);
 				ctx.uniformMatrix4fv(loc.mvp, false, mvp);
